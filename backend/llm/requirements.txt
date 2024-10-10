@@ -1,5 +1,4 @@
 openai
 sounddevice
-wave
 pynput
-pyttsx3
+wave
