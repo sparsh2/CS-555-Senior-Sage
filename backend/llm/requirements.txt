@@ -2,3 +2,4 @@ openai
 sounddevice
 pynput
 wave
+pydub

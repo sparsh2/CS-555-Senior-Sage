@@ -5,12 +5,16 @@ import time
 import sounddevice as sd
 from pynput import keyboard
 import wave
+import io
+from pydub import AudioSegment
+from pydub.playback import play
+
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI()
 
-def whisper():
+def stt_whisper():
     # This function uses OpenAI's whisper voice to text model to convert your voice input to text.
     record_audio()
     audio_file = open("user_response.wav", "rb")
@@ -21,8 +25,6 @@ def whisper():
     return transcript.text
 
 def record_audio(duration=None):
-    # This function allows you to record your voice with a press of a button, right now set to 'page down'. You could
-    # also bypass the keyboard input logic to consistently talk to the AI without pressing a button.
     CHUNK = 1024
     FORMAT = 'int16'
     CHANNELS = 1
@@ -90,11 +92,17 @@ def record_audio(duration=None):
             listener.stop()
         time.sleep(0.01)
 
-system_prompt = '''You are a helpful assistant for the elderly, try and have conversations with them.
-Be polite with them and ask them questions about their day. 
-Do not output long answers as it may be too long for them to read. Keep it short and simple and human-like. '''
 
-def openai_complete(user_ip):
+# To Do: Aadyant - Wake word (continous listening, how?), Prompt Engineer (concise, keep on asking if not understood), Data extraction;
+# To Do: Prasoon - Memory [chat (current session), log_files (history of sessions)], TTS, Data extraction
+# 
+
+def openai_complete(user_ip, context):
+    system_prompt = f'''You are a helpful assistant for the elderly, try and have conversations with them.
+    Be polite with them and ask them questions about their day. 
+    Do not output long answers as it may be too long for them to read. Keep it short and simple and human-like. 
+    Utilize the conext given below to keep track of user queries and your answers
+    CHAT HISTORY : {context}'''
     try:
         completion = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -107,18 +115,33 @@ def openai_complete(user_ip):
         ]
         )
         ans = completion.choices[0].message.content
-        print(ans)
+        print(f"Chatbot:{ans}")
+        tts_whisper(ans)
+        return ans
 
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def tts_whisper(input):
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=f"{input}",
+    )
+    audio_data = response.content
+    audio_segment = AudioSegment.from_file(io.BytesIO(audio_data), format="wav")
+    play(audio_segment)
+
 def main_func():
-    user_message = whisper()
+    context = []
+    user_message = stt_whisper()
     i = 0
     while (user_message.lower() != 'exit' or i < 5):
         print(f"You: {user_message.lower()}")
-        openai_complete(user_message)
-        user_message = whisper()
+        chat_ans = openai_complete(user_message, context)
+        context.append((user_message, chat_ans))
+        print(f"\n\n{context}\n\n")
+        user_message = stt_whisper()
         i+=1
 
 if __name__ == "__main__":
