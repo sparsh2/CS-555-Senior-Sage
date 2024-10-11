@@ -3,3 +3,4 @@ sounddevice
 pynput
 wave
 pydub
+langchain
