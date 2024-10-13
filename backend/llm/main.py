@@ -145,8 +145,6 @@ def main_func():
         'messages': []
     }
     
-    MAX_CONVERSATIONS = 100  # Adjust as needed to limit log size
-    
     while True:
         user_message = stt_whisper().strip()
         
@@ -154,14 +152,14 @@ def main_func():
             print("Ending conversation session.")
             break
         
-        # If the user asks about past conversations, handle that query
-        if 'yesterday' in user_message or 'last conversation' in user_message:
-            bot_response = answer_past_conversation_query(name, user_message)
-        else:
-            # Otherwise, proceed with normal chatbot interaction
-            print(f"You: {user_message}")
-            bot_response = openai_complete(user_message, context, voice)
-            print(f"Bot: {bot_response}\n")
+        # # If the user asks about past conversations, handle that query
+        # if 'yesterday' in user_message or 'last conversation' in user_message:
+        #     bot_response = answer_past_conversation_query(name, user_message)
+        # else:
+        # Otherwise, proceed with normal chatbot interaction
+        print(f"You: {user_message}")
+        bot_response = openai_complete(user_message, context, voice)
+        print(f"Bot: {bot_response}\n")
         
         # Update context for the current session
         context.append((user_message, bot_response))
