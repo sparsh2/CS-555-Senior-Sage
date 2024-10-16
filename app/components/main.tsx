@@ -59,7 +59,7 @@ async function deletePreferences(
   setIsFetching(true);
   console.log('making api call');
 
-  const timeout = 3000;
+  const timeout = 2000;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
