@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
-from voice_interactions import stt_whisper
+from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 
 # File and directory configurations
@@ -13,6 +13,8 @@ os.makedirs(LOGS_DIR, exist_ok=True)
 
 def select_voice():
     """Prompt the user to select a voice and return the selected voice."""
+    voice_select_message = "Please select the voice of your choice"
+    tts_whisper(voice_select_message)
     print("Please choose a voice to converse with:")
     print("1. Alloy\n2. Echo\n3. Fable\n4. Onyx\n5. Nova\n6. Shimmer")
     dic = {"1": "Alloy", "2": "Echo", "3": "Fable", "4": "Onyx", "5": "Nova", "6": "Shimmer"}
@@ -67,15 +69,15 @@ def append_conversation(username, conversation):
     logs.append(conversation)
     save_user_logs(username, logs)
 
-def search_logs_by_date(username, date):
-    """Search the user's logs for conversations on a specific date."""
-    logs = load_user_logs(username)
-    results = []
-    for session in logs:
-        session_date = datetime.fromisoformat(session['timestamp']).date()
-        if session_date == date:
-            results.append(session)
-    return results
+# def search_logs_by_date(username, date):
+#     """Search the user's logs for conversations on a specific date."""
+#     logs = load_user_logs(username)
+#     results = []
+#     for session in logs:
+#         session_date = datetime.fromisoformat(session['timestamp']).date()
+#         if session_date == date:
+#             results.append(session)
+#     return results
 
 def summarize_conversation(conversation):
     """Generate a summary of a conversation session."""
@@ -115,20 +117,25 @@ def main_func():
     user_info = load_user_info()
     
     print("Login:\n")
+    login_message = "Please enter your name to login and continue your conversation:"
+    tts_whisper(login_message)
     name = input("Enter your name to continue your conversation:\t").strip()
     
     if not name:
-        print("Name cannot be empty. Exiting.")
+        name_empty_message = "Name cannot be empty. Exiting."
+        tts_whisper(name_empty_message)
         return
     
     if name not in user_info:
-        print(f"Welcome to the VA, {name}!")
+        welcome_message = f"Welcome to the VA, {name}!"
+        tts_whisper(welcome_message)
         voice = select_voice()
         user_info[name] = voice
         save_user_info(user_info)
     else:
         voice = user_info[name]
-        print(f"Welcome back, {name}! Your selected voice is: {voice}")
+        welcome_back_message = f"Welcome back, {name}! Your selected voice is: {voice}"
+        tts_whisper(welcome_back_message)
     
     # Load previous logs to build the initial context
     past_logs = load_user_logs(name)
@@ -163,6 +170,10 @@ def main_func():
         
         # Update context for the current session
         context.append((user_message, bot_response))
+
+        if bot_response == 'Alright then, have a great day ahead!':
+            print("Have a good day")
+            break
         
         # Add to current conversation
         current_conversation['messages'].append({

@@ -93,11 +93,8 @@ def record_audio(duration=None):
         time.sleep(0.01)
 
 
-# To Do: Aadyant - Wake word (continous listening, how?), Prompt Engineer (concise, keep on asking if not understood), Data extraction;
-# To Do: Prasoon - Memory [chat (current session), log_files (history of sessions)], TTS, Data extraction
-# 
 
-def tts_whisper(input, voice):
+def tts_whisper(input, voice="nova"):
     response = client.audio.speech.create(
         model="tts-1",
         voice=f"{voice.lower()}",

@@ -1,6 +1,6 @@
 openai
 sounddevice
 pynput
-wave
 pydub
 langchain
+python-dotenv
