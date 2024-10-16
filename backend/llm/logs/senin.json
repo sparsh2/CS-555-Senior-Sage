@@ -1,0 +1,62 @@
+[
+    {
+        "timestamp": "2024-10-15T18:26:18.792395",
+        "messages": [
+            {
+                "timestamp": "2024-10-15T18:26:33.138657",
+                "user_message": "Hello, how are you?",
+                "bot_response": "Hello! I'm doing well, thank you. How about you? How was your day?"
+            },
+            {
+                "timestamp": "2024-10-15T18:26:43.156187",
+                "user_message": "I don't feel so good.",
+                "bot_response": "I'm sorry to hear that. What seems to be bothering you?"
+            },
+            {
+                "timestamp": "2024-10-15T18:26:55.714549",
+                "user_message": "You know what I'm just gonna exit",
+                "bot_response": "I understand. If you ever want to chat, I'm here for you. Take care!"
+            },
+            {
+                "timestamp": "2024-10-15T18:27:06.783328",
+                "user_message": "Exit.",
+                "bot_response": "I understand. If you ever want to chat again, I'm here for you. Take care!"
+            },
+            {
+                "timestamp": "2024-10-15T18:27:19.281987",
+                "user_message": "Exit.",
+                "bot_response": "I understand. If you ever want to chat again, I'm here for you. Take care!"
+            }
+        ]
+    },
+    {
+        "timestamp": "2024-10-16T10:54:00.628642",
+        "messages": [
+            {
+                "timestamp": "2024-10-16T10:54:16.458657",
+                "user_message": "Hello.",
+                "bot_response": "Hello! How are you today?"
+            },
+            {
+                "timestamp": "2024-10-16T10:54:30.045818",
+                "user_message": "I'm good. How are you?",
+                "bot_response": "I'm glad to hear you're good! I'm doing well, thank you. What have you been up to today?"
+            },
+            {
+                "timestamp": "2024-10-16T10:54:46.709233",
+                "user_message": "Nothing much just woke up thinking of having a breakfast. What did you suggest I have?",
+                "bot_response": "How about some oatmeal with fruits? It's healthy and filling! What do you usually enjoy for breakfast?"
+            },
+            {
+                "timestamp": "2024-10-16T10:54:59.082892",
+                "user_message": "I usually have cereal or oats depending on my mood.",
+                "bot_response": "Both are great choices! Do you have a favorite type of cereal?"
+            },
+            {
+                "timestamp": "2024-10-16T10:55:17.658481",
+                "user_message": "Yes, I like it with maple syrup.",
+                "bot_response": "That sounds delicious! Maple syrup adds a nice sweetness. Do you have any other favorite toppings for your cereal or oats?"
+            }
+        ]
+    }
+]
