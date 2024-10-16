@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
-from voice_interactions import stt_whisper
+from voice_interactions import stt_whisper, detect_wake_word
 from chat_completion import openai_complete
 
 # File and directory configurations
@@ -137,7 +137,13 @@ def main_func():
         for entry in session.get('messages', []):
             context.append((entry['user_message'], entry['bot_response']))
     
-    print("\nYou can start your conversation. Say 'exit' to end.")
+    #print("\nYou can start your conversation. Say 'exit' to end.")
+    # Wait for wake word before starting the conversation
+    if detect_wake_word():
+        print("Wake word detected. You can start your conversation. Say 'exit' to end.")
+    else:
+        print("Wake word not detected. Exiting.")
+        return
     
     # Initialize current conversation session
     current_conversation = {
@@ -155,13 +161,10 @@ def main_func():
             break
         
         # If the user asks about past conversations, handle that query
-        if 'yesterday' in user_message or 'last conversation' in user_message:
-            bot_response = answer_past_conversation_query(name, user_message)
-        else:
-            # Otherwise, proceed with normal chatbot interaction
-            print(f"You: {user_message}")
-            bot_response = openai_complete(user_message, context, voice)
-            print(f"Bot: {bot_response}\n")
+        # Otherwise, proceed with normal chatbot interaction
+        print(f"You: {user_message}")
+        bot_response = openai_complete(user_message, context, voice)
+        print(f"Bot: {bot_response}\n")
         
         # Update context for the current session
         context.append((user_message, bot_response))

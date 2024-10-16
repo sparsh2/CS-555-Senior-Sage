@@ -4,3 +4,5 @@ pynput
 wave
 pydub
 langchain
+simpleaudio
+pvporcupine

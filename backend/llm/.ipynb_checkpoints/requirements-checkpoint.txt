@@ -1,0 +1,6 @@
+openai
+sounddevice
+pynput
+wave
+pydub
+langchain
