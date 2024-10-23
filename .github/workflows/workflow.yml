@@ -10,21 +10,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: pwd
-      run: pwd
-    - name: ls
-      run: |
-        bash
-        ls
-    - name: docker
-      run: |
-        bash
-        docker
     - name: Build docker image
       working-directory: ./
-      run: |
-        bash
-        docker build -f docker/test-server/Dockerfile -t test-server backend/server/
+      run: docker build -f docker/test-server/Dockerfile -t test-server backend/server/
     - name: Run tests
       working-directory: ./
       run: docker run --rm test-server
