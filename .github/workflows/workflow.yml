@@ -7,12 +7,13 @@ on:
 jobs:
   server-tests:
     runs-on: ubuntu-latest
+    working-directory: ./
     steps:
     - name: pwd
       run: pwd
     - name: ls
       run: ls
     - name: Build docker image
-      run: docker build -f docker/test-server/Dockerfile -t test-server ./backend/server/
+      run: docker build -f docker/test-server/Dockerfile -t test-server backend/server/
     - name: Run tests
       run: docker run --rm test-server
