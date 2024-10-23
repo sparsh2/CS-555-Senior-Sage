@@ -11,10 +11,18 @@ jobs:
     - name: pwd
       run: pwd
     - name: ls
-      run: ls
+      run: |
+        bash
+        ls
+    - name: docker
+      run: |
+        bash
+        docker
     - name: Build docker image
       working-directory: ./
-      run: docker build -f docker/test-server/Dockerfile -t test-server backend/server/
+      run: |
+        bash
+        docker build -f docker/test-server/Dockerfile -t test-server backend/server/
     - name: Run tests
       working-directory: ./
       run: docker run --rm test-server
