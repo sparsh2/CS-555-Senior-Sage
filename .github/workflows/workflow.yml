@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: pwd
       run: pwd
+    - name: ls
+      run: ls
     - name: Build docker image
       run: docker build -f docker/test-server/Dockerfile -t test-server ./backend/server/
     - name: Run tests
