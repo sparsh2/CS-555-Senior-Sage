@@ -1,0 +1,11 @@
+"Have you had any alcohol or smoked recently?"
+"Have you taken all your medications as prescribed today?"
+"Are you experiencing any pain or discomfort today?"
+"Did you spend time with family or friends today?"
+"Did you sleep well last night?"
+"How would you rate your overall physical health today?"
+"Are you drinking enough water today?"
+"On a scale of 1-10, how would you rate your mood today?"
+"Do you feel irritable or frustrated more than usual?"
+"Have you felt sad, down, or depressed in the past week?"
+

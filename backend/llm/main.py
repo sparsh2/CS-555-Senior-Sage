@@ -5,8 +5,8 @@ from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 
 # File and directory configurations
-USER_INFO_FILE = 'user_info.json'
-LOGS_DIR = 'logs'
+USER_INFO_FILE = 'backend/llm/user_info.json'
+LOGS_DIR = 'backend/llm/logs'
 
 # Ensure the logs directory exists
 os.makedirs(LOGS_DIR, exist_ok=True)
@@ -69,49 +69,15 @@ def append_conversation(username, conversation):
     logs.append(conversation)
     save_user_logs(username, logs)
 
-# def search_logs_by_date(username, date):
-#     """Search the user's logs for conversations on a specific date."""
-#     logs = load_user_logs(username)
-#     results = []
-#     for session in logs:
-#         session_date = datetime.fromisoformat(session['timestamp']).date()
-#         if session_date == date:
-#             results.append(session)
-#     return results
-
 def summarize_conversation(conversation):
     """Generate a summary of a conversation session."""
     summary = []
     for msg in conversation['messages']:
+        timestamp = msg['timestamp']
         user_message = msg['user_message']
         bot_response = msg['bot_response']
-        summary.append(f"You: {user_message}\nBot: {bot_response}")
+        summary.append(f"Timestamp: {timestamp} - You: {user_message}\nBot: {bot_response}")
     return '\n'.join(summary)
-
-def answer_past_conversation_query(username, query):
-    """Handle questions related to past conversations."""
-    today = datetime.now().date()
-    if 'yesterday' in query:
-        date_to_search = today - timedelta(days=1)
-    elif 'last conversation' in query or 'previous conversation' in query:
-        date_to_search = None
-    else:
-        # If the query doesn't specify a time, handle differently or return "I don't understand"
-        return "I can only answer questions about past conversations like 'yesterday' or 'last session'."
-
-    if date_to_search:
-        # Search for conversations from yesterday
-        conversations = search_logs_by_date(username, date_to_search)
-    else:
-        # Get the most recent conversation if 'last conversation' is asked
-        conversations = load_user_logs(username)[-1:]  # Get only the last conversation
-
-    if not conversations:
-        return "I couldn't find any conversations from that time."
-
-    # Summarize the conversations found
-    summaries = [summarize_conversation(conv) for conv in conversations]
-    return '\n\n'.join(summaries)
 
 def main_func():
     user_info = load_user_info()
@@ -142,13 +108,15 @@ def main_func():
     context = []
     for session in past_logs:
         for entry in session.get('messages', []):
-            context.append((entry['user_message'], entry['bot_response']))
+            context.append((entry['timestamp'], entry['user_message'], entry['bot_response']))
+    print(context[0])
     
     print("\nYou can start your conversation. Say 'exit' to end.")
     
     # Initialize current conversation session
+    cur_time = datetime.now().isoformat()
     current_conversation = {
-        'timestamp': datetime.now().isoformat(),
+        'timestamp': cur_time,
         'messages': []
     }
     
@@ -159,17 +127,12 @@ def main_func():
             print("Ending conversation session.")
             break
         
-        # # If the user asks about past conversations, handle that query
-        # if 'yesterday' in user_message or 'last conversation' in user_message:
-        #     bot_response = answer_past_conversation_query(name, user_message)
-        # else:
-        # Otherwise, proceed with normal chatbot interaction
         print(f"You: {user_message}")
         bot_response = openai_complete(user_message, context, voice)
         print(f"Bot: {bot_response}\n")
         
         # Update context for the current session
-        context.append((user_message, bot_response))
+        context.append((cur_time, user_message, bot_response))
 
         if bot_response == 'Alright then, have a great day ahead!':
             print("Have a good day")
