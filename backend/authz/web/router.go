@@ -5,6 +5,7 @@ import (
 	"authz/types"
 	"encoding/json"
 	"io"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,8 +22,43 @@ func GetRouter() *gin.Engine {
 	authG.PUT("/verify", verify)
 	authG.POST("/gen-token", generateToken)
 	authG.POST("/login", login)
+	authG.POST("/signup", signup)
 
 	return r
+}
+
+func signup(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	signupReq := &types.UserSignupRequest{}
+	err = json.Unmarshal(bytes, signupReq)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	token, err := service.AuthService.Signup(signupReq)
+	if err != nil {
+		log.Println(err)
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"token": token,
+		"msg": "signup successful",
+	})
 }
 
 func login(c *gin.Context) {

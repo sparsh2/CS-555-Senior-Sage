@@ -23,3 +23,8 @@ type MongoUserDetails struct {
 	Email        string `bson:"email,omitempty"`
 	PasswordHash string `bson:"password_hash,omitempty"`
 }
+
+type UserSignupRequest struct {
+	UserEmail    string `json:"email"`
+	UserPassword string `json:"password"`
+}

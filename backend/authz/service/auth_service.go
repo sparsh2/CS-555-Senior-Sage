@@ -34,6 +34,39 @@ func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (
 	return ss, err
 }
 
+func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (string, error) {
+	h := sha256.New()
+	_, err := h.Write([]byte(signupReq.UserPassword))
+	if err != nil {
+		return "", fmt.Errorf("error hashing password: %v", err)
+	}
+	passwordHash := hex.EncodeToString(h.Sum(nil))
+	userDoc := &types.MongoUserDoc{
+		UserDetails: types.MongoUserDetails{
+			Email:        signupReq.UserEmail,
+			PasswordHash: passwordHash,
+		},
+	}
+	err = storage.StorageSvc.InsertUserDoc(userDoc)
+	if err != nil {
+		return "", fmt.Errorf("error inserting user: %v", err)
+	}
+	uid, err := storage.StorageSvc.GetUserId(signupReq.UserEmail)
+	if err != nil {
+		return "", fmt.Errorf("error getting user id: %v", err)
+	}
+
+	token, err := as.GenerateToken(&types.UserDetails{
+		UserId:   uid,
+		Username: signupReq.UserEmail,
+	})
+	if err != nil {
+		return "", fmt.Errorf("error generating jwt token: %v", err)
+	}
+	return token, nil
+
+}
+
 func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string, error) {
 	hash, err := storage.StorageSvc.GetUserHash(loginReq.UserEmail)
 	if err != nil {

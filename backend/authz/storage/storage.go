@@ -17,10 +17,11 @@ type StorageService struct {
 	client *mongo.Client
 }
 
-//go:generate moq -out storageservice_mock_test.go . IStorageService
+//go:generate moq -out storageservice_mock.go . IStorageService
 type IStorageService interface {
 	GetUserHash(string) (string, error)
 	GetUserId(string) (string, error)
+	InsertUserDoc(*types.MongoUserDoc) (error)
 }
 
 var StorageSvc IStorageService
@@ -64,4 +65,13 @@ func (s *StorageService) GetUserId(email string) (string, error) {
 	}
 	fmt.Println(result)
 	return result.UserId, nil
+}
+
+func (s *StorageService) InsertUserDoc(userDoc *types.MongoUserDoc) error {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
+	_, err := coll.InsertOne(context.Background(), userDoc)
+	if err != nil {
+		return fmt.Errorf("error inserting into db: %v", err)
+	}
+	return nil
 }
