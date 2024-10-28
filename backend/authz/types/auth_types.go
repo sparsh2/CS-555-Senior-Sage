@@ -13,3 +13,13 @@ type UserLoginRequest struct {
 	UserEmail    string `json:"email"`
 	UserPassword string `json:"password"`
 }
+
+type MongoUserDoc struct {
+	UserDetails MongoUserDetails `bson:"user_details"`
+	UserId      string           `bson:"_id"`
+}
+
+type MongoUserDetails struct {
+	Email        string `bson:"email,omitempty"`
+	PasswordHash string `bson:"password_hash,omitempty"`
+}
