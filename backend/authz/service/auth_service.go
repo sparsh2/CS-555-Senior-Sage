@@ -40,7 +40,7 @@ func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string
 		return "", fmt.Errorf("error getting password hash: %v", err)
 	}
 	h := sha256.New()
-	_, err  = h.Write([]byte(loginReq.UserPassword))
+	_, err = h.Write([]byte(loginReq.UserPassword))
 	if err != nil {
 		return "", fmt.Errorf("error getting hash: %v", err)
 	}
@@ -53,7 +53,7 @@ func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string
 	}
 
 	return as.GenerateToken(&types.UserDetails{
-		UserId: userId,
+		UserId:   userId,
 		Username: loginReq.UserEmail,
 	})
 }

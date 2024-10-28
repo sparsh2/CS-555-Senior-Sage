@@ -5,11 +5,11 @@ type AuthVerifyRequest struct {
 }
 
 type UserDetails struct {
-	UserId string `json:"user_id"`
+	UserId   string `json:"user_id"`
 	Username string `json:"username"`
 }
 
 type UserLoginRequest struct {
-	UserEmail string `json:"email"`
+	UserEmail    string `json:"email"`
 	UserPassword string `json:"password"`
 }

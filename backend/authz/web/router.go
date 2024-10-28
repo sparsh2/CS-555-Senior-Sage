@@ -54,7 +54,7 @@ func login(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"token": token,
-		"msg": "login successful",
+		"msg":   "login successful",
 	})
 }
 
@@ -80,7 +80,7 @@ func generateToken(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": "Error generating token",
-			"msg": err.Error(),
+			"msg":   err.Error(),
 		})
 		return
 	}
@@ -112,7 +112,7 @@ func verify(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": "Unknown internal error",
-			"msg": err.Error(),
+			"msg":   err.Error(),
 		})
 		return
 	}

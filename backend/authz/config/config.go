@@ -17,8 +17,8 @@ type DBConfig struct {
 }
 
 type Config struct {
-	DBConfig *DBConfig `yaml:"db"`
-	AuthSecretKey string `yaml:"authSecretKey"`
+	DBConfig      *DBConfig `yaml:"db"`
+	AuthSecretKey string    `yaml:"authSecretKey"`
 }
 
 var Configs *Config
