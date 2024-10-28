@@ -27,7 +27,7 @@ func LoadConfig() {
 	// read config from file
 	Configs = &Config{}
 	Configs.DBConfig = &DBConfig{}
-	configFilePath := "/etc/config/config.yaml"
+	configFilePath := "/app/config/conf.yaml"
 	f, err := os.Open(configFilePath)
 	if err != nil {
 		fmt.Println(err)

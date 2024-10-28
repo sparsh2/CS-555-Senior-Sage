@@ -15,7 +15,6 @@ func main() {
 	// Start the server
 	r := web.GetRouter()
 	err := r.Run()
-	defer storage.Storage.Close()
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
