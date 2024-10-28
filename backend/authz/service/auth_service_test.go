@@ -2,6 +2,7 @@ package service
 
 import (
 	"authz/config"
+	"authz/storage"
 	"authz/types"
 	"testing"
 
@@ -44,12 +45,18 @@ func Test_GenerateToken(t *testing.T) {
 	assert.NotEmpty(t, ss, "generated token shouldn't be empty")
 }
 
+// func Test_Login(t *testing.T) {
+// 	setup()
+// 	defer restore()
+// 	authService := &AuthenticationService{}
 
+// }
 
 func setup() {
 	config.Configs = &config.Config{}
 	config.Configs.DBConfig = &config.DBConfig{}
 	config.Configs.AuthSecretKey = "test_secret_key"
+	storage.StorageSvc = &storage.StorageService{}
 }
 
 func restore() {

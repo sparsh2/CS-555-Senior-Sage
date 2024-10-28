@@ -20,8 +20,42 @@ func GetRouter() *gin.Engine {
 	authG := r.Group("/auth/")
 	authG.PUT("/verify", verify)
 	authG.POST("/gen-token", generateToken)
+	authG.POST("/login", login)
 
 	return r
+}
+
+func login(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	loginReq := &types.UserLoginRequest{}
+	err = json.Unmarshal(bytes, loginReq)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+
+	token, err := service.AuthService.Login(loginReq)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"token": token,
+		"msg": "login successful",
+	})
 }
 
 func generateToken(c *gin.Context) {
