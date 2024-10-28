@@ -13,7 +13,6 @@ var StorageSvc IStorageService
 
 func init() {
 	StorageSvc = &StorageService{}
-	StorageSvc = &IStorageServiceMock{}
 }
 
 func (s *StorageService) GetUserHash(email string) (string, error) {
