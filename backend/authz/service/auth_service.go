@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AuthenticationService struct {
@@ -51,8 +52,14 @@ func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (
 }
 
 func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (string, error) {
+	_, err := storage.StorageSvc.GetUserId(signupReq.UserEmail)
+	if err == nil {
+		return "", fmt.Errorf("user already exists")
+	} else if err != mongo.ErrNoDocuments {
+		return "", fmt.Errorf("error getting user id: %v", err)
+	}
 	h := sha256.New()
-	_, err := h.Write([]byte(signupReq.UserPassword))
+	_, err = h.Write([]byte(signupReq.UserPassword))
 	if err != nil {
 		return "", fmt.Errorf("error hashing password: %v", err)
 	}

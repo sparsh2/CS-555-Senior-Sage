@@ -103,6 +103,25 @@ func Test_Login_Fail(t *testing.T) {
 	assert.Equal(t, 0, len(mockedStorage.GetUserIdCalls()))
 }
 
+func Test_SignUp_ShouldErrorWhenExistingUserFound(t *testing.T) {
+	setup()
+	defer teardown()
+	authService := &AuthenticationService{}
+	storageMock := storage.StorageSvc.(*storage.IStorageServiceMock)
+	storageMock.GetUserIdFunc = func(s string) (string, error) {
+		return "", nil
+	}
+	testSignupReq := &types.UserSignupRequest{
+		UserEmail:    "test@mail.com",
+		UserPassword: "testpass",
+	}
+	tkn, err := authService.Signup(testSignupReq)
+	assert.Error(t, err, "should error when existing email account found")
+	assert.Equal(t, "user already exists", err.Error())
+	assert.Empty(t, tkn)
+	assert.Equal(t, 1, len(storageMock.GetUserIdCalls()))
+}
+
 func setup() {
 	config.Configs = &config.Config{}
 	config.Configs.DBConfig = &config.DBConfig{}
