@@ -19,12 +19,35 @@ func GetRouter() *gin.Engine {
 	})
 
 	authG := r.Group("/auth/")
-	authG.PUT("/verify", verify)
+	authG.GET("/verify", verify)
 	authG.POST("/gen-token", generateToken)
 	authG.POST("/login", login)
 	authG.POST("/signup", signup)
 
+	// authorization - request access
+	r.GET("/request-access", requestAccess)
+
 	return r
+}
+
+func requestAccess(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	requestAccessReq := &types.RequestAccessRequest{}
+	err = json.Unmarshal(bytes, requestAccessReq)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
 }
 
 func signup(c *gin.Context) {
@@ -144,8 +167,14 @@ func verify(c *gin.Context) {
 		return
 	}
 
-	ok, err := service.AuthService.VerifyToken(authReq.JWTToken)
+	claims, err := service.AuthService.VerifyToken(authReq.JWTToken)
 	if err != nil {
+		if err == types.ErrInvalidToken {
+			c.JSON(200, gin.H{
+				"valid": "false",
+			})
+			return
+		}
 		c.JSON(500, gin.H{
 			"error": "Unknown internal error",
 			"msg":   err.Error(),
@@ -153,14 +182,9 @@ func verify(c *gin.Context) {
 		return
 	}
 
-	if ok {
-		c.JSON(200, gin.H{
-			"valid": "true",
-		})
-		return
-	} else {
-		c.JSON(200, gin.H{
-			"valid": "false",
-		})
-	}
+	c.JSON(200, gin.H{
+		"valid": "true",
+		"user_id": claims.UserId,
+		"user_email": claims.UserEmail,
+	})
 }

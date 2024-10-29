@@ -24,15 +24,92 @@ func Test_Verify(t *testing.T) {
 	assert.NoError(t, err, "GenerateToken() should not throw error")
 	assert.NotEmpty(t, ss, "generated token shouldn't be empty")
 
-	ok, err := authService.VerifyToken(ss)
+	claims, err := authService.VerifyToken(ss)
 	assert.NoError(t, err)
-	assert.True(t, ok)
+	assert.NotNil(t, claims)
 
 	config.Configs.AuthSecretKey = "newsecretkey"
 
-	ok, err = authService.VerifyToken(ss)
+	claims, err = authService.VerifyToken(ss)
 	assert.Error(t, err)
-	assert.False(t, ok)
+	assert.Nil(t, claims)
+}
+
+func Test_RequestAccess(t *testing.T) {
+	setup()
+	defer teardown()
+	authService := &AuthenticationService{}
+	requesterId := "u_id"
+	testUserDetails := &types.UserDetails{
+		UserId:    requesterId,
+		UserEmail: "testuser",
+	}
+	ss, err := authService.GenerateToken(testUserDetails)
+	assert.NoError(t, err, "GenerateToken() should not throw error")
+	assert.NotEmpty(t, ss, "generated token shouldn't be empty")
+	mockedStorage := storage.StorageSvc.(*storage.IStorageServiceMock)
+
+	// test granted
+	mockUserId := "test_user_id"
+	requestAccessReq := &types.RequestAccessRequest{
+		RequesterToken: ss,
+		UserId:         mockUserId,
+		Resources:      []types.ResourceType{types.UserDetailsResource, types.UserRemindersResource},
+	}
+	mockedStorage.GetAclDocFunc = func(UserId string) (*types.MongoAclsDoc, error) {
+		return &types.MongoAclsDoc{
+			AclId:  "aclid",
+			UserId: UserId,
+			Acls: map[types.ResourceType][]string{
+				types.UserDetailsResource:    {requesterId, "other_id"},
+				types.UserPreferenceResource: {"other_id"},
+				types.UserRemindersResource:  {requesterId},
+			},
+		}, nil
+	}
+	granted, err := authService.RequestAccess(requestAccessReq)
+	assert.NoError(t, err)
+	assert.True(t, granted)
+
+	// test denied
+	mockedStorage.GetAclDocFunc = func(UserId string) (*types.MongoAclsDoc, error) {
+		return &types.MongoAclsDoc{
+			AclId:  "aclid",
+			UserId: UserId,
+			Acls: map[types.ResourceType][]string{
+				types.UserDetailsResource:    {requesterId, "other_id"},
+				types.UserPreferenceResource: {"other_id"},
+				types.UserRemindersResource:  {},
+			},
+		}, nil
+	}
+	granted, err = authService.RequestAccess(requestAccessReq)
+	assert.NoError(t, err)
+	assert.False(t, granted)
+
+	// test unknown resource request
+	mockedStorage.GetAclDocFunc = func(UserId string) (*types.MongoAclsDoc, error) {
+		return &types.MongoAclsDoc{
+			AclId:  "aclid",
+			UserId: UserId,
+			Acls: map[types.ResourceType][]string{
+				types.UserDetailsResource:    {requesterId, "other_id"},
+				types.UserPreferenceResource: {"other_id"},
+			},
+		}, nil
+	}
+	granted, err = authService.RequestAccess(requestAccessReq)
+	assert.Error(t, err)
+	assert.False(t, granted)
+
+	// test storage error
+	mockedStorage.GetAclDocFunc = func(UserId string) (*types.MongoAclsDoc, error) {
+		return nil, fmt.Errorf("some db error")
+	}
+	granted, err = authService.RequestAccess(requestAccessReq)
+	assert.Error(t, err)
+	assert.False(t, granted)
+
 }
 
 func Test_GenerateToken(t *testing.T) {

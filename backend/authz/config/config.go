@@ -9,18 +9,20 @@ import (
 )
 
 type DBConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
-	DBName   string `yaml:"database"`
-	AppName  string `yaml:"appname"`
-	UsersCollection string `yaml:"users"`
+	Host            string `yaml:"host"`
+	Port            int    `yaml:"port"`
+	User            string `yaml:"user"`
+	Password        string `yaml:"password"`
+	DBName          string `yaml:"database"`
+	AppName         string `yaml:"appname"`
+	UsersCollection string `yaml:"users_collection"`
+	AclsCollection  string `yaml:"acls_collection"`
 }
 
 type Config struct {
 	DBConfig      *DBConfig `yaml:"db"`
 	AuthSecretKey string    `yaml:"authSecretKey"`
+	LLMUserEmail  string    `yaml:"llmUsername"`
 }
 
 var Configs *Config

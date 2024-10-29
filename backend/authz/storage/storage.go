@@ -21,7 +21,9 @@ type StorageService struct {
 type IStorageService interface {
 	GetUserHash(string) (string, error)
 	GetUserId(string) (string, error)
-	InsertUserDoc(*types.MongoUserDoc) (error)
+	InsertUserDoc(*types.MongoUserDoc) error
+	GetAclDoc(string) (*types.MongoAclsDoc, error)
+	InsertAclDoc(*types.MongoAclsDoc) error
 }
 
 var StorageSvc IStorageService
@@ -45,6 +47,16 @@ func InitStorage() error {
 	return nil
 }
 
+func (s *StorageService) GetAclDoc(UserId string) (*types.MongoAclsDoc, error) {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
+	var result types.MongoAclsDoc
+	err := coll.FindOne(context.Background(), bson.D{{"uid", UserId}}).Decode(&result)
+	if err != nil {
+		return nil, fmt.Errorf("error finding Acls for the user: %v", err)
+	}
+	return &result, nil
+}
+
 func (s *StorageService) GetUserHash(email string) (string, error) {
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
 	var result types.MongoUserDoc
@@ -52,7 +64,6 @@ func (s *StorageService) GetUserHash(email string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error finding the user: %v", err)
 	}
-	fmt.Println(result)
 	return result.UserDetails.PasswordHash, nil
 }
 
@@ -75,3 +86,13 @@ func (s *StorageService) InsertUserDoc(userDoc *types.MongoUserDoc) error {
 	}
 	return nil
 }
+
+func (s *StorageService) InsertAclDoc(aclDoc *types.MongoAclsDoc) error {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
+	_, err := coll.InsertOne(context.Background(), aclDoc)
+	if err != nil {
+		return fmt.Errorf("error inserting into db: %v", err)
+	}
+	return nil
+}
+

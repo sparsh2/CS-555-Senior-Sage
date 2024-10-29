@@ -24,18 +24,12 @@ func init() {
 
 type CustomRegisteredClaims struct {
 	jwt.RegisteredClaims
-	UserId    string
-	UserEmail string
+	UserId    string `json:"user_id"`
+	UserEmail string `json:"user_email"`
 }
 
 func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (string, error) {
 	signingKey := []byte(config.Configs.AuthSecretKey)
-	// claims := &jwt.RegisteredClaims{
-	// 	Issuer:    "sage-server",
-	// 	ExpiresAt: jwt.NewNumericDate(time.Now().Add(9999 * time.Hour)),
-	// 	IssuedAt:  jwt.NewNumericDate(time.Now()),
-	// 	NotBefore: jwt.NewNumericDate(time.Now()),
-	// }
 	claims := &CustomRegisteredClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "sage-server",
@@ -78,7 +72,22 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 	if err != nil {
 		return "", fmt.Errorf("error getting user id: %v", err)
 	}
-
+	llmuid, err := storage.StorageSvc.GetUserId(config.Configs.LLMUserEmail)
+	if err != nil {
+		return "", fmt.Errorf("error getting llm user id: %v", err)
+	}
+	aclDoc := &types.MongoAclsDoc{
+		UserId: uid,
+		Acls: map[types.ResourceType][]string{
+			types.UserDetailsResource:    {llmuid, uid},
+			types.UserPreferenceResource: {llmuid},
+			types.UserRemindersResource:  {llmuid, uid},
+		},
+	}
+	err = storage.StorageSvc.InsertAclDoc(aclDoc)
+	if err != nil {
+		return "", fmt.Errorf("error populating ACLs: %v", err)
+	}
 	token, err := as.GenerateToken(&types.UserDetails{
 		UserId:    uid,
 		UserEmail: signupReq.UserEmail,
@@ -114,12 +123,48 @@ func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string
 	})
 }
 
-func (as *AuthenticationService) VerifyToken(tokenString string) (bool, error) {
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) { return []byte(config.Configs.AuthSecretKey), nil })
+func (as *AuthenticationService) VerifyToken(tokenString string) (*CustomRegisteredClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &CustomRegisteredClaims{}, func(t *jwt.Token) (interface{}, error) { return []byte(config.Configs.AuthSecretKey), nil })
 	if err != nil {
-		return false, fmt.Errorf("unable to verify the token: %v", err)
+		return nil, fmt.Errorf("unable to verify the token: %v", err)
 	}
 	if !token.Valid {
+		return nil, types.ErrInvalidToken
+	}
+	return token.Claims.(*CustomRegisteredClaims), nil
+}
+
+func (as *AuthenticationService) RequestAccess(requestAccessReq *types.RequestAccessRequest) (bool, error) {
+	claims, err := as.VerifyToken(requestAccessReq.RequesterToken)
+	if err != nil {
+		return false, err
+	}
+	requesterId := claims.UserId
+	docId := requestAccessReq.UserId
+	acl, err := storage.StorageSvc.GetAclDoc(docId)
+	if err != nil {
+		return false, fmt.Errorf("error getting acls: %v", err)
+	}
+	granted := true
+	for _, res := range requestAccessReq.Resources {
+		ok := false
+		_, ok1 := acl.Acls[res]
+		if !ok1 {
+			return false, fmt.Errorf("unknown resource type %v", res)
+		}
+		for _, uid := range acl.Acls[res] {
+			if uid == requesterId {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			granted = false
+			break
+		}
+	}
+
+	if !granted {
 		return false, nil
 	}
 	return true, nil
