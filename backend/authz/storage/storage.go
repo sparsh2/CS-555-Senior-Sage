@@ -95,4 +95,3 @@ func (s *StorageService) InsertAclDoc(aclDoc *types.MongoAclsDoc) error {
 	}
 	return nil
 }
-

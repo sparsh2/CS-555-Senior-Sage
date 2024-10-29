@@ -80,7 +80,7 @@ func signup(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"token": token,
-		"msg": "signup successful",
+		"msg":   "signup successful",
 	})
 }
 
@@ -183,8 +183,8 @@ func verify(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"valid": "true",
-		"user_id": claims.UserId,
+		"valid":      "true",
+		"user_id":    claims.UserId,
 		"user_email": claims.UserEmail,
 	})
 }
