@@ -21,13 +21,29 @@ func init() {
 	AuthService = &AuthenticationService{}
 }
 
+type CustomRegisteredClaims struct {
+	jwt.RegisteredClaims
+	UserId    string
+	UserEmail string
+}
+
 func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (string, error) {
 	signingKey := []byte(config.Configs.AuthSecretKey)
-	claims := &jwt.RegisteredClaims{
-		Issuer:    "sage-server",
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(9999 * time.Hour)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		NotBefore: jwt.NewNumericDate(time.Now()),
+	// claims := &jwt.RegisteredClaims{
+	// 	Issuer:    "sage-server",
+	// 	ExpiresAt: jwt.NewNumericDate(time.Now().Add(9999 * time.Hour)),
+	// 	IssuedAt:  jwt.NewNumericDate(time.Now()),
+	// 	NotBefore: jwt.NewNumericDate(time.Now()),
+	// }
+	claims := &CustomRegisteredClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "sage-server",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(9999 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+		},
+		UserId:    userDetails.UserId,
+		UserEmail: userDetails.UserEmail,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	ss, err := token.SignedString(signingKey)
@@ -57,8 +73,8 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 	}
 
 	token, err := as.GenerateToken(&types.UserDetails{
-		UserId:   uid,
-		Username: signupReq.UserEmail,
+		UserId:    uid,
+		UserEmail: signupReq.UserEmail,
 	})
 	if err != nil {
 		return "", fmt.Errorf("error generating jwt token: %v", err)
@@ -86,8 +102,8 @@ func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string
 	}
 
 	return as.GenerateToken(&types.UserDetails{
-		UserId:   userId,
-		Username: loginReq.UserEmail,
+		UserId:    userId,
+		UserEmail: loginReq.UserEmail,
 	})
 }
 

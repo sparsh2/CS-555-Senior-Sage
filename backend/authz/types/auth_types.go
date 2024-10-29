@@ -5,8 +5,8 @@ type AuthVerifyRequest struct {
 }
 
 type UserDetails struct {
-	UserId   string `json:"user_id"`
-	Username string `json:"username"`
+	UserId    string `json:"user_id"`
+	UserEmail string `json:"username"`
 }
 
 type UserLoginRequest struct {
@@ -15,8 +15,8 @@ type UserLoginRequest struct {
 }
 
 type MongoUserDoc struct {
-	UserDetails MongoUserDetails `bson:"user_details"`
-	UserId      string           `bson:"_id"`
+	UserDetails MongoUserDetails `bson:"user_details,omitempty"`
+	UserId      string           `bson:"_id,omitempty"`
 }
 
 type MongoUserDetails struct {

@@ -30,3 +30,15 @@ package storage
 // 	err := StorageSvc.(*StorageService).client.Disconnect(context.Background())
 // 	assert.NoError(t, err)
 // }
+/*
+cat > conf.yaml <<EOF
+authSecretKey: testkey
+db:
+  host: mymongocluster.r1pcx2q.mongodb.net
+  user: sage
+  password: oQZxNrwTuKBsmAgu
+  database: sage
+  appname: users
+  users: users
+EOF
+*/

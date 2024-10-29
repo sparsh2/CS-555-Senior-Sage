@@ -17,8 +17,8 @@ func Test_Verify(t *testing.T) {
 	defer teardown()
 	authService := &AuthenticationService{}
 	testUserDetails := &types.UserDetails{
-		UserId:   "u_id",
-		Username: "testuser",
+		UserId:    "u_id",
+		UserEmail: "testuser",
 	}
 	ss, err := authService.GenerateToken(testUserDetails)
 	assert.NoError(t, err, "GenerateToken() should not throw error")
@@ -40,8 +40,8 @@ func Test_GenerateToken(t *testing.T) {
 	defer teardown()
 	authService := &AuthenticationService{}
 	testUserDetails := &types.UserDetails{
-		UserId:   "u_id",
-		Username: "testuser",
+		UserId:    "u_id",
+		UserEmail: "testuser",
 	}
 	ss, err := authService.GenerateToken(testUserDetails)
 	assert.NoError(t, err, "GenerateToken() should not throw error")
