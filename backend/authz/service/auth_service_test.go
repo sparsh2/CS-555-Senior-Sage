@@ -8,7 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"testing"
-
+    "go.mongodb.org/mongo-driver/mongo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -178,6 +178,36 @@ func Test_Login_Fail(t *testing.T) {
 	assert.Empty(t, tkn, "should be empty")
 	assert.Equal(t, 1, len(mockedStorage.GetUserHashCalls()))
 	assert.Equal(t, 0, len(mockedStorage.GetUserIdCalls()))
+}
+
+func Test_SignUp_Success(t *testing.T) {
+	setup()
+	defer teardown()
+	authService := &AuthenticationService{}
+	storageMock := storage.StorageSvc.(*storage.IStorageServiceMock)
+	storageMock.GetUserIdFunc = func(s string) (string, error) {
+		if len(storageMock.GetUserIdCalls()) == 1 {
+			return "", mongo.ErrNoDocuments
+		} else if len(storageMock.GetUserIdCalls()) == 2 {
+			return "user_id", nil
+		} else {
+			return "llm_id", nil
+		}
+	}
+	storageMock.InsertUserDocFunc = func(mongoUserDoc *types.MongoUserDoc) error {
+		return nil
+	}
+	storageMock.InsertAclDocFunc = func(mongoAclsDoc *types.MongoAclsDoc) error {
+		return nil
+	}
+	testSignupReq := &types.UserSignupRequest{
+		UserEmail:    "test@mail.com",
+		UserPassword: "testpass",
+	}
+	tkn, err := authService.Signup(testSignupReq)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, tkn)
+	assert.Equal(t, 3, len(storageMock.GetUserIdCalls()))
 }
 
 func Test_SignUp_ShouldErrorWhenExistingUserFound(t *testing.T) {
