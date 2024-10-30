@@ -1,0 +1,14 @@
+[
+    {
+        "reminder for medicines": {
+            "time": "10:30 a.m.",
+            "frequency": "daily"
+        }
+    },
+    {
+        "reminder for meeting Chopper": {
+            "time": "6:30 p.m.",
+            "frequency": "one-time"
+        }
+    }
+]

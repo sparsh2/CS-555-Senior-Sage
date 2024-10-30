@@ -1,15 +1,18 @@
 import json
 import os
+import re
 from datetime import datetime, timedelta
 from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 
 # File and directory configurations
-USER_INFO_FILE = 'backend/llm/user_info.json'
-LOGS_DIR = 'backend/llm/logs'
+USER_INFO_FILE = 'CS-555-Senior-Sage/backend/llm/user_info.json'
+LOGS_DIR = 'CS-555-Senior-Sage/backend/llm/logs'  
+REMINDER_DIR = 'CS-555-Senior-Sage/backend/llm/reminder'
 
 # Ensure the logs directory exists
 os.makedirs(LOGS_DIR, exist_ok=True)
+os.makedirs(REMINDER_DIR, exist_ok=True)
 
 def select_voice():
     """Prompt the user to select a voice and return the selected voice."""
@@ -42,6 +45,33 @@ def save_user_info(user_info):
             json.dump(user_info, f, indent=4)
     except IOError as e:
         print(f"Error saving user info: {e}")
+
+def load_user_reminders(username):
+    """Load reminders for a specific user."""
+    reminder_file = os.path.join(REMINDER_DIR, f"{username}_reminders.json")
+    if os.path.exists(reminder_file):
+        try:
+            with open(reminder_file, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f"Warning: {reminder_file} is corrupted. Starting with empty reminders.")
+    return []
+
+def save_user_reminders(username, reminders):
+    """Save reminders for a specific user."""
+    reminder_file = os.path.join(REMINDER_DIR, f"{username}_reminders.json")
+    try:
+        with open(reminder_file, 'w') as f:
+            json.dump(reminders, f, indent=4)
+    except IOError as e:
+        print(f"Error saving reminders for {username}: {e}")
+
+def add_reminder(username, reminder_details):
+    """Add a new reminder to the user's reminders list."""
+    reminders = load_user_reminders(username)
+    reminders.append(reminder_details)
+    save_user_reminders(username, reminders)
+
 
 def load_user_logs(username):
     """Load conversation logs for a specific user."""
@@ -109,7 +139,6 @@ def main_func():
     for session in past_logs:
         for entry in session.get('messages', []):
             context.append((entry['timestamp'], entry['user_message'], entry['bot_response']))
-    print(context[0])
     
     print("\nYou can start your conversation. Say 'exit' to end.")
     
@@ -129,13 +158,31 @@ def main_func():
         
         print(f"You: {user_message}")
         bot_response = openai_complete(user_message, context, voice)
-        print(f"Bot: {bot_response}\n")
+
+        # Attempt to extract and parse the JSON part
+        json_match = re.search(r"\{[^}]+\}+", bot_response.replace("\n", ""), re.DOTALL)
+
+        if json_match:
+            json_str = json_match.group(0).strip() 
+
+            try:
+                bot_response_dict = json.loads(json_str)  # Parse it to a dictionary
+                reminder_file_path = os.path.join("reminder", f"{name}_reminder.json")
+                print(f"Debug: Saving reminder to {reminder_file_path}")
+                add_reminder(name, bot_response_dict)
+    
+            except json.JSONDecodeError:
+                print("Debug: bot_response is not a valid JSON string")
         
         # Update context for the current session
-        context.append((cur_time, user_message, bot_response))
+        context.append((user_message, bot_response))
 
-        if bot_response == 'Alright then, have a great day ahead!':
-            print("Have a good day")
+        if "Alright then have a great" in re.sub(r'[^\w\s]', '', bot_response):
+            current_conversation['messages'].append({
+            'timestamp': datetime.now().isoformat(),
+            'user_message': user_message,
+            'bot_response': bot_response
+            })
             break
         
         # Add to current conversation
