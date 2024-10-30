@@ -16,3 +16,14 @@ jobs:
     - name: Run tests
       working-directory: ./
       run: docker run --rm test-server
+  authz-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build docker image
+      working-directory: ./
+      run: docker build -t authz-testing -f docker/test-authz/Dockerfile backend/authz
+    - name: Run tests
+      working-directory: ./
+      run: docker run --rm authz-testing
