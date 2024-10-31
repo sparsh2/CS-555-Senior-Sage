@@ -1,0 +1,52 @@
+[
+    {
+        "timestamp": "2024-10-30T16:57:27.841569",
+        "messages": [
+            {
+                "timestamp": "2024-10-30T16:57:46.346138",
+                "user_message": "My name is Adyant.",
+                "bot_response": "Nice to meet you, Adyant! How are you feeling today?"
+            },
+            {
+                "timestamp": "2024-10-30T16:58:08.045236",
+                "user_message": "I am feeling good, thank you. Could you do one job for me?",
+                "bot_response": "I'm glad to hear that you're feeling good, Adyant! What can I help you with today?"
+            },
+            {
+                "timestamp": "2024-10-30T16:58:39.633335",
+                "user_message": "so I would like you to you know make a appointment for me can you do that no leave it I want you to set reminders for me",
+                "bot_response": "Of course, I can help you with that! Just let me know what reminder you would like to set, including the time and how often you want it to repeat."
+            },
+            {
+                "timestamp": "2024-10-30T16:59:10.035361",
+                "user_message": "So, I would like to set a reminder for taking my medicines on 31st of October and the timing is 5pm, the frequency is daily.",
+                "bot_response": "Got it! Here's your reminder: \n\n```json\n{\n  \"reminder for medicines\": {\n    \"time\": \"5:00 pm\",\n    \"frequency\": \"daily\"\n  }\n}\n```\n\nIs there anything else you\u2019d like to set a reminder for or talk about?"
+            },
+            {
+                "timestamp": "2024-10-30T16:59:19.702841",
+                "user_message": "No, thank you, bye bye.",
+                "bot_response": "Alright then, have a great day ahead!"
+            }
+        ]
+    },
+    {
+        "timestamp": "2024-10-30T20:25:41.653344",
+        "messages": [
+            {
+                "timestamp": "2024-10-30T20:25:59.431363",
+                "user_message": "I like playing piano.",
+                "bot_response": "That's wonderful, Adyant! Playing the piano can be such a relaxing and rewarding hobby. Do you have a favorite piece or song you enjoy playing?"
+            },
+            {
+                "timestamp": "2024-10-30T20:26:46.713257",
+                "user_message": "I just want to know, did you save my response as a preference?",
+                "bot_response": "Yes, I saved your preference about playing the piano! If you have more preferences or interests you'd like to share, feel free to let me know."
+            },
+            {
+                "timestamp": "2024-10-30T20:26:56.083920",
+                "user_message": "Okay, bye",
+                "bot_response": "Alright then, have a great day ahead!"
+            }
+        ]
+    }
+]

@@ -6,13 +6,15 @@ from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 
 # File and directory configurations
-USER_INFO_FILE = 'CS-555-Senior-Sage/backend/llm/user_info.json'
-LOGS_DIR = 'CS-555-Senior-Sage/backend/llm/logs'  
-REMINDER_DIR = 'CS-555-Senior-Sage/backend/llm/reminder'
+USER_INFO_FILE = 'user_info.json'
+LOGS_DIR = 'logs'  
+REMINDER_DIR = 'reminder'
+PREFERENCES_DIR = 'preferences'
 
 # Ensure the logs directory exists
 os.makedirs(LOGS_DIR, exist_ok=True)
 os.makedirs(REMINDER_DIR, exist_ok=True)
+os.makedirs(PREFERENCES_DIR, exist_ok=True)
 
 def select_voice():
     """Prompt the user to select a voice and return the selected voice."""
@@ -93,6 +95,27 @@ def save_user_logs(username, logs):
     except IOError as e:
         print(f"Error saving logs for {username}: {e}")
 
+def load_user_preferences(username):
+    """Load preferences for a specific user."""
+    preferences_file = os.path.join(PREFERENCES_DIR, f"{username}_preferences.json")
+    if os.path.exists(preferences_file):
+        try:
+            with open(preferences_file, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f"Warning: {preferences_file} is corrupted. Starting with empty preferences.")
+    return []
+
+def save_user_preferences(username, preferences):
+    """Save preferences for a specific user."""
+    preferences_file = os.path.join(PREFERENCES_DIR, f"{username}_preferences.json")
+    try:
+        with open(preferences_file, 'w') as f:
+            json.dump(preferences, f, indent=4)
+    except IOError as e:
+        print(f"Error saving preferences for {username}: {e}")
+
+
 def append_conversation(username, conversation):
     """Append a completed conversation session to the user's log."""
     logs = load_user_logs(username)
@@ -161,9 +184,28 @@ def main_func():
 
         # Attempt to extract and parse the JSON part
         json_match = re.search(r"\{[^}]+\}+", bot_response.replace("\n", ""), re.DOTALL)
+        
+        """# Attempt to parse detected preferences
+        preferences_match = re.search(r'\{"preference":.*?\}', bot_response.replace("\n", ""), re.DOTALL)
+
+        if preferences_match:
+            preferences_str = preferences_match.group(0).strip()
+            preferences_str = preferences_str.replace("'", '"')  # Fix JSON format if necessary
+    
+        try:
+            preference_dict = json.loads(preferences_str)
+            user_preferences = load_user_preferences(name)
+            user_preferences.append(preference_dict)
+            save_user_preferences(name, user_preferences)
+        
+        except json.JSONDecodeError:
+            print("Debug: bot_response does not contain valid JSON for preferences.")"""
+
 
         if json_match:
             json_str = json_match.group(0).strip() 
+            # Fix JSON format issues (replace single quotes with double quotes for JSON compatibility)
+            json_str = json_str.replace("'", '"')
 
             try:
                 bot_response_dict = json.loads(json_str)  # Parse it to a dictionary
