@@ -180,6 +180,36 @@ func Test_Login_Fail(t *testing.T) {
 	assert.Equal(t, 0, len(mockedStorage.GetUserIdCalls()))
 }
 
+func Test_SignUp_InsertError(t *testing.T) {
+	setup()
+	defer teardown()
+	authService := &AuthenticationService{}
+	storageMock := storage.StorageSvc.(*storage.IStorageServiceMock)
+	storageMock.GetUserIdFunc = func(s string) (string, error) {
+		if len(storageMock.GetUserIdCalls()) == 1 {
+			return "", mongo.ErrNoDocuments
+		} else if len(storageMock.GetUserIdCalls()) == 2 {
+			return "user_id", nil
+		} else {
+			return "llm_id", nil
+		}
+	}
+	storageMock.InsertUserDocFunc = func(mongoUserDoc *types.MongoUserDoc) error {
+		return nil
+	}
+	storageMock.InsertAclDocFunc = func(mongoAclsDoc *types.MongoAclsDoc) error {
+		return fmt.Errorf("insert error")
+	}
+	testSignupReq := &types.UserSignupRequest{
+		UserEmail:    "test@mail.com",
+		UserPassword: "testpass",
+	}
+	tkn, err := authService.Signup(testSignupReq)
+	assert.Error(t, err)
+	assert.Empty(t, tkn)
+	assert.Equal(t, 3, len(storageMock.GetUserIdCalls()))
+}
+
 func Test_SignUp_Success(t *testing.T) {
 	setup()
 	defer teardown()
