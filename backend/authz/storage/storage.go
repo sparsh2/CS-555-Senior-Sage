@@ -72,7 +72,7 @@ func (s *StorageService) GetUserId(email string) (string, error) {
 	var result types.MongoUserDoc
 	err := coll.FindOne(context.Background(), bson.D{{"user_details.email", email}}).Decode(&result)
 	if err != nil {
-		return "", fmt.Errorf("error finding the user: %v", err)
+		return "", err
 	}
 	fmt.Println(result)
 	return result.UserId, nil
