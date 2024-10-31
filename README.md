@@ -24,6 +24,40 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 - Run `pip install -r requirements.txt`
 - From the same directory run `flask --app server run`
 
+### Authorization server setup
+#### Set up
+- `authz` service is written `golang`. So, ensure you have installed go on your local: [Install go](https://go.dev/doc/install). Requires go version `1.23`
+- Navigate to dir `backend/authz` and run `go mod download` to install dependencies
+- Run `go install github.com/matryer/moq@latest` to install `moq` to generate mocks for testing
+- Run `go generate ./...` to generate the mocks
+- Run `go test ./...` to run the tests on local
+
+
+#### Run
+- Run in docker
+- From the root dir run `docker build -t authz -f docker/authz/Dockerfile backend/authz` to build image
+- Run `docker run -it --rm -p 8080:8080 --entrypoint bash authz`
+- This should open up a terminal to the docker container
+- Add the `conf.yaml` file for the server:
+```
+mkdir config
+cd config
+cat > conf.yaml <<EOF
+authSecretKey: testkey
+llmUsername: llmuser
+db:
+  host: mymongocluster.r1pcx2q.mongodb.net
+  user: sage
+  password: oQZxNrwTuKBsmAgu
+  database: sage
+  appname: users
+  users_collection: users
+  acls_collection: acls
+EOF
+```
+- Run `cd ../` and `./authz` to start the server
+- This should start the server in the docker and expose port on local on 8080
+
 ### LLM functionalities setup
 - Install ffmpeg
     - Using `chocolatey` for windows: `choco install ffmpeg`
