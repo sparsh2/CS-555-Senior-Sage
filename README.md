@@ -79,6 +79,17 @@ EOF
 - **User Interaction Logs**: Captures logs of individual user interactions for review and improvement.
 - **End-of-Conversation Detection**: Detects when a conversation has naturally ended and disengages to ensure a smooth user experience.
 
+## Features completed so far (Sprint 2)
+
+- **Reminder for appointments**: The user is now able to set reminder for appointments with the help of voice assistant.
+- **Reminder for checking BP**: The user can now set reminders for checking his BP with the help of voice assistant.
+- **Reminder for medication**: The user can now set reminders for taking medication with the help of voice assistant.
+- **Timesense**: The voice assistant now has a sense of what time it was yesterday, what time it is today and it remembers where we last left off our conversation.
+- **CI/CD set up**: Completed CI/CD setup leveraging Github Actions. For every pull request raised to main branch, it now triggers workflows to run all tests of the repository.
+- **Login & and sign up functionality**: Authz service has been added which now supports user login and signup.
+- **Authorization**: Authz service also exposes endpoints to be used by storage service to check for requesting user permissions before granting access to resources in the database. This is a requirement for HIPAA compliant storage system.
+- 
+
 ### Demos
 
 - Video demonstration of completed features: [Drive Link](https://drive.google.com/drive/u/0/folders/13SrXH7Rgg0j0vdOqyGlyub7U1ZGvrnYm)
