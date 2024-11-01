@@ -7,9 +7,9 @@ import os
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI()
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def openai_complete(user_ip, context, voice):
-    DOCS_PATH = "CS-555-Senior-Sage/backend/llm/documentation.txt"
+    DOCS_PATH = os.path.join(BASE_DIR, 'documentation.txt')
     if os.path.exists(DOCS_PATH):
         try:
             with open(DOCS_PATH, 'r') as f:
@@ -28,7 +28,7 @@ def openai_complete(user_ip, context, voice):
     or interpreting medical results. When in doubt, encourage consulting a healthcare professional.
     The conversation should be done in English (it can include numbers), if the user responds or asks you a question in any other language, return 
     "Pardon, I didn't quite get that,could you try again in English"
-    If the user asks you to set a reminder, please extract the relevant information in a json like : ['reminder for medicines' : 'time': '8:30 am', 'frequency' : 'daily']. If the user hasnt provided information regarding time and frequency, ask them gently. Return the json
+    If the user asks you to set a reminder, please extract the relevant information in a json like : {{'reminder for medicines' : {{'time': '8:30 am', 'frequency' : 'daily'}}}}. If the user hasnt provided information regarding time and frequency, ask them gently. Return the json
     When the user tries to end the conversation using "exit","bye" or "see you soon" or anything simlilar, return 'Alright then, have a great day ahead!'
 
     CHAT HISTORY : {context}

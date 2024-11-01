@@ -107,7 +107,7 @@ def fetch_audio(sentence, voice="nova"):
 
 # Main TTS function with preloading
 def tts_whisper(input_text, voice="nova"):
-    sentences = re.split(r'(?<=[.!?:])\s+', input_text)
+    sentences = re.split(r'(?<=[.:])\s+', input_text)
     executor = ThreadPoolExecutor(max_workers=2)  # One thread for current, one for preloading
     next_audio = None
 

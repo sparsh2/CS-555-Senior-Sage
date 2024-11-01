@@ -5,10 +5,13 @@ from datetime import datetime, timedelta
 from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 
-# File and directory configurations
-USER_INFO_FILE = 'CS-555-Senior-Sage/backend/llm/user_info.json'
-LOGS_DIR = 'CS-555-Senior-Sage/backend/llm/logs'  
-REMINDER_DIR = 'CS-555-Senior-Sage/backend/llm/reminder'
+# Base directory is the folder containing this script file (assuming it's in "llm" folder)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Paths using os.path.join() for OS independence
+USER_INFO_FILE = os.path.join(BASE_DIR, 'user_info.json')
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+REMINDER_DIR = os.path.join(BASE_DIR, 'reminder')
 
 # Ensure the logs directory exists
 os.makedirs(LOGS_DIR, exist_ok=True)
@@ -147,7 +150,7 @@ def main_func():
     current_conversation = {
         'timestamp': cur_time,
         'messages': []
-    }
+    } 
     
     while True:
         user_message = stt_whisper().strip()
@@ -159,8 +162,7 @@ def main_func():
         print(f"You: {user_message}")
         bot_response = openai_complete(user_message, context, voice)
 
-        # Attempt to extract and parse the JSON part
-        json_match = re.search(r"\{[^}]+\}+", bot_response.replace("\n", ""), re.DOTALL)
+        json_match = re.search(r"\{[^}]+\}+", bot_response.replace("\n", "").replace(" ", ""), re.DOTALL)
 
         if json_match:
             json_str = json_match.group(0).strip() 
@@ -175,7 +177,8 @@ def main_func():
                 print("Debug: bot_response is not a valid JSON string")
         
         # Update context for the current session
-        context.append((user_message, bot_response))
+        cur_time = datetime.now().isoformat()
+        context.append((cur_time, user_message, bot_response))
 
         if "Alright then have a great" in re.sub(r'[^\w\s]', '', bot_response):
             current_conversation['messages'].append({

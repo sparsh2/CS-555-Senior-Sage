@@ -4,5 +4,23 @@
             "time": "12:00 PM",
             "frequency": "one-time"
         }
+    },
+    {
+        "reminder for breakfast": {
+            "time": "6:30 AM",
+            "frequency": "one-time"
+        }
+    },
+    {
+        "reminderforwalkwithOreo": {
+            "time": "4:00PM",
+            "frequency": "daily"
+        }
+    },
+    {
+        "reminderforyoga": {
+            "time": "6:00AM",
+            "frequency": "weeklyonweekdays"
+        }
     }
 ]

@@ -10,5 +10,12 @@
             "time": "6:30 p.m.",
             "frequency": "one-time"
         }
+    },
+    {
+        "reminder for port departure": {
+            "time": "10:00 a.m.",
+            "date": "2024-11-01",
+            "frequency": "one-time"
+        }
     }
 ]

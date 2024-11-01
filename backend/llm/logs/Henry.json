@@ -48,5 +48,30 @@
                 "bot_response": "Pardon, I didn't quite get that, could you try again in English?"
             }
         ]
+    },
+    {
+        "timestamp": "2024-10-31T17:53:03.039457",
+        "messages": [
+            {
+                "timestamp": "2024-10-31T17:53:19.981245",
+                "user_message": "Hi.",
+                "bot_response": "Hello! How's your day going so far? Did you manage to enjoy some golf or get a chance to relax with something else?"
+            },
+            {
+                "timestamp": "2024-10-31T17:54:11.719534",
+                "user_message": "I did get a chance to play golf last week, I think I'll do it more often. Can you set me a reminder for my golf sessions?",
+                "bot_response": "That sounds like a great plan! To set up your reminder, when would you like to have your golf sessions, and how often would you like to be reminded?"
+            },
+            {
+                "timestamp": "2024-10-31T17:54:45.491571",
+                "user_message": "I want the golf sessions to be on Mondays and Thursdays at 3 p.m.",
+                "bot_response": "Great! Here's your reminder setup:\n\n```json\n{\n  \"reminder for golf sessions\": {\n    \"time\": \"3:00 PM\",\n    \"days\": [\"Monday\", \"Thursday\"],\n    \"frequency\": \"weekly\"\n  }\n}\n```\n\nHow are you finding your golf sessions? Do you usually play with friends, or do you prefer going solo?"
+            },
+            {
+                "timestamp": "2024-10-31T17:55:38.874462",
+                "user_message": "Okay, bye.",
+                "bot_response": "Alright then, have a great day ahead!"
+            }
+        ]
     }
 ]
