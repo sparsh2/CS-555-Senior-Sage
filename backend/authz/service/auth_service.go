@@ -63,6 +63,11 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 			Email:        signupReq.UserEmail,
 			PasswordHash: passwordHash,
 		},
+		Data: map[string]string{
+			types.ResourceToMongoField[types.RESOURCE_USER_DETAILS]:     "",
+			types.ResourceToMongoField[types.RESOURCE_USER_PREFERENCES]: "",
+			types.ResourceToMongoField[types.RESOURCE_USER_REMINDERS]:   "",
+		},
 	}
 	err = storage.StorageSvc.InsertUserDoc(userDoc)
 	if err != nil {
@@ -79,9 +84,9 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 	aclDoc := &types.MongoAclsDoc{
 		UserId: uid,
 		Acls: map[types.ResourceType][]string{
-			types.UserDetailsResource:    {llmuid, uid},
-			types.UserPreferenceResource: {llmuid},
-			types.UserRemindersResource:  {llmuid, uid},
+			types.RESOURCE_USER_DETAILS:    {llmuid, uid},
+			types.RESOURCE_USER_PREFERENCES: {llmuid},
+			types.RESOURCE_USER_REMINDERS:  {llmuid, uid},
 		},
 	}
 	err = storage.StorageSvc.InsertAclDoc(aclDoc)

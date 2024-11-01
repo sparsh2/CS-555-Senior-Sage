@@ -29,7 +29,7 @@ type Config struct {
 
 type AuthzConfig struct {
 	Host string `yaml:"host"`
-	Port string    `yaml:"port"`
+	Port string `yaml:"port"`
 }
 
 var Configs *Config

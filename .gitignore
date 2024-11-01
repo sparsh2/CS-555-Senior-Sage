@@ -90,3 +90,6 @@ yarn-error.log
 
 # go mocks
 *_mock.go
+
+# helm packages
+*.tgz

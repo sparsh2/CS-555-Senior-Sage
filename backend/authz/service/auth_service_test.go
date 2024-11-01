@@ -8,8 +8,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"testing"
-    "go.mongodb.org/mongo-driver/mongo"
+
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func Test_Verify(t *testing.T) {
@@ -54,16 +55,16 @@ func Test_RequestAccess(t *testing.T) {
 	requestAccessReq := &types.RequestAccessRequest{
 		RequesterToken: ss,
 		UserId:         mockUserId,
-		Resources:      []types.ResourceType{types.UserDetailsResource, types.UserRemindersResource},
+		Resources:      []types.ResourceType{types.RESOURCE_USER_DETAILS, types.RESOURCE_USER_REMINDERS},
 	}
 	mockedStorage.GetAclDocFunc = func(UserId string) (*types.MongoAclsDoc, error) {
 		return &types.MongoAclsDoc{
 			AclId:  "aclid",
 			UserId: UserId,
 			Acls: map[types.ResourceType][]string{
-				types.UserDetailsResource:    {requesterId, "other_id"},
-				types.UserPreferenceResource: {"other_id"},
-				types.UserRemindersResource:  {requesterId},
+				types.RESOURCE_USER_DETAILS:     {requesterId, "other_id"},
+				types.RESOURCE_USER_PREFERENCES: {"other_id"},
+				types.RESOURCE_USER_REMINDERS:   {requesterId},
 			},
 		}, nil
 	}
@@ -77,9 +78,9 @@ func Test_RequestAccess(t *testing.T) {
 			AclId:  "aclid",
 			UserId: UserId,
 			Acls: map[types.ResourceType][]string{
-				types.UserDetailsResource:    {requesterId, "other_id"},
-				types.UserPreferenceResource: {"other_id"},
-				types.UserRemindersResource:  {},
+				types.RESOURCE_USER_DETAILS:     {requesterId, "other_id"},
+				types.RESOURCE_USER_PREFERENCES: {"other_id"},
+				types.RESOURCE_USER_REMINDERS:   {},
 			},
 		}, nil
 	}
@@ -93,8 +94,8 @@ func Test_RequestAccess(t *testing.T) {
 			AclId:  "aclid",
 			UserId: UserId,
 			Acls: map[types.ResourceType][]string{
-				types.UserDetailsResource:    {requesterId, "other_id"},
-				types.UserPreferenceResource: {"other_id"},
+				types.RESOURCE_USER_DETAILS:     {requesterId, "other_id"},
+				types.RESOURCE_USER_PREFERENCES: {"other_id"},
 			},
 		}, nil
 	}

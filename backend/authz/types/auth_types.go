@@ -23,18 +23,37 @@ type RequestAccessRequest struct {
 	Resources      []ResourceType `json:"resources"`
 }
 
-type ResourceType int
+type ResourceType string
 
 const (
-	UserDetailsResource ResourceType = iota
-	UserPreferenceResource
-	UserRemindersResource
+	RESOURCE_USER_DETAILS     ResourceType = "USER_DETAILS"
+	RESOURCE_USER_PREFERENCES ResourceType = "USER_PREFERENCES"
+	RESOURCE_USER_REMINDERS   ResourceType = "USER_REMINDERS"
+	RESOURCE_UNKNOWN          ResourceType = "UNKNOWN"
 )
 
+var ResourceList = []ResourceType{
+	RESOURCE_USER_DETAILS,
+	RESOURCE_USER_PREFERENCES,
+	RESOURCE_USER_REMINDERS,
+}
+
+const (
+	MONGO_USER_DETAILS_FIELD     = "user_details"
+	MONGO_USER_PREFERENCES_FIELD = "user_preferences"
+	MONGO_USER_REMINDERS_FIELD   = "user_reminders"
+)
+
+var ResourceToMongoField map[ResourceType]string = map[ResourceType]string{
+	RESOURCE_USER_DETAILS:     MONGO_USER_DETAILS_FIELD,
+	RESOURCE_USER_PREFERENCES: MONGO_USER_PREFERENCES_FIELD,
+	RESOURCE_USER_REMINDERS:   MONGO_USER_REMINDERS_FIELD,
+}
+
 var ResourceIdToString map[ResourceType]string = map[ResourceType]string{
-	UserDetailsResource:    "UserDetailsResource",
-	UserPreferenceResource: "UserPreferenceResource",
-	UserRemindersResource:  "UserRemindersResource",
+	RESOURCE_USER_DETAILS:     "UserDetailsResource",
+	RESOURCE_USER_PREFERENCES: "UserPreferenceResource",
+	RESOURCE_USER_REMINDERS:   "UserRemindersResource",
 }
 
 type UserDetails struct {
@@ -43,8 +62,9 @@ type UserDetails struct {
 }
 
 type MongoUserDoc struct {
-	UserDetails MongoUserDetails `bson:"user_details,omitempty"`
-	UserId      string           `bson:"_id,omitempty"`
+	UserDetails MongoUserDetails  `bson:"user_details,omitempty"`
+	UserId      string            `bson:"_id,omitempty"`
+	Data        map[string]string `bson:"data,omitempty"`
 }
 
 type MongoUserDetails struct {

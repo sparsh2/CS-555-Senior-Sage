@@ -15,8 +15,8 @@ type DBConfig struct {
 	Password        string `yaml:"password"`
 	DBName          string `yaml:"database"`
 	AppName         string `yaml:"appname"`
-	UsersCollection string `yaml:"users_collection"`
-	AclsCollection  string `yaml:"acls_collection"`
+	UsersCollection string `yaml:"usersCollection"`
+	AclsCollection  string `yaml:"aclsCollection"`
 }
 
 type Config struct {
