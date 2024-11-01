@@ -87,7 +87,7 @@ EOF
 - **Timesense**: The voice assistant now has a sense of what time it was yesterday, what time it is today and it remembers where we last left off our conversation.
 - **CI/CD set up**: Completed CI/CD setup leveraging Github Actions. For every pull request raised to main branch, it now triggers workflows to run all tests of the repository.
 - **Login & and sign up functionality**: Authz service has been added which now supports user login and signup.
-- **Authorization**: Authz service also exposes endpoints to be used by storage service to check for requesting user permissions before granting access to resources in the database. This is a requirement for HIPAA compliant storage system.
+- **Authorization**:  `authz` service also exposes endpoints to be used by `storage` service to check for requesting user permissions before granting access to resources in the database. This is a requirement for HIPAA compliant storage system.
 - 
 
 ### Demos
