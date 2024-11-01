@@ -10,6 +10,16 @@ authz:
   targetPort: 8080
   config:
     secretKey: "testSecretKey!"
+storageService:
+  name: storage-service
+  image: storage-service
+  replicas: 1
+  configMapName: storage-service-config
+  serviceName: storage-service-svc
+  servicePort: 8080
+  targetPort: 8080
+  config:
+    secretKey: "testSecretKey!"
 llmUsername: "llmuser"
 db:
   host: mymongocluster.r1pcx2q.mongodb.net
