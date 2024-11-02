@@ -1,0 +1,25 @@
+[
+    {
+        "reminder for golf": {
+            "time": "5:00 PM",
+            "days": [
+                "Monday",
+                "Thursday",
+                "Friday"
+            ],
+            "frequency": "weekly"
+        }
+    },
+    {
+        "reminder for friend meeting": {
+            "time": "10:00 AM",
+            "date": "2024-11-01"
+        }
+    },
+    {
+        "reminder for friend meeting": {
+            "time": "12:00 PM",
+            "date": "2024-11-01"
+        }
+    }
+]
