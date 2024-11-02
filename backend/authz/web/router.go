@@ -48,6 +48,23 @@ func requestAccess(c *gin.Context) {
 		})
 		return
 	}
+	granted, err := service.AuthService.RequestAccess(requestAccessReq)
+	if err != nil {
+		c.JSON(404, gin.H{
+			"error": "Bad Request",
+			"msg": err.Error(),
+		})
+		return
+	}
+	if granted {
+		c.JSON(200, gin.H{
+			"access_request": "granted",
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"access_request": "denied",
+		})
+	}
 }
 
 func signup(c *gin.Context) {
