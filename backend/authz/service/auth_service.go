@@ -45,20 +45,24 @@ func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (
 	return ss, err
 }
 
-func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (string, error) {
+func checkIfUserExists(signupReq *types.UserSignupRequest) (bool, error) {
 	_, err := storage.StorageSvc.GetUserId(signupReq.UserEmail)
 	if err == nil {
-		return "", fmt.Errorf("user already exists")
+		return true, nil
 	} else if err != mongo.ErrNoDocuments {
-		return "", fmt.Errorf("error getting user id: %v", err)
+		return false, fmt.Errorf("error getting user id: %v", err)
 	}
+	return false, nil
+}
+
+func getUserDoc(signupReq *types.UserSignupRequest) (*types.MongoUserDoc, error) {
 	h := sha256.New()
-	_, err = h.Write([]byte(signupReq.UserPassword))
+	_, err := h.Write([]byte(signupReq.UserPassword))
 	if err != nil {
-		return "", fmt.Errorf("error hashing password: %v", err)
+		return  nil, fmt.Errorf("error hashing password: %v", err)
 	}
 	passwordHash := hex.EncodeToString(h.Sum(nil))
-	userDoc := &types.MongoUserDoc{
+	return &types.MongoUserDoc{
 		UserDetails: types.MongoUserDetails{
 			Email:        signupReq.UserEmail,
 			PasswordHash: passwordHash,
@@ -68,40 +72,63 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 			types.ResourceToMongoField[types.RESOURCE_USER_PREFERENCES]: "",
 			types.ResourceToMongoField[types.RESOURCE_USER_REMINDERS]:   "",
 		},
-	}
-	err = storage.StorageSvc.InsertUserDoc(userDoc)
-	if err != nil {
-		return "", fmt.Errorf("error inserting user: %v", err)
-	}
+	}, nil
+}
+
+func getAclsDoc(signupReq *types.UserSignupRequest) (*types.MongoAclsDoc, error) {
 	uid, err := storage.StorageSvc.GetUserId(signupReq.UserEmail)
 	if err != nil {
-		return "", fmt.Errorf("error getting user id: %v", err)
+		return nil, fmt.Errorf("error getting user id: %v", err)
 	}
 	llmuid, err := storage.StorageSvc.GetUserId(config.Configs.LLMUserEmail)
 	if err != nil {
-		return "", fmt.Errorf("error getting llm user id: %v", err)
+		return nil, fmt.Errorf("error getting llm user id: %v", err)
 	}
-	aclDoc := &types.MongoAclsDoc{
+	return &types.MongoAclsDoc{
 		UserId: uid,
 		Acls: map[types.ResourceType][]string{
 			types.RESOURCE_USER_DETAILS:    {llmuid, uid},
 			types.RESOURCE_USER_PREFERENCES: {llmuid},
 			types.RESOURCE_USER_REMINDERS:  {llmuid, uid},
 		},
+	}, nil
+}
+
+func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (string, error) {
+	exists, err := checkIfUserExists(signupReq)
+	if err != nil {
+		return "", err
+	}
+	if exists {
+		return "", fmt.Errorf("user already exists")
+	}
+
+	userDoc, err := getUserDoc(signupReq)
+	if err != nil {
+		return "", err
+	}
+	err = storage.StorageSvc.InsertUserDoc(userDoc)
+	if err != nil {
+		return "", fmt.Errorf("error inserting user: %v", err)
+	}
+
+	aclDoc, err := getAclsDoc(signupReq)
+	if err != nil {
+		return "", err
 	}
 	err = storage.StorageSvc.InsertAclDoc(aclDoc)
 	if err != nil {
 		return "", fmt.Errorf("error populating ACLs: %v", err)
 	}
+
 	token, err := as.GenerateToken(&types.UserDetails{
-		UserId:    uid,
+		UserId:    aclDoc.UserId,
 		UserEmail: signupReq.UserEmail,
 	})
 	if err != nil {
 		return "", fmt.Errorf("error generating jwt token: %v", err)
 	}
 	return token, nil
-
 }
 
 func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string, error) {
