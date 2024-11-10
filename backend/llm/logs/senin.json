@@ -1,61 +1,136 @@
 [
     {
-        "timestamp": "2024-10-15T18:26:18.792395",
+        "timestamp": "2024-10-29T13:47:30.254584",
         "messages": [
             {
-                "timestamp": "2024-10-15T18:26:33.138657",
-                "user_message": "Hello, how are you?",
-                "bot_response": "Hello! I'm doing well, thank you. How about you? How was your day?"
+                "timestamp": "2024-10-29T13:47:48.569609",
+                "user_message": "\uc548\ub155",
+                "bot_response": "Pardon, I didn't quite get that, could you try again in English?"
             },
             {
-                "timestamp": "2024-10-15T18:26:43.156187",
-                "user_message": "I don't feel so good.",
-                "bot_response": "I'm sorry to hear that. What seems to be bothering you?"
+                "timestamp": "2024-10-29T13:48:00.005159",
+                "user_message": "Hey",
+                "bot_response": "Hello! How are you today? Have you been keeping busy with anything interesting?"
             },
             {
-                "timestamp": "2024-10-15T18:26:55.714549",
-                "user_message": "You know what I'm just gonna exit",
-                "bot_response": "I understand. If you ever want to chat, I'm here for you. Take care!"
+                "timestamp": "2024-10-29T13:49:46.152888",
+                "user_message": "Um, yeah, actually, as a matter of fact, I have my family coming over today, my mom, my dad, my brother, my older brother, and my younger brother, and my sister, so I'm just busy making food for all of them. It's so fun!",
+                "bot_response": "Wow, that sounds wonderful! It's great that you\u2019re having a family gathering. What kind of food are you preparing? Have you all planned any special activities for when they arrive?"
             },
             {
-                "timestamp": "2024-10-15T18:27:06.783328",
-                "user_message": "Exit.",
-                "bot_response": "I understand. If you ever want to chat again, I'm here for you. Take care!"
+                "timestamp": "2024-10-29T13:50:30.236984",
+                "user_message": "oh no no no so nothing very fancy but we're gonna sit together chat over dinner and watch a good movie we're thinking we'll watch Yeh Jawani Hai Diwani",
+                "bot_response": "That sounds like a lovely evening! Yeh Jawani Hai Diwani is a great choice for a movie night. It's always nice to relax and enjoy some good food and company. Do you have a favorite dish you\u2019re making for dinner? And how are you feeling today, are you in a good mood?"
             },
             {
-                "timestamp": "2024-10-15T18:27:19.281987",
-                "user_message": "Exit.",
-                "bot_response": "I understand. If you ever want to chat again, I'm here for you. Take care!"
+                "timestamp": "2024-10-29T13:50:50.401528",
+                "user_message": "Yeah, I'm in a great mood today However, I do not have a lot of time to chat with us I just wanted to drop by and have a quick check-in. So I'm gonna go now",
+                "bot_response": "Alright then, have a great day ahead!"
             }
         ]
     },
     {
-        "timestamp": "2024-10-16T10:54:00.628642",
+        "timestamp": "2024-10-29T13:51:08.239758",
         "messages": [
             {
-                "timestamp": "2024-10-16T10:54:16.458657",
-                "user_message": "Hello.",
-                "bot_response": "Hello! How are you today?"
+                "timestamp": "2024-10-29T13:51:15.128634",
+                "user_message": "Bye.",
+                "bot_response": "Alright then, have a great day ahead!"
+            }
+        ]
+    },
+    {
+        "timestamp": "2024-10-29T13:51:41.520544",
+        "messages": [
+            {
+                "timestamp": "2024-10-29T13:51:50.750018",
+                "user_message": "Hello",
+                "bot_response": "Hello! How are you today? Did your family gathering go well?"
             },
             {
-                "timestamp": "2024-10-16T10:54:30.045818",
-                "user_message": "I'm good. How are you?",
-                "bot_response": "I'm glad to hear you're good! I'm doing well, thank you. What have you been up to today?"
+                "timestamp": "2024-10-29T13:52:55.558477",
+                "user_message": "Oh so my family hasn't really arrived yet, I've just come here for a quick advice. What do you think would they like more? I know you don't know their preference but I want you to choose one of the two dishes I'm thinking. One is grilled chicken and naan and the other is makhani paneer with rice. What do you think they would like more?",
+                "bot_response": "Both options sound delicious! Grilled chicken and naan is a classic favorite, especially if they enjoy something savory and hearty. On the other hand, makhani paneer with rice is creamy and flavorful, which can be a big hit as well. If I had to choose, I might lean towards the makhani paneer; it's comforting and tends to please a variety of palates. Trust your instincts though! What do you feel like making?"
             },
             {
-                "timestamp": "2024-10-16T10:54:46.709233",
-                "user_message": "Nothing much just woke up thinking of having a breakfast. What did you suggest I have?",
-                "bot_response": "How about some oatmeal with fruits? It's healthy and filling! What do you usually enjoy for breakfast?"
+                "timestamp": "2024-10-29T13:53:41.249131",
+                "user_message": "No, no, that sounds great. I was confused between the two. I enjoy cooking them both So I'm gonna go with your advice. I'm gonna make makhani paneer and rice. Thank you for that",
+                "bot_response": "That sounds like a fantastic choice! Makhani paneer is always a comforting and delicious option. I\u2019m sure your family will love it! Cooking can be such a joyful experience, especially when it\u2019s for loved ones. \n\nBy the way, have you had a chance to take care of your medications today? It\u2019s important to keep up with them while you\u2019re busy planning the gathering."
             },
             {
-                "timestamp": "2024-10-16T10:54:59.082892",
-                "user_message": "I usually have cereal or oats depending on my mood.",
-                "bot_response": "Both are great choices! Do you have a favorite type of cereal?"
+                "timestamp": "2024-10-29T13:54:14.375987",
+                "user_message": "Oh, yes, thank you for reminding. I'm reminding me. I'm actually gonna go and take my sugar medicine right now",
+                "bot_response": "You're very welcome! I'm glad you remembered to take your medicine. It's always good to stay on top of it, especially with all the activity you have planned with your family. Have you had a chance to drink enough water today? Staying hydrated is important too!"
             },
             {
-                "timestamp": "2024-10-16T10:55:17.658481",
-                "user_message": "Yes, I like it with maple syrup.",
-                "bot_response": "That sounds delicious! Maple syrup adds a nice sweetness. Do you have any other favorite toppings for your cereal or oats?"
+                "timestamp": "2024-10-29T13:54:53.907977",
+                "user_message": "mm-hmm I have been drinking some good amount of water and I just drank another glass while taking my medicine so thank you for that and I'm gonna go going now I have to cook some really delicious meal for my family they're gonna be arriving really soon",
+                "bot_response": "That\u2019s great to hear you\u2019re staying hydrated! I\u2019m sure your family will enjoy the delicious meal you\u2019re preparing. Have fun cooking and enjoy your time with them! If you need anything later, feel free to drop by. Alright then, have a great day ahead!"
+            }
+        ]
+    },
+    {
+        "timestamp": "2024-10-29T16:16:23.964215",
+        "messages": [
+            {
+                "timestamp": "2024-10-29T16:16:32.750154",
+                "user_message": "you",
+                "bot_response": "Pardon, I didn't quite get that, could you try again in English?"
+            },
+            {
+                "timestamp": "2024-10-29T16:16:41.677237",
+                "user_message": "you",
+                "bot_response": "Pardon, I didn't quite get that, could you try again in English?"
+            },
+            {
+                "timestamp": "2024-10-29T16:16:58.279273",
+                "user_message": "",
+                "bot_response": "Hello! How are you today? Did you enjoy your time with your family over the weekend?"
+            },
+            {
+                "timestamp": "2024-10-29T16:17:18.844437",
+                "user_message": "",
+                "bot_response": "Hello! How are you today? Did you enjoy your time with your family over the weekend?"
+            },
+            {
+                "timestamp": "2024-10-29T16:17:36.910948",
+                "user_message": "Yes, I did.",
+                "bot_response": "That's great to hear! Spending time with family can be really uplifting. What did you all do together?"
+            },
+            {
+                "timestamp": "2024-10-29T16:17:45.470082",
+                "user_message": "Bye.",
+                "bot_response": "Alright then, have a great day ahead!"
+            }
+        ]
+    },
+    {
+        "timestamp": "2024-10-29T19:08:15.714623",
+        "messages": [
+            {
+                "timestamp": "2024-10-29T19:08:25.334088",
+                "user_message": "hello",
+                "bot_response": "Hello! How are you today? Did you have a good night\u2019s sleep?"
+            },
+            {
+                "timestamp": "2024-10-29T19:08:53.714836",
+                "user_message": "What is today's date?",
+                "bot_response": "Today's date is October 29, 2024. How are you doing today?"
+            },
+            {
+                "timestamp": "2024-10-29T19:09:12.143559",
+                "user_message": "Do you know what the time is right now?",
+                "bot_response": "I'm afraid I can't check the current time for you. However, you can easily find it on your device or a nearby clock. How are you doing today?"
+            },
+            {
+                "timestamp": "2024-10-29T19:10:43.394977",
+                "user_message": "Can you tell me a short story in 100 words?",
+                "bot_response": "Once in a quaint village, an old baker named Mr. Thompson created the most delicious bread. Every morning, the delightful aroma filled the streets, drawing villagers near. One day, a little girl named Lily approached him, asking for a loaf to share with her sick mother. Touched by her kindness, Mr. Thompson gifted her two loaves. Inspired, the villagers began sharing their own treats, fostering a spirit of giving. Soon, the village transformed into a community where everyone cared for one another. Years later, the scent of fresh bread still lingered, a reminder of the bonds formed through simple acts of kindness."
+            },
+            {
+                "timestamp": "2024-10-29T19:10:59.380308",
+                "user_message": "Bye-bye.",
+                "bot_response": "Alright then, have a great day ahead!"
             }
         ]
     }

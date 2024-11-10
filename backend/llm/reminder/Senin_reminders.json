@@ -1,0 +1,16 @@
+[
+    {
+        "reminder for walks and yoga": {
+            "time": "6:00 AM",
+            "start_date": "November 1, 2024",
+            "frequency": "weekdays"
+        }
+    },
+    {
+        "reminder for doctor's appointment": {
+            "time": "12:00 PM",
+            "start_date": "November 1, 2024",
+            "frequency": "once"
+        }
+    }
+]

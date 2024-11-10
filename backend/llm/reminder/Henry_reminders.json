@@ -1,0 +1,12 @@
+[
+    {
+        "reminder for golf sessions": {
+            "time": "3:00 PM",
+            "days": [
+                "Monday",
+                "Thursday"
+            ],
+            "frequency": "weekly"
+        }
+    }
+]
