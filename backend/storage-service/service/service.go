@@ -131,6 +131,7 @@ func (as *Service) GetData(getDataReq *types.GetDataRequest) (*types.GetDataResp
 	resp.ReminderDetails = userDetails.ReminderDetails
 	resp.RPMReadings = userDetails.RPMReadings
 	resp.VoiceSelection = userDetails.VoiceSelection
+	resp.Name = userDetails.Name
 	resp.Msg = "data fetched successfully"
 	return resp, nil
 }

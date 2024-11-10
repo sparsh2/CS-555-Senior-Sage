@@ -55,8 +55,12 @@ func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
 	if err != nil {
 		return fmt.Errorf("error encrypting user data: %v", err)
 	}
+	encEmail, err := EncryptionSvc.Encrypt(userDetails.UserEmail)
+	if err != nil {
+		return fmt.Errorf("error encrypting user email: %v", err)
+	}
 	userDoc := &types.MongoUserDoc{
-		Email: userDetails.UserEmail,
+		Email: encEmail,
 		Data:  encData,
 	}
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)

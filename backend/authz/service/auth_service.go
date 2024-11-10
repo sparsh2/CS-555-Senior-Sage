@@ -24,12 +24,15 @@ func init() {
 
 type CustomRegisteredClaims struct {
 	jwt.RegisteredClaims
-	UserId    string `json:"user_id"`
-	UserEmail string `json:"user_email"`
+	UserId string `json:"user_id"`
 }
 
 func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (string, error) {
 	signingKey := []byte(config.Configs.AuthSecretKey)
+	encEmail, err := storage.EncryptionSvc.Encrypt(userDetails.UserEmail)
+	if err != nil {
+		return "", fmt.Errorf("error encrypting email: %v", err)
+	}
 	claims := &CustomRegisteredClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "sage-server",
@@ -37,8 +40,7 @@ func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
-		UserId:    userDetails.UserId,
-		UserEmail: userDetails.UserEmail,
+		UserId: encEmail,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	ss, err := token.SignedString(signingKey)
@@ -46,7 +48,11 @@ func (as *AuthenticationService) GenerateToken(userDetails *types.UserDetails) (
 }
 
 func checkIfUserExists(signupReq *types.UserSignupRequest) (bool, error) {
-	_, err := storage.StorageSvc.GetUserId(signupReq.UserEmail)
+	encEmail, err := storage.EncryptionSvc.Encrypt(signupReq.UserEmail)
+	if err != nil {
+		return false, fmt.Errorf("error encrypting email: %v", err)
+	}
+	_, err = storage.StorageSvc.GetUserDoc(encEmail)
 	if err == nil {
 		return true, nil
 	} else if err != mongo.ErrNoDocuments {
@@ -55,41 +61,41 @@ func checkIfUserExists(signupReq *types.UserSignupRequest) (bool, error) {
 	return false, nil
 }
 
-func getUserDoc(signupReq *types.UserSignupRequest) (*types.MongoUserDoc, error) {
+func getUserDoc(signupReq *types.UserSignupRequest) (*types.UserDetails, error) {
 	h := sha256.New()
 	_, err := h.Write([]byte(signupReq.UserPassword))
 	if err != nil {
-		return  nil, fmt.Errorf("error hashing password: %v", err)
+		return nil, fmt.Errorf("error hashing password: %v", err)
 	}
 	passwordHash := hex.EncodeToString(h.Sum(nil))
-	return &types.MongoUserDoc{
-		UserDetails: types.MongoUserDetails{
-			Email:        signupReq.UserEmail,
-			PasswordHash: passwordHash,
-		},
-		Data: map[string]string{
-			types.ResourceToMongoField[types.RESOURCE_USER_DETAILS]:     "",
-			types.ResourceToMongoField[types.RESOURCE_USER_PREFERENCES]: "",
-			types.ResourceToMongoField[types.RESOURCE_USER_REMINDERS]:   "",
-		},
+	return &types.UserDetails{
+		UserEmail:         signupReq.UserEmail,
+		PasswordHash:      passwordHash,
+		ReminderDetails:   &[]types.ReminderDetails{},
+		RPMReadings:       &[]types.RPMReading{},
+		Preferences:       &[]string{},
+		ChatHistory:       &[]types.ChatSession{},
+		QuestionResponses: &[]types.QuestionResponse{},
+		VoiceSelection:    signupReq.VoiceSelection,
+		Name:              signupReq.Name,
 	}, nil
 }
 
 func getAclsDoc(signupReq *types.UserSignupRequest) (*types.MongoAclsDoc, error) {
-	uid, err := storage.StorageSvc.GetUserId(signupReq.UserEmail)
+	encEmail, err := storage.EncryptionSvc.Encrypt(signupReq.UserEmail)
 	if err != nil {
-		return nil, fmt.Errorf("error getting user id: %v", err)
+		return nil, fmt.Errorf("error encrypting email: %v", err)
 	}
-	llmuid, err := storage.StorageSvc.GetUserId(config.Configs.LLMUserEmail)
+	llmEncEmail, err := storage.EncryptionSvc.Encrypt(config.Configs.LLMUserEmail)
 	if err != nil {
-		return nil, fmt.Errorf("error getting llm user id: %v", err)
+		return nil, fmt.Errorf("error encrypting email: %v", err)
 	}
 	return &types.MongoAclsDoc{
-		UserId: uid,
+		UserId: encEmail,
 		Acls: map[types.ResourceType][]string{
-			types.RESOURCE_USER_DETAILS:    {llmuid, uid},
-			types.RESOURCE_USER_PREFERENCES: {llmuid},
-			types.RESOURCE_USER_REMINDERS:  {llmuid, uid},
+			types.RESOURCE_USER_DETAILS:     {llmEncEmail, encEmail},
+			types.RESOURCE_USER_PREFERENCES: {llmEncEmail},
+			types.RESOURCE_USER_REMINDERS:   {llmEncEmail, encEmail},
 		},
 	}, nil
 }
@@ -116,15 +122,12 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 	if err != nil {
 		return "", err
 	}
-	err = storage.StorageSvc.InsertAclDoc(aclDoc)
+	err = storage.StorageSvc.InsertAclsDoc(aclDoc)
 	if err != nil {
 		return "", fmt.Errorf("error populating ACLs: %v", err)
 	}
 
-	token, err := as.GenerateToken(&types.UserDetails{
-		UserId:    aclDoc.UserId,
-		UserEmail: signupReq.UserEmail,
-	})
+	token, err := as.GenerateToken(userDoc)
 	if err != nil {
 		return "", fmt.Errorf("error generating jwt token: %v", err)
 	}
@@ -132,27 +135,23 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 }
 
 func (as *AuthenticationService) Login(loginReq *types.UserLoginRequest) (string, error) {
-	hash, err := storage.StorageSvc.GetUserHash(loginReq.UserEmail)
+	encEmail, err := storage.EncryptionSvc.Encrypt(loginReq.UserEmail)
 	if err != nil {
-		return "", fmt.Errorf("error getting password hash: %v", err)
+		return "", fmt.Errorf("error encrypting email: %v", err)
+	}
+	userDoc, err := storage.StorageSvc.GetUserDoc(encEmail)
+	if err != nil {
+		return "", fmt.Errorf("error getting user doc: %v", err)
 	}
 	h := sha256.New()
 	_, err = h.Write([]byte(loginReq.UserPassword))
 	if err != nil {
 		return "", fmt.Errorf("error getting hash: %v", err)
 	}
-	if hash != hex.EncodeToString(h.Sum(nil)) {
+	if userDoc.PasswordHash != hex.EncodeToString(h.Sum(nil)) {
 		return "", fmt.Errorf("incorrect username or password")
 	}
-	userId, err := storage.StorageSvc.GetUserId(loginReq.UserEmail)
-	if err != nil {
-		return "", fmt.Errorf("error getting user id: %v", err)
-	}
-
-	return as.GenerateToken(&types.UserDetails{
-		UserId:    userId,
-		UserEmail: loginReq.UserEmail,
-	})
+	return as.GenerateToken(userDoc)
 }
 
 func (as *AuthenticationService) VerifyToken(tokenString string) (*CustomRegisteredClaims, error) {
@@ -173,7 +172,7 @@ func (as *AuthenticationService) RequestAccess(requestAccessReq *types.RequestAc
 	}
 	requesterId := claims.UserId
 	docId := requestAccessReq.UserId
-	acl, err := storage.StorageSvc.GetAclDoc(docId)
+	acl, err := storage.StorageSvc.GetAclsDoc(docId)
 	if err != nil {
 		return false, fmt.Errorf("error getting acls: %v", err)
 	}

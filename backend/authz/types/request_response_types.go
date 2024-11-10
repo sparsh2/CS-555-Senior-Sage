@@ -29,6 +29,33 @@ type GetDataResponse struct {
 	Preferences     *[]string          `json:"preferences"`
 	ChatHistory     *[]ChatSession     `json:"chat_history"`
 	VoiceSelection  string             `json:"voice_selection"`
-	Name            string             `json:"name"`
 	Msg             string             `json:"msg"`
+}
+
+// Request types
+type AuthVerifyRequest struct {
+	JWTToken string `json:"jwt_token"`
+}
+
+type UserLoginRequest struct {
+	UserEmail    string `json:"email"`
+	UserPassword string `json:"password"`
+}
+
+type UserSignupRequest struct {
+	VoiceSelection string `json:"voice_selection"`
+	Name           string `json:"name"`
+	UserEmail      string `json:"email"`
+	UserPassword   string `json:"password"`
+}
+
+type RequestAccessRequest struct {
+	RequesterToken string         `json:"requester_id"`
+	UserId      string         `json:"user_id"`
+	Resources   []ResourceType `json:"resources"`
+}
+
+type RequestAccessResponse struct {
+	AccessRequest bool   `json:"access_request"`
+	Message       string `json:"message,omitempty"`
 }
