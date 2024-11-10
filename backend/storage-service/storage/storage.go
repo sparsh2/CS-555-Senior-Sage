@@ -67,15 +67,6 @@ func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
 	return nil
 }
 
-func (s *StorageService) InsertAclDoc(aclDoc *types.MongoAclsDoc) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
-	_, err := coll.InsertOne(context.Background(), aclDoc)
-	if err != nil {
-		return fmt.Errorf("error inserting into db: %v", err)
-	}
-	return nil
-}
-
 func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
 	var result types.MongoUserDoc
