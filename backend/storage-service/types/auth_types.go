@@ -33,16 +33,19 @@ type RequestAccessResponse struct {
 type ResourceType string
 
 const (
-	RESOURCE_USER_DETAILS     ResourceType = "USER_DETAILS"
-	RESOURCE_USER_PREFERENCES ResourceType = "USER_PREFERENCES"
-	RESOURCE_USER_REMINDERS   ResourceType = "USER_REMINDERS"
-	RESOURCE_UNKNOWN          ResourceType = "UNKNOWN"
+	RESOURCE_USER_DETAILS      ResourceType = "USER_DETAILS"
+	RESOURCE_USER_PREFERENCES  ResourceType = "USER_PREFERENCES"
+	RESOURCE_USER_REMINDERS    ResourceType = "USER_REMINDERS"
+	RESOURCE_USER_CHAT_HISTORY ResourceType = "USER_CHAT_HISTORY"
+	RESOURCE_RPM_READINGS      ResourceType = "RPM_READINGS"
+	RESOURCE_UNKNOWN           ResourceType = "UNKNOWN"
 )
 
 var ResourceList = []ResourceType{
-	RESOURCE_USER_DETAILS,
+	RESOURCE_USER_CHAT_HISTORY,
 	RESOURCE_USER_PREFERENCES,
 	RESOURCE_USER_REMINDERS,
+	RESOURCE_RPM_READINGS,
 }
 
 const (
@@ -63,16 +66,11 @@ var ResourceIdToString map[ResourceType]string = map[ResourceType]string{
 	RESOURCE_USER_REMINDERS:   "UserRemindersResource",
 }
 
-type UserDetails struct {
-	UserId    string `json:"user_id"`
-	UserEmail string `json:"username"`
-}
-
-type MongoUserDoc struct {
-	UserDetails MongoUserDetails  `bson:"user_details,omitempty"`
-	UserId      string            `bson:"_id,omitempty"`
-	Data        MongoResourceData `bson:"data,omitempty"`
-}
+// type MongoUserDoc struct {
+// 	UserDetails MongoUserDetails  `bson:"user_details,omitempty"`
+// 	UserId      string            `bson:"_id,omitempty"`
+// 	Data        MongoResourceData `bson:"data,omitempty"`
+// }
 
 type MongoResourceData struct {
 	UserDetails     string `bson:"user_details,omitempty"`
@@ -89,17 +87,6 @@ type MongoAclsDoc struct {
 	AclId  string                    `bson:"_id,omitempty"`
 	UserId string                    `bson:"uid,omitempty"`
 	Acls   map[ResourceType][]string `bson:"acls,omitempty"`
-}
-
-type GetDataRequest struct {
-	UserId         string         `json:"user_id"`
-	RequesterToken string         `json:"requester_token"`
-	Resources      []ResourceType `json:"resources"`
-}
-
-type GetDataResponse struct {
-	Data map[ResourceType]string `json:"data"`
-	Msg  string        `json:"msg"`
 }
 
 type WriteDataResponse struct {

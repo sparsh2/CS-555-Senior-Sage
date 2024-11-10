@@ -21,6 +21,7 @@ type DBConfig struct {
 
 type Config struct {
 	DBConfig      *DBConfig `yaml:"db"`
+	DataEncryptionKey string      `yaml:"encryptionKey"`
 	AuthSecretKey string    `yaml:"authSecretKey"`
 	LLMUserEmail  string    `yaml:"llmUsername"`
 }

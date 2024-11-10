@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"storage-service/service"
 	"storage-service/types"
 
@@ -17,21 +18,15 @@ func GetRouter() *gin.Engine {
 		})
 	})
 
-	// authG := r.Group("/auth/")
-	// authG.GET("/verify", verify)
-	// authG.POST("/gen-token", generateToken)
-	// authG.POST("/login", login)
-	// authG.POST("/signup", signup)
-
-	// authorization - request access
-	// r.GET("/request-access", requestAccess)
+	r.PUT("/preferences", writePreferences)
+	r.PUT("/reponses", writeResponses)
+	r.PUT("/reminders", writeReminders)
 	r.GET("/data", getData)
-	r.PUT("/data", writeData)
 
 	return r
 }
 
-func writeData(c *gin.Context) {
+func writeReminders(c *gin.Context) {
 	bytes, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -40,8 +35,8 @@ func writeData(c *gin.Context) {
 		})
 		return
 	}
-	writeDataReq := &types.WriteDataRequest{}
-	err = json.Unmarshal(bytes, writeDataReq)
+	req := &types.WriteRemindersRequest{}
+	err = json.Unmarshal(bytes, req)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": "Bad Request",
@@ -49,36 +44,103 @@ func writeData(c *gin.Context) {
 		})
 		return
 	}
-	ok := false
-	for _, resource := range types.ResourceList {
-		if _, ok1 := writeDataReq.Data[resource]; ok1 {
-			ok = true
-		}
-	}
-	if !ok {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   "Invalid resource type",
+	err = service.Svc.WriteReminders(req)
+	if err == types.ErrAccessDenied {
+		c.JSON(403, gin.H{
+			"error": "Access Denied",
+			"msg":   "Write access to reminders denied",
 		})
 		return
 	}
-
-	resp, err := service.Svc.WriteData(writeDataReq)
 	if err != nil {
-		if err == types.ErrAccessDenied {
-			c.JSON(403, gin.H{
-				"error": "Access Denied",
-				"msg":   resp.Msg,
-			})
-			return
-		}
+		log.Println(err)
 		c.JSON(500, gin.H{
 			"error": "Internal Server Error",
 			"msg":   err.Error(),
 		})
 		return
 	}
-	c.JSON(200, resp)
+	c.JSON(200, gin.H{
+		"success": true,
+	})
+}
+
+func writeResponses(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	req := &types.WriteResponsesRequest{}
+	err = json.Unmarshal(bytes, req)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	err = service.Svc.WriteResponses(req)
+	if err == types.ErrAccessDenied {
+		c.JSON(403, gin.H{
+			"error": "Access Denied",
+			"msg":   "Write access to responses denied",
+		})
+		return
+	}
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"error": "Internal Server Error",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+	})
+}
+
+func writePreferences(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	writePreferencesReq := &types.WritePreferencesRequest{}
+	err = json.Unmarshal(bytes, writePreferencesReq)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	err = service.Svc.WritePreferences(writePreferencesReq)
+	if err == types.ErrAccessDenied {
+		c.JSON(403, gin.H{
+			"error": "Access Denied",
+			"msg":   "Write access to preferences denied",
+		})
+		return
+	}
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"error": "Internal Server Error",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+	})
 }
 
 func getData(c *gin.Context) {
@@ -99,21 +161,6 @@ func getData(c *gin.Context) {
 		})
 		return
 	}
-	ok := true
-	for _, resource := range getDataReq.Resources {
-		if _, ok1 := types.ResourceIdToString[resource]; !ok1 {
-			ok = false
-			break
-		}
-	}
-	if !ok {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   "Invalid resource type",
-		})
-		return
-	}
-
 	resp, err := service.Svc.GetData(getDataReq)
 	if err != nil {
 		if err == types.ErrAccessDenied {
@@ -123,6 +170,7 @@ func getData(c *gin.Context) {
 			})
 			return
 		}
+		log.Println(err)
 		c.JSON(500, gin.H{
 			"error": "Internal Server Error",
 			"msg":   err.Error(),

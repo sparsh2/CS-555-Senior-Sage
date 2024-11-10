@@ -1,11 +1,12 @@
 package storage
 
 import (
-	"storage-service/config"
-	"storage-service/types"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
+	"storage-service/config"
+	"storage-service/types"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,13 +20,8 @@ type StorageService struct {
 
 //go:generate moq -out storageservice_mock.go . IStorageService
 type IStorageService interface {
-	GetUserHash(string) (string, error)
-	GetUserId(string) (string, error)
-	GetUserData(string, []types.ResourceType, *types.GetDataResponse) error
-	InsertUserDoc(*types.MongoUserDoc) error
-	GetAclDoc(string) (*types.MongoAclsDoc, error)
-	InsertAclDoc(*types.MongoAclsDoc) error
-	WriteUserData(string, map[types.ResourceType]string, []types.ResourceType) error
+	InsertUserDoc(userDetails *types.UserDetails) error
+	GetUserDoc(email string) (*types.UserDetails, error)
 }
 
 var StorageSvc IStorageService
@@ -49,78 +45,22 @@ func InitStorage() error {
 	return nil
 }
 
-func (s *StorageService) WriteUserData(UserId string, data map[types.ResourceType]string, resources []types.ResourceType) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	updateVal := bson.D{}
-	for _, res := range resources {
-		// TODO: check if the resource is valid and log error
-		updateVal = append(updateVal, bson.E{Key: "data." + types.ResourceToMongoField[res], Value: data[res]})
-	}
-	_, err := coll.UpdateOne(context.Background(), bson.D{bson.E{Key: "user_id", Value: UserId}}, bson.D{bson.E{Key: "$set", Value: updateVal}})
-	if err != nil {
-		return fmt.Errorf("error updating user data: %v", err)
-	}
-	return nil
-}
+func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
 
-func (s *StorageService) GetUserData(UserId string, resources []types.ResourceType, resp *types.GetDataResponse) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	projection := bson.D{}
-	for _, r := range resources {
-		projection = append(projection, bson.E{Key: "data."+types.ResourceToMongoField[r], Value: 1})
-	}
-	var result types.MongoUserDoc
-	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "user_id", Value: UserId}}, options.FindOne().SetProjection(projection)).Decode(&result)
+	bytes, err := json.Marshal(userDetails)
 	if err != nil {
-		return fmt.Errorf("error finding the user: %v", err)
+		return fmt.Errorf("error marshalling user data: %v", err)
 	}
-	for _, r := range resources {
-		switch r {
-		case types.RESOURCE_USER_DETAILS:
-			resp.Data[r] = result.Data.UserDetails
-		case types.RESOURCE_USER_PREFERENCES:
-			resp.Data[r] = result.Data.UserPreferences
-		case types.RESOURCE_USER_REMINDERS:
-			resp.Data[r] = result.Data.UserReminders
-		}
-	}
-	return nil
-}
-
-func (s *StorageService) GetAclDoc(UserId string) (*types.MongoAclsDoc, error) {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
-	var result types.MongoAclsDoc
-	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "uid", Value: UserId}}).Decode(&result)
+	encData, err := EncryptionSvc.Encrypt(string(bytes))
 	if err != nil {
-		return nil, fmt.Errorf("error finding Acls for the user: %v", err)
+		return fmt.Errorf("error encrypting user data: %v", err)
 	}
-	return &result, nil
-}
-
-func (s *StorageService) GetUserHash(email string) (string, error) {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	var result types.MongoUserDoc
-	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "user_details.email", Value: email}}).Decode(&result)
-	if err != nil {
-		return "", fmt.Errorf("error finding the user: %v", err)
+	userDoc := &types.MongoUserDoc{
+		Email: userDetails.UserEmail,
+		Data:  encData,
 	}
-	return result.UserDetails.PasswordHash, nil
-}
-
-func (s *StorageService) GetUserId(email string) (string, error) {
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	var result types.MongoUserDoc
-	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "user_details.email", Value: email}}).Decode(&result)
-	if err != nil {
-		return "", fmt.Errorf("error finding the user: %v", err)
-	}
-	fmt.Println(result)
-	return result.UserId, nil
-}
-
-func (s *StorageService) InsertUserDoc(userDoc *types.MongoUserDoc) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	_, err := coll.InsertOne(context.Background(), userDoc)
+	_, err = coll.InsertOne(context.Background(), userDoc)
 	if err != nil {
 		return fmt.Errorf("error inserting into db: %v", err)
 	}
@@ -134,4 +74,23 @@ func (s *StorageService) InsertAclDoc(aclDoc *types.MongoAclsDoc) error {
 		return fmt.Errorf("error inserting into db: %v", err)
 	}
 	return nil
+}
+
+func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
+	var result types.MongoUserDoc
+	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "email", Value: email}}).Decode(&result)
+	if err != nil {
+		return nil, fmt.Errorf("error finding the user: %v", err)
+	}
+	userDoc := &types.UserDetails{}
+	decryptedJsonData, err := EncryptionSvc.Decrypt(result.Data)
+	if err != nil {
+		return nil, fmt.Errorf("error decrypting user data: %v", err)
+	}
+	err = json.Unmarshal([]byte(decryptedJsonData), userDoc)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshalling user data: %v", err)
+	}
+	return userDoc, nil
 }

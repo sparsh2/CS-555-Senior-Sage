@@ -2,10 +2,9 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"storage-service/storage"
 	"storage-service/types"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type Service struct {
@@ -17,52 +16,121 @@ func init() {
 	Svc = &Service{}
 }
 
-type CustomRegisteredClaims struct {
-	jwt.RegisteredClaims
-	UserId    string `json:"user_id"`
-	UserEmail string `json:"user_email"`
-}
-
-func (as *Service) WriteData(writeDataReq *types.WriteDataRequest) (*types.WriteDataResponse, error) {
-	resources := []types.ResourceType{}
-	for resource := range writeDataReq.Data {
-		switch resource {
-		case types.RESOURCE_USER_DETAILS:
-			resources = append(resources, types.RESOURCE_USER_DETAILS)
-		case types.RESOURCE_USER_PREFERENCES:
-			resources = append(resources, types.RESOURCE_USER_PREFERENCES)
-		case types.RESOURCE_USER_REMINDERS:
-			resources = append(resources, types.RESOURCE_USER_REMINDERS)
-		}
-	}
-	granted, msg, err := AuthzClientSvc.VerifyAccessRequest(writeDataReq.RequesterToken, writeDataReq.UserId, resources)
+func (as *Service) WriteReminders(req *types.WriteRemindersRequest) error {
+	granted, _, err := AuthzClientSvc.VerifyAccessRequest(
+		req.RequesterToken,
+		req.UserId,
+		[]types.ResourceType{types.RESOURCE_USER_REMINDERS},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error in verifying access request: %v", err)
+		return fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
-		return &types.WriteDataResponse{Success: false, Msg: msg}, types.ErrAccessDenied
+		return types.ErrAccessDenied
 	}
-	err = storage.StorageSvc.WriteUserData(writeDataReq.UserId, writeDataReq.Data, resources)
+	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
 	if err != nil {
-		return nil, fmt.Errorf("error in writing user data: %v", err)
+		return fmt.Errorf("error in getting user data: %v", err)
 	}
-	return &types.WriteDataResponse{}, nil
+	if userDetails.ReminderDetails == nil {
+		userDetails.ReminderDetails = &[]types.ReminderDetails{}
+	}
+	userDetails.ReminderDetails = req.Reminders
+	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	if err != nil {
+		return fmt.Errorf("error in writing user data: %v", err)
+	}
+	return nil
+}
+
+func (as *Service) WriteResponses(req *types.WriteResponsesRequest) error {
+	granted, _, err := AuthzClientSvc.VerifyAccessRequest(
+		req.RequesterToken,
+		req.UserId,
+		[]types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY},
+	)
+	if err != nil {
+		return fmt.Errorf("error in verifying access request: %v", err)
+	}
+	if !granted {
+		return types.ErrAccessDenied
+	}
+	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
+	if err != nil {
+		return fmt.Errorf("error in getting user data: %v", err)
+	}
+	if userDetails.ChatHistory == nil {
+		userDetails.ChatHistory = &[]types.ChatSession{}
+	}
+	if len(*req.Responses) < len(*userDetails.ChatHistory) {
+		log.Printf("warning: new responses are less than the existing responses for user %s\n", req.UserId)
+	}
+	userDetails.QuestionResponses = req.Responses
+	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	if err != nil {
+		return fmt.Errorf("error in writing user data: %v", err)
+	}
+	return nil
+}
+
+func (as *Service) WritePreferences(req *types.WritePreferencesRequest) error {
+	granted, _, err := AuthzClientSvc.VerifyAccessRequest(
+		req.RequesterToken,
+		req.UserId,
+		[]types.ResourceType{types.RESOURCE_USER_PREFERENCES},
+	)
+	if err != nil {
+		return fmt.Errorf("error in verifying access request: %v", err)
+	}
+	if !granted {
+		return types.ErrAccessDenied
+	}
+	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
+	if err != nil {
+		return fmt.Errorf("error in getting user data: %v", err)
+	}
+	if userDetails.Preferences == nil {
+		userDetails.Preferences = &[]string{}
+	}
+
+	if len(*req.Preferences) < len(*userDetails.Preferences) {
+		log.Printf("warning: new preferences are less than the existing preferences for user %s\n", req.UserId)
+	}
+	userDetails.Preferences = req.Preferences
+	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	if err != nil {
+		return fmt.Errorf("error in writing user data: %v", err)
+	}
+	return nil
 }
 
 func (as *Service) GetData(getDataReq *types.GetDataRequest) (*types.GetDataResponse, error) {
-	granted, msg, err := AuthzClientSvc.VerifyAccessRequest(getDataReq.RequesterToken, getDataReq.UserId, getDataReq.Resources)
+	granted, msg, err := AuthzClientSvc.VerifyAccessRequest(
+		getDataReq.RequesterToken,
+		getDataReq.UserId,
+		[]types.ResourceType{
+			types.RESOURCE_USER_PREFERENCES,
+			types.RESOURCE_USER_REMINDERS,
+			types.RESOURCE_USER_CHAT_HISTORY,
+			types.RESOURCE_RPM_READINGS,
+		},
+	)
 	if err != nil {
 		return nil, fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
 		return &types.GetDataResponse{Msg: msg}, types.ErrAccessDenied
 	}
-	resp := &types.GetDataResponse{
-		Data: make(map[types.ResourceType]string),
-	}
-	err = storage.StorageSvc.GetUserData(getDataReq.UserId, getDataReq.Resources, resp)
+	resp := &types.GetDataResponse{}
+	userDetails, err := storage.StorageSvc.GetUserDoc(getDataReq.UserId)
 	if err != nil {
 		return nil, fmt.Errorf("error in getting user data: %v", err)
 	}
+	resp.ChatHistory = userDetails.ChatHistory
+	resp.Preferences = userDetails.Preferences
+	resp.ReminderDetails = userDetails.ReminderDetails
+	resp.RPMReadings = userDetails.RPMReadings
+	resp.VoiceSelection = userDetails.VoiceSelection
+	resp.Msg = "data fetched successfully"
 	return resp, nil
 }
