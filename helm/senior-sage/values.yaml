@@ -20,6 +20,14 @@ storageService:
   targetPort: 8080
   config:
     secretKey: "testSecretKey!"
+languageProcessor:
+  name: language-processor
+  image: language-processor
+  replicas: 1
+  configMapName: language-processor-config
+  serviceName: language-processor-svc
+  servicePort: 8080
+  targetPort: 8080
 llmUsername: "llmuser"
 db:
   host: mymongocluster.r1pcx2q.mongodb.net
