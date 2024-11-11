@@ -52,7 +52,7 @@ func requestAccess(c *gin.Context) {
 	if err != nil {
 		c.JSON(404, gin.H{
 			"error": "Bad Request",
-			"msg": err.Error(),
+			"msg":   err.Error(),
 		})
 		return
 	}
