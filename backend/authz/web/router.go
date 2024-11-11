@@ -113,25 +113,28 @@ func login(c *gin.Context) {
 	loginReq := &types.UserLoginRequest{}
 	err = json.Unmarshal(bytes, loginReq)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
+		resp := &types.UserLoginResponse{
+			Error: "Bad Request",
+			Msg:   err.Error(),
+		}
+		c.JSON(400, resp)
 		return
 	}
 
 	token, err := service.AuthService.Login(loginReq)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
+		resp := &types.UserLoginResponse{
+			Error: "Bad Request",
+			Msg:   err.Error(),
+		}
+		c.JSON(400, resp)
 		return
 	}
-	c.JSON(200, gin.H{
-		"token": token,
-		"msg":   "login successful",
-	})
+	resp := &types.UserLoginResponse{
+		Token: token,
+		Msg:   "login successful",
+	}
+	c.JSON(200, resp)
 }
 
 func generateToken(c *gin.Context) {

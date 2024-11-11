@@ -42,6 +42,12 @@ type UserLoginRequest struct {
 	UserPassword string `json:"password"`
 }
 
+type UserLoginResponse struct {
+	Error string `json:"error,omitempty"`
+	Token string `json:"token,omitempty"`
+	Msg  string `json:"msg,omitempty"`
+}
+
 type UserSignupRequest struct {
 	VoiceSelection string `json:"voice_selection"`
 	Name           string `json:"name"`

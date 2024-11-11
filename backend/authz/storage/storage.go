@@ -42,6 +42,7 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("error connection to db: %v", err)
 	}
+	EncryptionSvc = NewEncryptionService(config.Configs.DataEncryptionKey)
 	storageSvc.client = client
 	StorageSvc = storageSvc
 	return nil
