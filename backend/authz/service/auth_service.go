@@ -57,15 +57,14 @@ func (as *AuthenticationService) Signup(signupReq *types.UserSignupRequest) (str
 	if err != nil {
 		return "", fmt.Errorf("error hashing password: %v", err)
 	}
-
-	PasswordHash := hex.EncodeToString(h.Sum(nil))
-	UserDoc := &types.MongoUserDoc{
+	passwordHash := hex.EncodeToString(h.Sum(nil))
+	userDoc := &types.MongoUserDoc{
 		UserDetails: types.MongoUserDetails{
 			Email:        signupReq.UserEmail,
-			PasswordHash: PasswordHash,
+			PasswordHash: passwordHash,
 		},
 	}
-	err = storage.StorageSvc.InsertUserDoc(UserDoc)
+	err = storage.StorageSvc.InsertUserDoc(userDoc)
 	if err != nil {
 		return "", fmt.Errorf("error inserting user: %v", err)
 	}
@@ -149,9 +148,15 @@ func (as *AuthenticationService) RequestAccess(requestAccessReq *types.RequestAc
 	granted := true
 	for _, res := range requestAccessReq.Resources {
 		ok := false
-		ok, shouldReturn, returnValue, returnValue1 := useraccessmethod(acl, res, requesterId, ok)
-		if shouldReturn {
-			return returnValue, returnValue1
+		_, ok1 := acl.Acls[res]
+		if !ok1 {
+			return false, fmt.Errorf("unknown resource type %v", res)
+		}
+		for _, uid := range acl.Acls[res] {
+			if uid == requesterId {
+				ok = true
+				break
+			}
 		}
 		if !ok {
 			granted = false
@@ -163,18 +168,4 @@ func (as *AuthenticationService) RequestAccess(requestAccessReq *types.RequestAc
 		return false, nil
 	}
 	return true, nil
-}
-
-func useraccessmethod(acl *types.MongoAclsDoc, res types.ResourceType, requesterId string, ok bool) (bool, bool, bool, error) {
-	_, ok1 := acl.Acls[res]
-	if !ok1 {
-		return false, true, false, fmt.Errorf("unknown resource type %v", res)
-	}
-	for _, uid := range acl.Acls[res] {
-		if uid == requesterId {
-			ok = true
-			break
-		}
-	}
-	return ok, false, false, nil
 }
