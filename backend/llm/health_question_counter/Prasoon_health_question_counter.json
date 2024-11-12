@@ -1,0 +1,72 @@
+{
+    "0": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:35:22",
+        "curr_date": "2024-11-11",
+        "diff": -1
+    },
+    "1": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:49:03",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "2": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:49:41",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "3": {
+        "counter": true,
+        "freq": 7,
+        "asked_date": "2024-11-11 19:36:15",
+        "curr_date": "2024-11-11",
+        "diff": -1
+    },
+    "4": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:48:31",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "5": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:52:55",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "6": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:50:36",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "7": {
+        "counter": true,
+        "freq": 1,
+        "asked_date": "2024-11-11 19:53:20",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "8": {
+        "counter": true,
+        "freq": 7,
+        "asked_date": "2024-11-11 19:54:07",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    },
+    "9": {
+        "counter": true,
+        "freq": 7,
+        "asked_date": "2024-11-11 19:55:25",
+        "curr_date": "2024-11-11",
+        "diff": 0
+    }
+}

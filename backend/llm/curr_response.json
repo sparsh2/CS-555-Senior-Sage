@@ -1,0 +1,10 @@
+{
+    "user": "Tom",
+    "q_idx": 0,
+    "Questions": {
+        "question": "Have you had any alcohol or smoked recently?",
+        "freq": 1
+    },
+    "Answer": "Yes, I drank some wine.",
+    "Date": "2024-11-11 20:14:49"
+}
