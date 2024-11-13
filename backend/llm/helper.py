@@ -41,9 +41,8 @@ def load_user_health_question_counter(username):
 
 # **Function to update the health question counter**
 def initialize_health_question_counter(questions, counter_data, username):
-    curr_date = datetime.now().strftime("%Y-%m-%d")
-    
     for q_idx, data in questions.items():
+        curr_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         if q_idx not in counter_data:
             # If question is not in the counter, add it
             counter_data[q_idx] = {
@@ -55,12 +54,15 @@ def initialize_health_question_counter(questions, counter_data, username):
             }
         else:
             counter_data[q_idx]["curr_date"] = curr_date
-            if counter_data[q_idx]["asked_date"] != None:
-                diff = (datetime.fromisoformat(curr_date) - datetime.fromisoformat(counter_data[q_idx]["asked_date"])).days
-                if diff == counter_data[q_idx]["freq"]:
-                    counter_data[q_idx]["counter"]=False
-                    counter_data[q_idx]["asked_date"]=None
-                    counter_data[q_idx]["diff"]=0
+            curr_date = counter_data[q_idx]["curr_date"][:10]  # Extract only the date part (YYYY-MM-DD)
+            asked_date = counter_data[q_idx]["asked_date"][:10] if counter_data[q_idx]["asked_date"] else None
+
+            if asked_date:
+                diff = (datetime.fromisoformat(curr_date) - datetime.fromisoformat(asked_date)).days
+                if diff >= counter_data[q_idx]["freq"]:
+                    counter_data[q_idx]["counter"] = False
+                    counter_data[q_idx]["asked_date"] = None
+                    counter_data[q_idx]["diff"] = 0
                 else:
                     counter_data[q_idx]["diff"] = diff
 

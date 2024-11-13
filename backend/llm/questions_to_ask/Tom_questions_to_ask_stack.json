@@ -1,4 +1,8 @@
 {
+    "0": {
+        "question": "Have you had any alcohol or smoked recently?",
+        "freq": 1
+    },
     "1": {
         "question": "Have you taken all your medications as prescribed today?",
         "freq": 1

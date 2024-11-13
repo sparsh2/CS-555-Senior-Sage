@@ -193,5 +193,55 @@
                 "bot_response": "Alright then, have a great day ahead!"
             }
         ]
+    },
+    {
+        "timestamp": "2024-11-11T20:31:22.019674",
+        "messages": [
+            {
+                "timestamp": "2024-11-11T20:31:49.333109",
+                "user_message": "hi, i am back. Thinking to go grab my favourite pizza",
+                "bot_response": "Welcome back! Pizza sounds delicious! What's your favorite topping?"
+            },
+            {
+                "timestamp": "2024-11-11T20:32:29.110019",
+                "user_message": "i love having mushrooms, onions, jalapenos and tomatos on my pizza",
+                "bot_response": "Mushrooms, onions, jalape\u00f1os, and tomatoes make for a delicious combination on pizza! Do you usually make it at home or order from your favorite place? Also, have you tried any new flavors or toppings recently?"
+            },
+            {
+                "timestamp": "2024-11-11T20:33:22.257671",
+                "user_message": "yes i tried pineapple pizza and another pizza with bbq sauce, i didnt quite like that though",
+                "bot_response": "Pineapple pizza can be a bit of a love-it-or-hate-it, right? It\u2019s interesting you tried BBQ sauce on pizza, but didn't like it. Sometimes those flavors can be quite different than expected! \n\nSo, besides experimenting with different pizzas, do you have any other favorite dishes or cuisines that you enjoy?"
+            },
+            {
+                "timestamp": "2024-11-11T20:34:24.722570",
+                "user_message": "i know what i dont like, i despise cabages",
+                "bot_response": "I completely understand! Cabbage can be quite polarizing. It's great that you know what you like and dislike. What are some of your favorite vegetables instead? Or do you have a dish that you really enjoy?"
+            },
+            {
+                "timestamp": "2024-11-11T20:35:11.330233",
+                "user_message": "oh also my favourite team is playing today, sentinels in the vct playoffs. That is why I wanted to get some good pizza to do a watch party",
+                "bot_response": "That sounds like a fun evening! Watching the Sentinels play while enjoying your favorite pizza is a great way to spend the day. Do you usually have friends over for watch parties, or will it just be you and Oreo this time? Also, do you have a favorite pizza place you like to order from?"
+            },
+            {
+                "timestamp": "2024-11-11T20:36:16.297252",
+                "user_message": "i love the pizza that napolis make",
+                "bot_response": "Napolis makes some fantastic pizza! Their crust has that perfect crispy texture, doesn't it? Do you usually order from them or have you tried making a similar style at home? Also, how's Oreo doing while you're getting ready for the watch party?"
+            },
+            {
+                "timestamp": "2024-11-11T20:36:30.032381",
+                "user_message": "i am also glad that oreo is with me, my dog always keeps me company!",
+                "bot_response": "It\u2019s wonderful that Oreo keeps you company! Dogs can really lift your spirits. Does Oreo have any favorite toys or activities you both enjoy doing together?"
+            },
+            {
+                "timestamp": "2024-11-11T20:39:28.062930",
+                "user_message": "i love it when i am playing valorant and he comes and sits next to me, i feel like i have a lovely company",
+                "bot_response": "It sounds like Oreo is such a great companion while you play Valorant! Having a dog nearby can definitely make gaming more enjoyable. Does he do anything funny or cute while you\u2019re playing?"
+            },
+            {
+                "timestamp": "2024-11-11T20:39:39.127624",
+                "user_message": "bye",
+                "bot_response": "Alright then, have a great day ahead!"
+            }
+        ]
     }
 ]
