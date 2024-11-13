@@ -1,0 +1,32 @@
+namespace: senior-sage
+dockerUsername: "sarodesparsh"
+authz:
+  name: authz
+  image: authz
+  replicas: 1
+  configMapName: authz-config
+  serviceName: authz-svc
+  servicePort: 8080
+  targetPort: 8080
+  config:
+    secretKey: "testSecretKey!"
+storageService:
+  name: storage-service
+  image: storage-service
+  replicas: 1
+  configMapName: storage-service-config
+  serviceName: storage-service-svc
+  servicePort: 8080
+  targetPort: 8080
+  config:
+    secretKey: "testSecretKey!"
+llmUsername: "llmuser"
+db:
+  host: mymongocluster.r1pcx2q.mongodb.net
+  user: sage
+  password: oQZxNrwTuKBsmAgu
+  database: sage
+  appname: users
+  usersCollection: users
+  aclsCollections: acls
+  port: 8080

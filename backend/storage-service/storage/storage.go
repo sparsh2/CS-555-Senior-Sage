@@ -1,12 +1,12 @@
 package storage
 
 import (
-	"authz/config"
-	"authz/types"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
+	"storage-service/config"
+	"storage-service/types"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,8 +22,6 @@ type StorageService struct {
 type IStorageService interface {
 	InsertUserDoc(userDetails *types.UserDetails) error
 	GetUserDoc(email string) (*types.UserDetails, error)
-	GetAclsDoc(email string) (*types.MongoAclsDoc, error)
-	InsertAclsDoc(aclsDoc *types.MongoAclsDoc) error
 }
 
 var StorageSvc IStorageService
@@ -71,25 +69,6 @@ func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
 		return fmt.Errorf("error inserting into db: %v", err)
 	}
 	return nil
-}
-
-func (s *StorageService) InsertAclsDoc(aclsDoc *types.MongoAclsDoc) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
-	_, err := coll.InsertOne(context.Background(), aclsDoc)
-	if err != nil {
-		return fmt.Errorf("error inserting into db: %v", err)
-	}
-	return nil
-}
-
-func (s *StorageService) GetAclsDoc(email string) (*types.MongoAclsDoc, error) {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
-	var result types.MongoAclsDoc
-	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "uid", Value: email}}).Decode(&result)
-	if err != nil {
-		return nil, fmt.Errorf("error finding the user: %v", err)
-	}
-	return &result, nil
 }
 
 func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
