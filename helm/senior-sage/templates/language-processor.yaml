@@ -46,6 +46,7 @@ metadata:
 data:
   conf.yaml: |-
     llmUsername: {{ .Values.llmUsername }}
+    llmPassword: {{ .Values.llmPassword }}
     storageService:
       host: {{ .Values.namespace }}.{{ .Values.storageService.serviceName }}
       port: {{ .Values.storageService.servicePort }}

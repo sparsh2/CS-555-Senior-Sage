@@ -4,6 +4,8 @@ from functools import wraps
 from flask import request
 from flask_socketio import disconnect, emit
 import requests
+from .other import llm_authenticate, pull_user_data, del_user_data, get_response_data
+import time
 
 import yaml
 
@@ -14,6 +16,12 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 
 with open('/app/config/conf.yaml', 'r') as file:
     cfg = yaml.safe_load(file)
+
+ok = llm_authenticate(cfg)
+if not ok:
+    print("Error authenticating with LLM")
+    time.sleep(5)
+    exit(1)
 
 def token_required(f):
     @wraps(f)
@@ -60,19 +68,22 @@ state_data = {}
 @token_required
 def handle_connect(current_user):
     state_data[request.sid] = current_user
+    pull_user_data(cfg, current_user)
     print(current_user)
     print('Client connected')
     emit('connected', {'data': 'Connected'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    del_user_data(state_data[request.sid])
     del state_data[request.sid]
     print('Client disconnected')
 
 
-@socketio.on('voice_capture')
+@socketio.on('voice_input')
 def handle_voice_capture(raw_voice_data):
-    pass
+    user_id = state_data[request.sid]
+    get_response_data(user_id, raw_voice_data)
 
 
 

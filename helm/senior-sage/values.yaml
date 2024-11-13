@@ -29,6 +29,7 @@ languageProcessor:
   servicePort: 8080
   targetPort: 8080
 llmUsername: "llmuser"
+llmPassword: "llmpassword"
 db:
   host: mymongocluster.r1pcx2q.mongodb.net
   user: sage
