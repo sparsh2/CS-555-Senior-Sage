@@ -1,7 +1,5 @@
-import json
-import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 from update_health_question_counter_data import update_health_question_counter, save_user_health_question_counter, load_health_questions
@@ -35,12 +33,14 @@ def main_func():
         tts_whisper(welcome_back_message)
 
     
-    # Load previous logs to build the initial context
     past_logs = load_user_logs(name)
     context = []
     for session in past_logs:
         for entry in session.get('messages', []):
             context.append((entry['timestamp'], entry['user_message'], entry['bot_response']))
+
+    counter_data = load_user_health_question_counter(name)
+    initialize_health_question_counter(questions, counter_data, name)
     
     counter_data = load_user_health_question_counter(name)
     # Initialize the health questions counter for all the new questions in the health quessionaire; 
@@ -49,7 +49,6 @@ def main_func():
 
     print("\nYou can start your conversation. Say 'exit' to end.")
     
-    # Initialize current conversation session
     cur_time = datetime.now().isoformat()
     current_conversation = {
         'timestamp': cur_time,
@@ -57,7 +56,8 @@ def main_func():
     } 
     
     while True:
-        user_message = stt_whisper().strip()
+        # user_message = stt_whisper().strip()
+        user_message = input()
         
         if user_message.lower() == 'exit':
             print("Ending conversation session.")
@@ -65,12 +65,6 @@ def main_func():
         
         print(f"You: {user_message}")
         bot_response = openai_complete(name, user_message, context, voice)
-
-        if bot_response == " ":
-            continue
-
-        
-        # Update context for the current session
         cur_time = datetime.now().isoformat()
         context.append((cur_time, user_message, bot_response))
 
@@ -82,7 +76,6 @@ def main_func():
             })
             break
         
-        # Add to current conversation
         current_conversation['messages'].append({
             'timestamp': datetime.now().isoformat(),
             'user_message': user_message,
@@ -91,7 +84,8 @@ def main_func():
 
 
     
-    append_conversation(name, current_conversation) # Save this conversation session
+    append_conversation(name, current_conversation)
+    print(f"Conversation session saved for user '{name}'.")
 
 if __name__ == "__main__":
     main_func()

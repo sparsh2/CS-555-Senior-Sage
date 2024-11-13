@@ -43,9 +43,9 @@ var ResourceIdToString map[ResourceType]string = map[ResourceType]string{
 }
 
 type MongoAclsDoc struct {
-	AclId  string                    `bson:"_id,omitempty"`
-	UserId string                    `bson:"uid,omitempty"`
-	Acls   map[ResourceType][]string `bson:"acls,omitempty"`
+	AclId  string                    `bson:"_id,omitempty",json:"acl_id,omitempty"`
+	UserId string                    `bson:"uid,omitempty",json:"user_id,omitempty"`
+	Acls   map[ResourceType][]string `bson:"acls,omitempty",json:"acls,omitempty"`
 }
 
 var ErrInvalidToken = fmt.Errorf("invalid token")
