@@ -1,0 +1,30 @@
+{
+  "user": "Prasoon",
+  "last_updated": "2024-11-11T20:35:53.496966",
+  "preferences": [
+    {
+      "type": "food",
+      "detail": "favorite pizza toppings include mushrooms, onions, jalapenos, and tomatoes",
+      "sentiment": "like",
+      "timestamp": "2024-11-11T20:32:10.265585"
+    },
+    {
+      "type": "food",
+      "detail": "Pineapple pizza",
+      "sentiment": "like",
+      "timestamp": "2024-11-11T20:32:57.879026"
+    },
+    {
+      "type": "food",
+      "detail": "cabbages",
+      "sentiment": "dislike",
+      "timestamp": "2024-11-11T20:34:07.915894"
+    },
+    {
+      "type": "food",
+      "detail": "Pizza from Napolis",
+      "sentiment": "like",
+      "timestamp": "2024-11-11T20:35:53.496936"
+    }
+  ]
+}
