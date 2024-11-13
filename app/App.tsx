@@ -28,6 +28,7 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import Main from './components/main';
+import Login from './components/login';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -35,13 +36,24 @@ type SectionProps = PropsWithChildren<{
 
 function App(): React.JSX.Element {
   const [isFetching, setIsFetching] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const isDarkMode = false;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  
+  //Callback function to handle login
+  const handleLoginSuccess = () => {
+    setLoggedIn(true); // This will display Main after login
+  };
 
-  return <Main></Main>;
+  //return <Main></Main>;
+  return (
+    <View style={{flex: 1}}>
+      {loggedIn ? <Main /> : <Login onLoginSuccess={handleLoginSuccess} />}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
