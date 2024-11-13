@@ -1,24 +1,80 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
+from functools import wraps
+from flask import request
+from flask_socketio import disconnect, emit
+import requests
+
+import yaml
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 
-def authenticate(token):
-    # Implement your authentication logic here
-    # For example, check the token against a database or other storage
-    return token == "your_secret_token"
+with open('/app/config/conf.yaml', 'r') as file:
+    cfg = yaml.safe_load(file)
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        global cfg
+        token = None
+        if "Authorization" in request.headers:
+            token = request.headers["Authorization"]
+        print(token)
+        if not token:
+            return {
+                "message": "Authentication Token is missing!",
+                "data": None,
+                "error": "Unauthorized"
+            }, 401
+        try:
+            authzHost = cfg['authzService']['host']
+            authzPort = cfg['authzService']['port']
+            response = requests.get(f"http://{authzHost}:{authzPort}/auth/verify", json={"jwt_token": token})
+            response.raise_for_status()
+            current_user = response.json()
+            if current_user['valid'] == False:
+                return {
+                    "message": "Invalid Token",
+                    "data": None,
+                    "error": "Unauthorized"
+                }, 401
+            current_user = current_user['user_id']
+        except Exception as e:
+            return {
+                "message": "Something went wrong",
+                "data": None,
+                "error": str(e)
+            }, 500
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+state_data = {}
+
 
 @socketio.on('connect')
-def handle_connect():
+@token_required
+def handle_connect(current_user):
+    state_data[request.sid] = current_user
+    print(current_user)
     print('Client connected')
     emit('connected', {'data': 'Connected'})
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    del state_data[request.sid]
     print('Client disconnected')
+
+
+@socketio.on('voice_capture')
+def handle_voice_capture(raw_voice_data):
+    pass
+
+
 
 @socketio.on('message')
 def handle_message(data):
@@ -34,4 +90,5 @@ def handle_message(data):
     emit('response', {'data': 'Message received'})
 
 if __name__ == '__main__':
+    print('Starting server...')
     socketio.run(app)

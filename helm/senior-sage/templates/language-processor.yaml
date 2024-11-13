@@ -49,6 +49,9 @@ data:
     storageService:
       host: {{ .Values.namespace }}.{{ .Values.storageService.serviceName }}
       port: {{ .Values.storageService.servicePort }}
+    authzService:
+      host: {{ .Values.namespace }}.{{ .Values.authz.serviceName }}
+      port: {{ .Values.authz.servicePort }}
 
 ---
 apiVersion: v1
