@@ -4,7 +4,7 @@ from functools import wraps
 from flask import request
 from flask_socketio import disconnect, emit
 import requests
-from .other import llm_authenticate, pull_user_data, del_user_data, get_response_data
+from .other import llm_authenticate, pull_user_data, del_user_data, get_response_data_from_llm
 import time
 
 import yaml
@@ -83,7 +83,7 @@ def handle_disconnect():
 @socketio.on('voice_input')
 def handle_voice_capture(raw_voice_data):
     user_id = state_data[request.sid]
-    get_response_data(user_id, raw_voice_data)
+    get_response_data_from_llm(user_id, raw_voice_data)
 
 
 

@@ -26,19 +26,21 @@ def pull_user_data(cfg, user_id):
         host = cfg['storageService']['host']
         port = cfg['storageService']['port']
         response = requests.get(f"http://{host}:{port}/data", json={"requester_token": llm_token, "user_id": user_id})
-        # response = requests.get(f"http://llm:5000/user/{user_id}", headers={"Authorization": llm_token})
         response.raise_for_status()
         user_data = response.json()
-        all_user_data[user_id] = user_data
+        all_user_data[user_id] = {
+            'user_data': user_data, 
+            'current_session': {}
+        }
     except Exception as e:
         print(f"Error pulling user data: {e}")
-        # return None
-    # return user_data
 
 def del_user_data(user_id):
     global all_user_data
     if user_id in all_user_data:
         del all_user_data[user_id]
 
-def get_response_data(user_id, voice_data):
+def get_response_data_from_llm(user_id, voice_data):
+    current_user_data = all_user_data.get(user_id, {})
+
     pass
