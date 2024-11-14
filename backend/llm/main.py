@@ -56,8 +56,7 @@ def main_func():
     } 
     
     while True:
-        # user_message = stt_whisper().strip()
-        user_message = input()
+        user_message = stt_whisper().strip()
         
         if user_message.lower() == 'exit':
             print("Ending conversation session.")

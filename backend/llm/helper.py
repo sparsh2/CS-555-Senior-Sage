@@ -48,7 +48,7 @@ def load_user_health_question_counter(username):
 # **Function to update the health question counter**
 def initialize_health_question_counter(questions, counter_data, username):
     for q_idx, data in questions.items():
-        curr_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        curr_date = datetime.now().isoformat()
         if q_idx not in counter_data:
             # If question is not in the counter, add it
             counter_data[q_idx] = {

@@ -83,7 +83,8 @@ def handle_disconnect():
 @socketio.on('voice_input')
 def handle_voice_capture(raw_voice_data):
     user_id = state_data[request.sid]
-    get_response_data_from_llm(user_id, raw_voice_data)
+    voice_response, disconnect = get_response_data_from_llm(user_id, raw_voice_data)
+    emit('voice_response', {'data': voice_response, 'disconnect': disconnect})
 
 
 

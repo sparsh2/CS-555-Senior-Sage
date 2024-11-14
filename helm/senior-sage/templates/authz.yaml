@@ -64,9 +64,11 @@ metadata:
   name: {{ .Values.authz.serviceName }}
   namespace: {{ .Values.namespace }}
 spec:
+  type: NodePort
   selector:
     app: {{ .Values.authz.name }}
   ports:
     - protocol: TCP
       port: {{ .Values.authz.servicePort }}
       targetPort: {{ .Values.authz.targetPort }}
+      nodePort: {{ .Values.authz.nodePort }}

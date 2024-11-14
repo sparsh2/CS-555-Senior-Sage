@@ -8,6 +8,7 @@ authz:
   serviceName: authz-svc
   servicePort: 8080
   targetPort: 8080
+  nodePort: 30001
   config:
     secretKey: "testSecretKey!"
 storageService:
@@ -21,6 +22,7 @@ storageService:
   config:
     secretKey: "testSecretKey!"
 languageProcessor:
+  openaiApiKey: "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"
   name: language-processor
   image: language-processor
   replicas: 1
@@ -28,6 +30,7 @@ languageProcessor:
   serviceName: language-processor-svc
   servicePort: 8080
   targetPort: 8080
+  nodePort: 30000
 llmUsername: "llmuser"
 llmPassword: "llmpassword"
 db:

@@ -78,6 +78,7 @@ func getUserDoc(signupReq *types.UserSignupRequest) (*types.UserDetails, error) 
 		QuestionResponses: &[]types.QuestionResponse{},
 		VoiceSelection:    signupReq.VoiceSelection,
 		Name:              signupReq.Name,
+		QuestionCounts:    map[int]types.QuestionCounter{},
 	}, nil
 }
 

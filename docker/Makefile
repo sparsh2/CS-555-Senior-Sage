@@ -1,5 +1,5 @@
 # docker user name
-NAMESPACE := <your-docker-username>
+NAMESPACE := sarodesparsh
 
 all: authz-docker storage-service-docker
 
