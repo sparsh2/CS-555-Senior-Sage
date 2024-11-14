@@ -3,7 +3,7 @@
  * https://github.com/facebook/react-native
  *
  * @format
- */
+ 
 
 import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
@@ -64,3 +64,19 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+*/
+
+// App.tsx
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './navigation/AppNavigator'; // Import your main navigator component
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <AppNavigator /> {/* Include the main app navigation here */}
+    </NavigationContainer>
+  );
+}
+
