@@ -88,7 +88,7 @@ func (s *StorageService) GetAclsDoc(email string) (*types.MongoAclsDoc, error) {
 	var result types.MongoAclsDoc
 	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "uid", Value: email}}).Decode(&result)
 	if err != nil {
-		return nil, fmt.Errorf("error finding the user: %v", err)
+		return nil, err
 	}
 	return &result, nil
 }
@@ -98,7 +98,7 @@ func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
 	var result types.MongoUserDoc
 	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "email", Value: email}}).Decode(&result)
 	if err != nil {
-		return nil, fmt.Errorf("error finding the user: %v", err)
+		return nil, err
 	}
 	userDoc := &types.UserDetails{}
 	decryptedJsonData, err := EncryptionSvc.Decrypt(result.Data)

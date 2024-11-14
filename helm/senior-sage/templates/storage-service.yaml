@@ -48,7 +48,7 @@ data:
     encryptionKey: {{ .Values.storageService.config.encryptionKey }}
     llmUsername: {{ .Values.llmUsername }}
     authzConfig:
-      host: {{  .Values.namespace }}.{{ .Values.authz.serviceName }}
+      host: {{ .Values.authz.serviceName }}.{{ .Values.namespace }}
       port: {{ .Values.authz.servicePort }}
     db:
       host: {{ .Values.db.host }}

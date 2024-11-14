@@ -21,12 +21,12 @@ spec:
         image: {{ .Values.dockerUsername }}/{{ .Values.languageProcessor.image }}
         ports:
         - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /ping
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        # livenessProbe:
+        #   httpGet:
+        #     path: /ping
+        #     port: 5000
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 5
         volumeMounts:
         - name: config-volume
           mountPath: /app/config/
@@ -49,10 +49,10 @@ data:
     llmPassword: {{ .Values.llmPassword }}
     openaiApiKey: {{ .Values.languageProcessor.openaiApiKey }}
     storageService:
-      host: {{ .Values.namespace }}.{{ .Values.storageService.serviceName }}
+      host: {{ .Values.storageService.serviceName }}.{{ .Values.namespace }}
       port: {{ .Values.storageService.servicePort }}
     authzService:
-      host: {{ .Values.namespace }}.{{ .Values.authz.serviceName }}
+      host: {{ .Values.authz.serviceName }}.{{ .Values.namespace }}
       port: {{ .Values.authz.servicePort }}
 
 ---
@@ -60,6 +60,20 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.languageProcessor.serviceName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Values.languageProcessor.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.languageProcessor.servicePort }}
+      targetPort: {{ .Values.languageProcessor.targetPort }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.languageProcessor.nodePortServiceName }}
   namespace: {{ .Values.namespace }}
 spec:
   type: NodePort
@@ -70,3 +84,4 @@ spec:
       port: {{ .Values.languageProcessor.servicePort }}
       targetPort: {{ .Values.languageProcessor.targetPort }}
       nodePort: {{ .Values.languageProcessor.nodePort }}
+

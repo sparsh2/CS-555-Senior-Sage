@@ -4,7 +4,7 @@ from functools import wraps
 from flask import request
 from flask_socketio import disconnect, emit
 import requests
-from .other import llm_authenticate, pull_user_data, del_user_data, get_response_data_from_llm
+from other import llm_authenticate, pull_user_data, del_user_data, get_response_data_from_llm
 import time
 
 import yaml
@@ -13,10 +13,15 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong', 200
+
+
 
 with open('/app/config/conf.yaml', 'r') as file:
     cfg = yaml.safe_load(file)
-
+print(cfg)
 ok = llm_authenticate(cfg)
 if not ok:
     print("Error authenticating with LLM")
@@ -103,4 +108,4 @@ def handle_message(data):
 
 if __name__ == '__main__':
     print('Starting server...')
-    socketio.run(app)
+    socketio.run(app, allow_unsafe_werkzeug=True)

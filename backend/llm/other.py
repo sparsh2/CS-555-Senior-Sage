@@ -1,20 +1,24 @@
 import requests
 import datetime
-from voice_interactions import stt_whisper, fetch_audio
-from server import cfg
+# from voice_interactions import stt_whisper, fetch_audio
+# from server import cfg
 import openai
 import json
 import re
 
 llm_token = ""
+cfg = {}
 
-def llm_authenticate(cfg):
+def llm_authenticate(cfg1):
+    global cfg
     global llm_token
+    cfg = cfg1
     username = cfg['llmUsername']
     password = cfg['llmPassword']
     try:
         host = cfg['authzService']['host']
         port = cfg['authzService']['port']
+        response = requests.post(f"http://{host}:{port}/auth/signup", json={"email": username, "password": password, "name": "LLM Server", "voice_selection": "nova"})
         response = requests.post(f"http://{host}:{port}/auth/login", json={"email": username, "password": password})
         response.raise_for_status()
         token = response.json()['token']
@@ -475,3 +479,22 @@ def responses(q_idx, username, user_answer):
 def update_health_question_counter(username, q_idx, counter_data):
     counter_data[q_idx]['counter'] = True
     counter_data[q_idx]['asked_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+def stt_whisper(audio_file):
+    openai.api_key = cfg.get('openaiApiKey')
+    client = openai.OpenAI()
+    transcript = client.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file
+    )
+    return transcript.text
+
+def fetch_audio(sentence, voice="nova"):
+    openai.api_key = cfg.get('openaiApiKey')
+    client = openai.OpenAI()
+    response = client.audio.speech.create(
+        model="tts-1",
+        voice=voice.lower(),
+        input=sentence
+    )
+    return response.content

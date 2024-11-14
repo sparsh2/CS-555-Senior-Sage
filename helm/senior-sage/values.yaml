@@ -6,11 +6,13 @@ authz:
   replicas: 1
   configMapName: authz-config
   serviceName: authz-svc
+  nodePortServiceName: authz-nodeport-svc
   servicePort: 8080
   targetPort: 8080
   nodePort: 30001
   config:
     secretKey: "testSecretKey!"
+    encryptionKey: "test_keytest_key"
 storageService:
   name: storage-service
   image: storage-service
@@ -28,8 +30,9 @@ languageProcessor:
   replicas: 1
   configMapName: language-processor-config
   serviceName: language-processor-svc
-  servicePort: 8080
-  targetPort: 8080
+  nodePortServiceName: language-processor-nodeport-svc
+  servicePort: 5000
+  targetPort: 5000
   nodePort: 30000
 llmUsername: "llmuser"
 llmPassword: "llmpassword"
@@ -40,5 +43,5 @@ db:
   database: sage
   appname: users
   usersCollection: users
-  aclsCollections: acls
+  aclsCollection: acls
   port: 8080
