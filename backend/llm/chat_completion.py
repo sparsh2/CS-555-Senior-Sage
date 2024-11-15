@@ -3,6 +3,7 @@ import openai
 import json
 from dotenv import load_dotenv
 from function_calling import reminders, responses, preferences
+from rag import get_context
 import os
 
 load_dotenv()
@@ -24,7 +25,7 @@ def load_health_questions_to_ask(username):
         print(f"Error loading health questions: {e}")
         return {}
 
-def openai_complete(username, user_ip, context, voice):
+def openai_complete(username, user_ip, context, vector_db, voice):
     tools = [
         {
             "type": "function",
@@ -136,23 +137,25 @@ def openai_complete(username, user_ip, context, voice):
 
     # Load health questions
     health_questions = load_health_questions_to_ask(username)
+    related_chunks = get_context(vector_db, user_ip)
     
     system_prompt = f'''
     You are a helpful assistant for the elderly, try and have conversations with {username}. Your primary goal is to get answers to these questions provided in the QUESTIONAIRE while being natural at it and not posing questions one after another.
-    Make sure to have sense of what questions and contexts you have discussed with the user in the day and try to continue your conversation from there instead of starting from the beginning. Ex: A user mentions their hobby or plans for the day once, try to refer the chat history and documentation to understand the user preference and how you can continue the conversations from there.
+    Make sure to have sense of what questions you have discussed with the user in the day and try to continue your conversation from there instead of starting from the beginning. Ex: A user mentions their hobby or plans for the day once, try to refer the chat history and documentation to understand the user preference and how you can continue the conversations from there.
     You can make use of the "QUESTIONAIRE" which includes some day to day questions that you should ask the user in a POLITE WAY, making sure it looks NATURAL and not like they are giving a medical form. When the user answers these question, call the ``responses`` function to store the answers to the questions and update your question bank.
-    Keep short and consize answers not to bother them too much. Do not output long answers as it may be too long for them to read. Keep it short and simple and human-like. 
-    Utilize the context given below to keep track of user queries and your answers. Try to bring up events from past conversations using CHAT HISTORY to make it a more personalised experience for the user.
+    Keep short and consize answers not to bother them too much. Do not output long answers as it may be too long for them to read. Keep it short and simple and human-like.
+    Utilize the "CHAT HISTORY" given below to keep track of user queries and your answers. Try to bring up events from past conversations using CHAT HISTORY to make it a more personalised experience for the user.
     Also try and keep a track of the users preferences, anything that makes them unique. Store results in one of the following: ["food", "hobby", "daily routine", "family", "health", "entertainment", "social", "other"] by calling the ``preferences`` function.
-    If you don't understand a request, ask for clarification rather than making assumptions. Always prioritize user safety by never providing medical diagnosis, treatment recommendations, 
-    or interpreting medical results. When in doubt, encourage consulting a healthcare professional.
-    The conversation should be done in English (it can include numbers), if the user responds or asks you a question in any other language, return 
-    "Pardon, I didn't quite get that,could you try again in English"
+    Some relevant context related to user queries is provided in "CONTEXT" along with the source of that information. Whenever a user asks you a health related question, make use of the CONTEXT to drive your answers and ALWAYS TELL THEM THE SOURCE OF YOUR ANSWER, as mentioned in CONTEXT (example, According to Healthy Meal Planning_ Tips for Older Adults _ National Institute on Aging.pdf, mention Source as National Institute on Aging).
+    If you don't understand a request, ask for clarification rather than making assumptions. Always prioritize user safety by never providing medical diagnosis, treatment recommendations, or interpreting medical results. When in doubt, encourage consulting a healthcare professional.
+    The conversation should be done in English (it can include numbers), if the user responds or asks you a question in any other language, return "Pardon, I didn't quite get that,could you try again in English"
     If the user asks you to set a reminder, please extract the relevant information and use the ``reminders`` function. If the user hasn't provided information regarding time and frequency, ask them gently.
     When the user tries to end the conversation using "exit","bye" or "see you soon" or anything simlilar, return 'Alright then, have a great day ahead!'
+    Please note your answers must never be in a list format,if you get CONTEXT that is too big, try and summarize it for the user before giving your final output and DONT MAKE YOUR ANSWER BIGGER THAN 80 WORDS.
 
     CHAT HISTORY: {context}
-    QUESTIONAIRE: {health_questions}'''
+    QUESTIONAIRE: {health_questions}
+    CONTEXT: {related_chunks}'''
 
     try:
         completion = client.chat.completions.create(

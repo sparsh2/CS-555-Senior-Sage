@@ -1,72 +1,72 @@
 {
     "0": {
-        "counter": false,
+        "counter": true,
         "freq": 1,
-        "asked_date": null,
-        "curr_date": "2024-11-13 10:46:38",
+        "asked_date": "2024-11-14 09:17:04",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "1": {
-        "counter": false,
+        "counter": true,
         "freq": 1,
-        "asked_date": null,
-        "curr_date": "2024-11-13",
+        "asked_date": "2024-11-14 09:17:44",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "2": {
-        "counter": false,
+        "counter": true,
         "freq": 1,
-        "asked_date": null,
-        "curr_date": "2024-11-13",
+        "asked_date": "2024-11-14 09:18:28",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "3": {
         "counter": true,
         "freq": 7,
         "asked_date": "2024-11-11 19:36:15",
-        "curr_date": "2024-11-13",
-        "diff": 2
+        "curr_date": "2024-11-14 09:08:11",
+        "diff": 3
     },
     "4": {
-        "counter": false,
+        "counter": true,
         "freq": 1,
-        "asked_date": null,
-        "curr_date": "2024-11-13",
+        "asked_date": "2024-11-14 09:20:13",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "5": {
         "counter": false,
         "freq": 1,
         "asked_date": null,
-        "curr_date": "2024-11-13",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "6": {
-        "counter": false,
+        "counter": true,
         "freq": 1,
-        "asked_date": null,
-        "curr_date": "2024-11-13",
+        "asked_date": "2024-11-14 09:00:38",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "7": {
         "counter": false,
         "freq": 1,
         "asked_date": null,
-        "curr_date": "2024-11-13",
+        "curr_date": "2024-11-14 09:08:11",
         "diff": 0
     },
     "8": {
         "counter": true,
         "freq": 7,
-        "asked_date": "2024-11-11 19:54:07",
-        "curr_date": "2024-11-13",
-        "diff": 2
+        "asked_date": "2024-11-14 09:19:00",
+        "curr_date": "2024-11-14 09:08:11",
+        "diff": 3
     },
     "9": {
         "counter": true,
         "freq": 7,
         "asked_date": "2024-11-11 19:55:25",
-        "curr_date": "2024-11-13",
-        "diff": 2
+        "curr_date": "2024-11-14 09:08:11",
+        "diff": 3
     }
 }

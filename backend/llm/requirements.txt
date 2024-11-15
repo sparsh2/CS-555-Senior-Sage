@@ -2,5 +2,13 @@ openai
 sounddevice
 pynput
 pydub
+regex==2024.4.28
+torch==2.3.0
+scikit-learn==1.4.2
+transformers==4.41.0
 langchain
+langchain-community
+langchain_openai
+faiss-cpu
 python-dotenv
+PyPDF2

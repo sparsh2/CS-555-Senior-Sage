@@ -1,8 +1,10 @@
 import re
 from datetime import datetime
+from langchain_openai import OpenAIEmbeddings
 from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 from helper import *
+from rag import load_vector_db, create_vector_db
 
 def main_func():
     user_info = load_user_info()
@@ -37,6 +39,13 @@ def main_func():
 
     counter_data = load_user_health_question_counter(name)
     initialize_health_question_counter(questions, counter_data, name)
+
+    SAVE_DIR = os.path.join(BASE_DIR, "vector_db")
+    if os.path.exists(SAVE_DIR):
+        embeddings = OpenAIEmbeddings()
+        vector_db = load_vector_db(SAVE_DIR, embeddings)
+    else:
+        vector_db = create_vector_db(SAVE_DIR)
     
     print("\nYou can start your conversation. Say 'exit' to end.")
     
@@ -47,19 +56,19 @@ def main_func():
     } 
     
     while True:
-        # user_message = stt_whisper().strip()
-        user_message = input()
+        user_message = stt_whisper().strip()
+        # user_message = input()
         
         if user_message.lower() == 'exit':
             print("Ending conversation session.")
             break
         
         print(f"You: {user_message}")
-        bot_response = openai_complete(name, user_message, context, voice)
+        bot_response = openai_complete(name, user_message, context, vector_db, voice)
         cur_time = datetime.now().isoformat()
         context.append((cur_time, user_message, bot_response))
 
-        if "Alright then have a great" in re.sub(r'[^\w\s]', '', bot_response):
+        if "alright then" in re.sub(r'[^\w\s]', '', bot_response).lower() or "have a great day ahead" in re.sub(r'[^\w\s]', '', bot_response).lower():
             current_conversation['messages'].append({
             'timestamp': datetime.now().isoformat(),
             'user_message': user_message,
