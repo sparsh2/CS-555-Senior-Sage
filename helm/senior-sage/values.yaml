@@ -38,6 +38,7 @@ languageProcessor:
   nodePort: 30000
 llmUsername: "llmuser"
 llmPassword: "llmpassword"
+host: "senior-sage.com"
 db:
   host: mymongocluster.r1pcx2q.mongodb.net
   user: sage
