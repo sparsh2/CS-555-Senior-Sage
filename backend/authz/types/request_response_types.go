@@ -56,7 +56,7 @@ type UserLoginRequest struct {
 type UserLoginResponse struct {
 	Error string `json:"error,omitempty"`
 	Token string `json:"token,omitempty"`
-	Msg  string `json:"msg,omitempty"`
+	Msg   string `json:"msg,omitempty"`
 }
 
 type UserSignupRequest struct {
@@ -68,8 +68,8 @@ type UserSignupRequest struct {
 
 type RequestAccessRequest struct {
 	RequesterToken string         `json:"requester_id"`
-	UserId      string         `json:"user_id"`
-	Resources   []ResourceType `json:"resources"`
+	UserId         string         `json:"user_id"`
+	Resources      []ResourceType `json:"resources"`
 }
 
 type RequestAccessResponse struct {

@@ -20,13 +20,13 @@ spec:
       - name: {{ .Values.languageProcessor.name }}
         image: {{ .Values.dockerUsername }}/{{ .Values.languageProcessor.image }}
         ports:
-        - containerPort: 8080
-        # livenessProbe:
-        #   httpGet:
-        #     path: /ping
-        #     port: 5000
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
+        - containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
         volumeMounts:
         - name: config-volume
           mountPath: /app/config/

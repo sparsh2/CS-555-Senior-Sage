@@ -1,5 +1,15 @@
 namespace: senior-sage
 dockerUsername: "sarodesparsh"
+serverService:
+  name: server-service
+  image: server
+  replicas: 1
+  configMapName: server-service-config
+  serviceName: server-service-svc
+  nodePortServiceName: server-service-nodeport-svc
+  servicePort: 8080
+  targetPort: 8080
+  nodePort: 30003
 authz:
   name: authz
   image: authz

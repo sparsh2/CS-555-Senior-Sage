@@ -21,6 +21,7 @@ def ping():
 
 with open('/app/config/conf.yaml', 'r') as file:
     cfg = yaml.safe_load(file)
+# cfg = {'llmUsername': 'llmuser', 'llmPassword': 'llmpassword', 'openaiApiKey': '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', 'storageService': {'host': 'storage-service-svc.senior-sage', 'port': 8080}, 'authzService': {'host': 'authz-svc.senior-sage', 'port': 8080}}
 print(cfg)
 ok = llm_authenticate(cfg)
 if not ok:
@@ -69,7 +70,7 @@ def token_required(f):
 state_data = {}
 
 
-@socketio.on('connect')
+@socketio.on('connect', namespace='/llm')
 @token_required
 def handle_connect(current_user):
     state_data[request.sid] = current_user
@@ -78,34 +79,19 @@ def handle_connect(current_user):
     print('Client connected')
     emit('connected', {'data': 'Connected'})
 
-@socketio.on('disconnect')
+@socketio.on('disconnect', namespace='/llm')
 def handle_disconnect():
     del_user_data(state_data[request.sid])
     del state_data[request.sid]
     print('Client disconnected')
 
 
-@socketio.on('voice_input')
+@socketio.on('voice_input', namespace='/llm')
 def handle_voice_capture(raw_voice_data):
     user_id = state_data[request.sid]
     voice_response, disconnect = get_response_data_from_llm(user_id, raw_voice_data)
     emit('voice_response', {'data': voice_response, 'disconnect': disconnect})
 
-
-
-@socketio.on('message')
-def handle_message(data):
-    print('Received message:', data)
-
-
-    # Authenticate the client
-    if not authenticate(data['token']):
-        emit('error', {'message': 'Unauthorized'})
-        return
-
-    # Process the message and emit a response
-    emit('response', {'data': 'Message received'})
-
 if __name__ == '__main__':
     print('Starting server...')
-    socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')

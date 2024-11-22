@@ -19,3 +19,57 @@ spec:
             name: {{ .Values.authz.serviceName }}
             port: 
               number: {{ .Values.authz.servicePort }}
+  - http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.serverService.serviceName }}
+            port: 
+              number: {{ .Values.serverService.servicePort }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: {{ .Values.serverService.name }}-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  ingressClassName: nginx
+  rules:
+  # - host: {{ .Values.host}}
+  - http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.serverService.serviceName }}
+            port: 
+              number: {{ .Values.serverService.servicePort }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/websocket-services: 'my-websocket-service'
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+  name: {{ .Values.languageProcessor.name }}-ingress
+  namespace: {{ .Values.namespace }}
+spec:
+  ingressClassName: nginx
+  rules:
+  # - host: {{ .Values.host}}
+  - http:
+      paths:
+      - path: /llm
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.languageProcessor.serviceName }}
+            port: 
+              number: {{ .Values.languageProcessor.servicePort }}
