@@ -4,32 +4,34 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Button,
   StyleSheet,
-  Image,
 } from 'react-native';
 
-export default function LoginScreen({ navigation }: any) {
-  console.log('Rendering LoginScreen...');
+export default function CreateAccountScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
-      {/* Logo and Title */}
       <View style={styles.header}>
-        <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Replace with your logo URI
-          style={styles.logo}
-        />
         <Text style={styles.title}>Senior Sage</Text>
       </View>
 
-      {/* Welcome Text */}
-      <Text style={styles.welcomeText}>Welcome</Text>
+      <Text style={styles.pageTitle}>Create Account</Text>
 
-      {/* Email and Password Fields */}
+      {/* Input Fields */}
       <TextInput
         style={styles.input}
-        placeholder="Email/Vitalink ID"
+        placeholder="First Name"
         placeholderTextColor="#999"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Last Name"
+        placeholderTextColor="#999"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        placeholderTextColor="#999"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -38,22 +40,19 @@ export default function LoginScreen({ navigation }: any) {
         secureTextEntry
       />
 
-      {/* Sign In Button */}
-      <TouchableOpacity style={styles.signInButton}>
-        <Text style={styles.signInButtonText}>Sign In</Text>
-      </TouchableOpacity>
-
-      {/* Forgot Password Link */}
-      <TouchableOpacity onPress={() => console.log('Forgot Password pressed')}>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
-
       {/* Create Account Button */}
-      <TouchableOpacity
+      <TouchableOpacity 
         style={styles.createAccountButton}
-        onPress={() => navigation.navigate('CreateAccount')} // Navigate to CreateAccount
+        onPress={() => navigation.navigate('ProfilePicture')} //Navigate to Profile Picture
       >
         <Text style={styles.createAccountButtonText}>Create Account</Text>
+      </TouchableOpacity>
+
+      {/* Sign In Link */}
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.signInLink}>
+          Already have an account? <Text style={styles.signInText}>Sign in</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -71,16 +70,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 10,
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 10,
   },
-  welcomeText: {
+  pageTitle: {
     fontSize: 28,
     fontWeight: '600',
     marginBottom: 20,
@@ -94,43 +89,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 15,
   },
-  signInButton: {
+  createAccountButton: {
     width: '100%',
     backgroundColor: '#4CAF50',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  signInButtonText: {
+  createAccountButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  forgotPassword: {
+  signInLink: {
     color: '#007BFF',
     fontSize: 14,
-    marginBottom: 20,
+    marginTop: 20,
+  },
+  signInText: {
     textDecorationLine: 'underline',
-  },
-  faceId: {
-    position: 'absolute',
-    top: '55%',
-    right: '10%',
-  },
-  createAccountButton: {
-    position: 'absolute',
-    bottom: 30,
-    borderColor: '#4CAF50',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  createAccountButtonText: {
-    color: '#4CAF50',
-    fontSize: 16,
     fontWeight: 'bold',
   },
 });
-
