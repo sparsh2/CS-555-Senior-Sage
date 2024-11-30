@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"server/config"
 	"server/types"
+	"strconv"
 	"strings"
 )
 
@@ -29,7 +30,7 @@ type AuthzClientService struct {
 
 func (as *AuthzClientService) VerifyToken(token string) (bool, string, error) {
 	reqStr := fmt.Sprintf(`{"jwt_token": "%s"}`, token)
-	req, err := http.NewRequest("GET", config.Configs.AuthSvcConfig.Host+":"+string(config.Configs.AuthSvcConfig.Port)+"/verify-token", strings.NewReader(reqStr))
+	req, err := http.NewRequest("GET", config.Configs.AuthSvcConfig.Host+":"+strconv.Itoa(config.Configs.AuthSvcConfig.Port)+"/verify-token", strings.NewReader(reqStr))
 	if err != nil {
 		return false, "", fmt.Errorf("error in creating request to authz service: %v", err)
 	}

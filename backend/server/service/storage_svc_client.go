@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"server/config"
 	"server/types"
+	"strconv"
 	"strings"
 )
 
@@ -20,7 +21,7 @@ func init() {
 
 func (s *StorageServiceClient) GetUserDetails(userId string, token string) (*types.GetUserDetailsResponse, error) {
 	host := config.Configs.StorageSvcConfig.Host
-	port := string(config.Configs.StorageSvcConfig.Port)
+	port := strconv.Itoa(config.Configs.StorageSvcConfig.Port)
 	// connect to storage service
 	body, err := json.Marshal(types.GetUserDetailsRequest{
 		UserId:         userId,
