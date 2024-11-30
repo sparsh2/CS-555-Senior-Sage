@@ -1,5 +1,5 @@
 import requests
-import datetime
+from datetime import datetime
 # from voice_interactions import stt_whisper, fetch_audio
 # from server import cfg
 import openai
@@ -328,8 +328,8 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
     QUESTIONAIRE: {health_questions}
     USER PREFERENCES: {user_preferences}'''
 
-    openai.api_key = cfg.get('openaiApiKey')
-    client = openai.OpenAI()
+    api_key = cfg.get('openaiApiKey')
+    client = openai.OpenAI(api_key)
 
     try:
         completion = client.chat.completions.create(
@@ -480,18 +480,19 @@ def update_health_question_counter(username, q_idx, counter_data):
     counter_data[q_idx]['counter'] = True
     counter_data[q_idx]['asked_date'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+import io
 def stt_whisper(audio_file):
-    openai.api_key = cfg.get('openaiApiKey')
-    client = openai.OpenAI()
+    client = openai.OpenAI(api_key=cfg.get('openaiApiKey'))
     transcript = client.audio.transcriptions.create(
         model="whisper-1",
-        file=audio_file
+        # file=io.BufferedReader(io.BytesIO(audio_file))
+        file=io.BufferedReader(io.BytesIO(audio_file))
     )
     return transcript.text
 
 def fetch_audio(sentence, voice="nova"):
-    openai.api_key = cfg.get('openaiApiKey')
-    client = openai.OpenAI()
+    api_key = cfg.get('openaiApiKey')
+    client = openai.OpenAI(api_key=api_key)
     response = client.audio.speech.create(
         model="tts-1",
         voice=voice.lower(),

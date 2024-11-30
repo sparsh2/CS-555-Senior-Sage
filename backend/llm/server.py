@@ -6,10 +6,13 @@ from flask_socketio import disconnect, emit
 import requests
 from other import llm_authenticate, pull_user_data, del_user_data, get_response_data_from_llm
 import time
+from flask import Flask
+import logging
 
 import yaml
 
 app = Flask(__name__)
+app.logger.setLevel(logging.DEBUG) # Set the desired log level
 app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -29,68 +32,119 @@ if not ok:
     time.sleep(5)
     exit(1)
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        global cfg
-        token = None
-        if "Authorization" in request.headers:
-            token = request.headers["Authorization"]
-        print(token)
-        if not token:
-            return {
-                "message": "Authentication Token is missing!",
-                "data": None,
-                "error": "Unauthorized"
-            }, 401
-        try:
-            authzHost = cfg['authzService']['host']
-            authzPort = cfg['authzService']['port']
-            response = requests.get(f"http://{authzHost}:{authzPort}/auth/verify", json={"jwt_token": token})
-            response.raise_for_status()
-            current_user = response.json()
-            if current_user['valid'] == False:
-                return {
-                    "message": "Invalid Token",
-                    "data": None,
-                    "error": "Unauthorized"
-                }, 401
-            current_user = current_user['user_id']
-        except Exception as e:
-            return {
-                "message": "Something went wrong",
-                "data": None,
-                "error": str(e)
-            }, 500
+# def token_required(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+        
+#         global cfg
+#         print('authenticating')
+#         token = None
+#         if "Authorization" in request.headers:
+#             token = request.headers["Authorization"]
+#         print(token)
+#         if not token:
+#             emit('connection_denied', {
+#                 "message": "Authentication Token is missing!",
+#                 "data": None,
+#                 "error": "Unauthorized"
+#             })
+#             return
+#         try:
+#             authzHost = cfg['authzService']['host']
+#             authzPort = cfg['authzService']['port']
+#             response = requests.get(f"http://{authzHost}:{authzPort}/auth/verify", json={"jwt_token": token})
+#             response.raise_for_status()
+#             current_user = response.json()
+#             if current_user['valid'] == False:
+#                 emit('connection_denied', {
+#                     "message": "Invalid Token",
+#                     "data": None,
+#                     "error": "Unauthorized"
+#                 })
+#                 return
+#             current_user = current_user['user_id']
+#         except Exception as e:
+#             emit('connection_denied',{
+#                 "message": "Something went wrong",
+#                 "data": None,
+#                 "error": str(e)
+#             })
+#             return
 
-        return f(current_user, *args, **kwargs)
+#         return f(current_user, *args, **kwargs)
 
-    return decorated
+#     return decorated
 
 state_data = {}
 
 
-@socketio.on('connect', namespace='/llm')
-@token_required
-def handle_connect(current_user):
+@socketio.on('auth', namespace='/llm')
+def handle_auth():
+    global app
+    app.logger.info('authenticating')
+    print('hi')
+    global cfg
+    print('authenticating')
+    token = None
+    if "Authorization" in request.headers:
+        token = request.headers["Authorization"]
+    app.logger.info(token)
+    if not token:
+        emit('connection_denied', {
+            "message": "Authentication Token is missing!",
+            "data": None,
+            "error": "Unauthorized"
+        })
+        return
+    try:
+        authzHost = cfg['authzService']['host']
+        authzPort = cfg['authzService']['port']
+        response = requests.get(f"http://{authzHost}:{authzPort}/auth/verify", json={"jwt_token": token})
+        response.raise_for_status()
+        current_user = response.json()
+        if current_user['valid'] == False:
+            emit('connection_denied', {
+                "message": "Invalid Token",
+                "data": None,
+                "error": "Unauthorized"
+            })
+            return
+        current_user = current_user['user_id']
+    except Exception as e:
+        emit('connection_denied',{
+            "message": "Something went wrong",
+            "data": None,
+            "error": str(e)
+        })
+        return
     state_data[request.sid] = current_user
     pull_user_data(cfg, current_user)
     print(current_user)
     print('Client connected')
-    emit('connected', {'data': 'Connected'})
+    emit('connected', {'data': 'Connected', 'sid': request.sid})
 
 @socketio.on('disconnect', namespace='/llm')
 def handle_disconnect():
+    global app
+    app.logger.info('disconnect')
     del_user_data(state_data[request.sid])
     del state_data[request.sid]
     print('Client disconnected')
 
+# @socketio.on('connect', namespace='/llm')
+# def handle_connect():
+#     [request.sid]
+#     del state_data[request.sid]
+#     print('Client disconnected')
 
 @socketio.on('voice_input', namespace='/llm')
 def handle_voice_capture(raw_voice_data):
-    user_id = state_data[request.sid]
-    voice_response, disconnect = get_response_data_from_llm(user_id, raw_voice_data)
-    emit('voice_response', {'data': voice_response, 'disconnect': disconnect})
+    try:
+        user_id = state_data[request.sid]
+        voice_response, disconnect = get_response_data_from_llm(user_id, raw_voice_data)
+        emit('voice_response', {'data': voice_response, 'disconnect': disconnect})
+    except Exception as e:
+        app.logger.error(e.message)
 
 if __name__ == '__main__':
     print('Starting server...')

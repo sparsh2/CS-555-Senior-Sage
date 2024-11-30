@@ -65,3 +65,19 @@ spec:
     - protocol: TCP
       port: {{ .Values.serverService.servicePort }}
       targetPort: {{ .Values.serverService.targetPort }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.serverService.nodePortServiceName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Values.serverService.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.serverService.servicePort }}
+      # port: 80
+      targetPort: {{ .Values.serverService.targetPort }}
+      nodePort: {{ .Values.serverService.nodePort }}

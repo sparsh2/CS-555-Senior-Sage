@@ -86,5 +86,5 @@ spec:
     - protocol: TCP
       port: {{ .Values.authz.servicePort }}
       # port: 80
-      targetPort: {{ .Values.authz.targetPort }}
+      # targetPort: {{ .Values.authz.targetPort }}
       nodePort: {{ .Values.authz.nodePort }}
