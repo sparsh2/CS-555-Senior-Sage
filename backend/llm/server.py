@@ -4,7 +4,7 @@ from functools import wraps
 from flask import request
 from flask_socketio import disconnect, emit
 import requests
-from other import llm_authenticate, pull_user_data, del_user_data, get_response_data_from_llm
+from other import llm_authenticate, pull_user_data, del_user_data, get_response_data_from_llm, set_logger
 import time
 from flask import Flask
 import logging
@@ -13,6 +13,7 @@ import yaml
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG) # Set the desired log level
+set_logger(app.logger)
 app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app, cors_allowed_origins='*')
 
@@ -119,7 +120,7 @@ def handle_auth():
         return
     state_data[request.sid] = current_user
     pull_user_data(cfg, current_user)
-    print(current_user)
+    app.logger.info(current_user)
     print('Client connected')
     emit('connected', {'data': 'Connected', 'sid': request.sid})
 
@@ -144,7 +145,13 @@ def handle_voice_capture(raw_voice_data):
         voice_response, disconnect = get_response_data_from_llm(user_id, raw_voice_data)
         emit('voice_response', {'data': voice_response, 'disconnect': disconnect})
     except Exception as e:
-        app.logger.error(e.message)
+        # import traceback, sys
+        # exc_type, exc_value, exc_traceback = sys.exc_info()
+        # error_message = traceback.format_exception(exc_type, exc_value, exc_traceback)
+        # app.logger.error('Error:', error_message)
+        app.logger.info(f"Exception type: {type(e)}")
+        app.logger.error(f"Exception message: {str(e)}")
+        # app.logger.error(e)
 
 if __name__ == '__main__':
     print('Starting server...')

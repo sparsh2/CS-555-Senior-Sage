@@ -1,13 +1,21 @@
 import requests
 from datetime import datetime
 # from voice_interactions import stt_whisper, fetch_audio
+from pydub import AudioSegment
 # from server import cfg
 import openai
 import json
 import re
+import logging
 
 llm_token = ""
 cfg = {}
+
+logger: logging.Logger = logging.Logger('test')
+
+def set_logger(l):
+    global logger
+    logger = l
 
 def llm_authenticate(cfg1):
     global cfg
@@ -31,13 +39,14 @@ def llm_authenticate(cfg1):
 all_user_data = {}
 
 def pull_user_data(cfg, user_id):
-    global llm_token, all_user_data
+    global llm_token, all_user_data, logger
     try:
         host = cfg['storageService']['host']
         port = cfg['storageService']['port']
         response = requests.get(f"http://{host}:{port}/data", json={"requester_token": llm_token, "user_id": user_id})
         response.raise_for_status()
         user_data = response.json()
+        logger.info(f'user data: {user_data}')
         past_logs = user_data.get('chat_history', [])
         context = []
         for session in past_logs:
@@ -273,12 +282,13 @@ def create_questions_to_ask_stack(questions, counter_data, username):
 
 def get_response_data_from_llm(user_id, voice_data):
     global questions, all_user_data
-    current_user_data = all_user_data.get(user_id, {})
+    current_user_data: dict = all_user_data.get(user_id, {})
     counter_data, questions_to_ask = initialize_health_question_counter(questions, current_user_data.get('question_counts', {}), user_id)
     current_user_data['question_counts'] = counter_data
 
     text_data = stt_whisper(voice_data)
-    text_response, audio_response = openai_complete(user_id, text_data, questions_to_ask, current_user_data.get('preferences', []), current_user_data.get('context', []), current_user_data.get('user_data', {}).get('voice', 'Joanna'))
+    logger.info(current_user_data)
+    text_response, audio_response = openai_complete(user_id, text_data, questions_to_ask, current_user_data.get('preferences', []), current_user_data.get('context', []), current_user_data.get('user_data', {}).get('voice', 'nova'))
     
     cur_time = datetime.now().isoformat()
     context = current_user_data.get('context', [])
@@ -293,7 +303,8 @@ def get_response_data_from_llm(user_id, voice_data):
         # disconnect from the user
         return audio_response, True
 
-    
+    if 'current_session' not in current_user_data.keys():
+        current_user_data['current_session'] = {'messages': []}
     current_user_data['current_session']['messages'].append({
         'timestamp': datetime.now().isoformat(),
         'user_message': voice_data,
@@ -305,7 +316,7 @@ def get_response_data_from_llm(user_id, voice_data):
 
 
 def openai_complete(username, user_ip, questions_to_ask, user_preferences, context, voice):
-    
+    # global client
 
     # Load health questions
     health_questions = questions_to_ask
@@ -328,8 +339,9 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
     QUESTIONAIRE: {health_questions}
     USER PREFERENCES: {user_preferences}'''
 
-    api_key = cfg.get('openaiApiKey')
-    client = openai.OpenAI(api_key)
+    # api_key = 
+    client = openai.OpenAI(api_key=cfg.get('openaiApiKey'))
+    logger.info(f'init client in openai complete')
 
     try:
         completion = client.chat.completions.create(
@@ -410,8 +422,8 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
     except Exception as e:
         error_msg = f"An error occurred: {str(e)}"
         print(error_msg)
-        fetch_audio("I'm sorry, I encountered an error while processing your request.", voice)
-        return error_msg
+        audio_response = fetch_audio("I'm sorry, I encountered an error while processing your request.", voice)
+        return error_msg, audio_response
 
 
 def preferences(username, preference_type, preference_detail, sentiment):
@@ -483,11 +495,15 @@ def update_health_question_counter(username, q_idx, counter_data):
 import io
 def stt_whisper(audio_file):
     client = openai.OpenAI(api_key=cfg.get('openaiApiKey'))
+    buffer = io.BytesIO(audio_file)
+    buffer.name = 'file.mp3'
     transcript = client.audio.transcriptions.create(
         model="whisper-1",
         # file=io.BufferedReader(io.BytesIO(audio_file))
-        file=io.BufferedReader(io.BytesIO(audio_file))
+        file=io.BufferedReader(buffer)
+        # content=audio_file
     )
+    logger.info(f'transcript text: {transcript.text}')
     return transcript.text
 
 def fetch_audio(sentence, voice="nova"):
@@ -499,3 +515,4 @@ def fetch_audio(sentence, voice="nova"):
         input=sentence
     )
     return response.content
+    AudioSegment.from_file(io.BytesIO(audio_data), format="mp3")

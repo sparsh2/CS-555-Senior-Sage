@@ -3,6 +3,10 @@ import sounddevice as sd
 from pynput import keyboard
 import wave
 import time
+from pydub.playback import play
+import pydub
+from pydub import AudioSegment
+import io
 
 sio = socketio.Client(logger=True, engineio_logger=True)
 
@@ -21,10 +25,32 @@ def connected(data):
 @sio.on('voice_response', namespace='/llm')
 def handle_voice_response(data):
     print(data['disconnect'])
+    # handle_voice_response(data)
+    aud_seg = AudioSegment.from_file(io.BytesIO(data['data']), format="mp3")
+    play(aud_seg)
+    if not data['disconnect']:
+        record_audio()
+        sio.emit('voice_input', open("user_response.wav", 'rb').read(), namespace='/llm')
+    
 
 @sio.on('connection_denied', namespace='/llm')
 def connection_denied(data):
     print('auth failed', data)
+
+# def handle_voice_response(data):
+#     # Decode audio data (if necessary)
+#     decoded_audio = data['data']
+
+#     # Create pydub.AudioSegment object (if not already an AudioSegment)
+#     audio_segment = pydub.AudioSegment.from_mp3(decoded_audio)  # Adjust format if needed
+
+#     try:
+#         # Attempt playback with ffplay (fallback if missing)
+#         audio_segment.export(f.name, "wav")
+#     except (OSError, AttributeError):  # OSError for missing ffplay
+#         print("Failed to play audio using ffplay. Falling back to alternative method...")
+#         # Implement alternative playback logic (e.g., pyaudio)
+#     return audio_segment
 
 def record_audio(duration=None):
     CHUNK = 1024
@@ -95,7 +121,7 @@ def record_audio(duration=None):
         time.sleep(0.01)
 
 if __name__ == '__main__':
-    sio.connect('http://127.0.0.1:57098/', headers={
+    sio.connect('http://127.0.0.1:49675/', headers={
         'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2ODc0NzU0MiwibmJmIjoxNzMyNzUxMTQyLCJpYXQiOjE3MzI3NTExNDIsInVzZXJfaWQiOiJmYTgwNTAxYTBjOTE5ODUwNzE5NjYyYTg2OTJiNzcyNSJ9.6geyEI52DCA0HtTRUw2lQremjZp3fIcWRKgYFuzXw9M'
     }, namespaces='/llm')
     sio.wait()

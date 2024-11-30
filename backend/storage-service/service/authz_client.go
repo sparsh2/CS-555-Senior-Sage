@@ -27,7 +27,7 @@ type AuthzClientService struct {
 }
 
 func (as *AuthzClientService) VerifyAccessRequest(requesterToken string, userId string, resources []types.ResourceType) (bool, string, error) {
-	resp, err := http.Get(config.Configs.AuthzConfig.Host + ":" + config.Configs.AuthzConfig.Port + "/request-access")
+	resp, err := http.Get("http://"+config.Configs.AuthzConfig.Host + ":" + config.Configs.AuthzConfig.Port + "/request-access")
 	if err != nil {
 		return false, "", fmt.Errorf("error in making request to authz service: %v", err)
 	}
