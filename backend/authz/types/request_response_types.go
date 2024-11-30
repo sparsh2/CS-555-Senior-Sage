@@ -24,12 +24,23 @@ type GetDataRequest struct {
 }
 
 type GetDataResponse struct {
-	ReminderDetails *[]ReminderDetails `json:"reminder_details"`
-	RPMReadings     *[]RPMReading      `json:"rpm_readings"`
-	Preferences     *[]string          `json:"preferences"`
-	ChatHistory     *[]ChatSession     `json:"chat_history"`
-	VoiceSelection  string             `json:"voice_selection"`
-	Msg             string             `json:"msg"`
+	ReminderDetails   *[]ReminderDetails      `json:"reminder_details"`
+	RPMReadings       *[]RPMReading           `json:"rpm_readings"`
+	Preferences       *[]string               `json:"preferences"`
+	ChatHistory       *[]ChatSession          `json:"chat_history"`
+	QuestionResponses *[]QuestionResponse     `json:"question_responses"`
+	VoiceSelection    string                  `json:"voice_selection"`
+	Name              string                  `json:"name"`
+	Msg               string                  `json:"msg"`
+	QuestionCounts    map[int]QuestionCounter `json:"question_counts"`
+}
+
+type QuestionCounter struct {
+	Counter   bool   `json:"counter"`
+	Frequency int    `json:"frequency"`
+	AskedDate string `json:"asked_date"`
+	CurrDate  string `json:"curr_date"`
+	Diff      int    `json:"diff"`
 }
 
 // Request types
@@ -42,6 +53,12 @@ type UserLoginRequest struct {
 	UserPassword string `json:"password"`
 }
 
+type UserLoginResponse struct {
+	Error string `json:"error,omitempty"`
+	Token string `json:"token,omitempty"`
+	Msg   string `json:"msg,omitempty"`
+}
+
 type UserSignupRequest struct {
 	VoiceSelection string `json:"voice_selection"`
 	Name           string `json:"name"`
@@ -51,8 +68,8 @@ type UserSignupRequest struct {
 
 type RequestAccessRequest struct {
 	RequesterToken string         `json:"requester_id"`
-	UserId      string         `json:"user_id"`
-	Resources   []ResourceType `json:"resources"`
+	UserId         string         `json:"user_id"`
+	Resources      []ResourceType `json:"resources"`
 }
 
 type RequestAccessResponse struct {

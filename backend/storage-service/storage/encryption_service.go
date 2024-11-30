@@ -1,71 +1,78 @@
 package storage
 
 import (
+	"bytes"
 	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"io"
 	"storage-service/config"
 )
 
 type EncryptionService struct {
-	key []byte
-}
-
-func NewEncryptionService(key string) *EncryptionService {
-	return &EncryptionService{
-		key: []byte(key),
-	}
+    key []byte
 }
 
 var EncryptionSvc *EncryptionService
 
+func NewEncryptionService(key string) *EncryptionService {
+    return &EncryptionService{
+        key: []byte(key),
+    }
+}
+
 func InitEncryptionService() {
-	// read key from config
-	dataEncKey := config.Configs.DataEncryptionKey
-	EncryptionSvc = NewEncryptionService(dataEncKey)
+	encKey := config.Configs.DataEncryptionKey
+	EncryptionSvc = NewEncryptionService(encKey)
 }
 
 func (s *EncryptionService) Encrypt(plaintext string) (string, error) {
-	block, err := aes.NewCipher(s.key)
-	if err != nil {
-		return "", err
-	}
+    block, err := aes.NewCipher(s.key)
+    if err != nil {
+        return "", err
+    }
 
-	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
-	iv := ciphertext[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return "", err
-	}
+    plaintextBytes := []byte(plaintext)
+    plaintextBytes = pkcs7Padding(plaintextBytes, aes.BlockSize)
 
-	stream := cipher.NewCFBEncrypter(block, iv)
-	stream.XORKeyStream(ciphertext[aes.BlockSize:], []byte(plaintext))
+    ciphertext := make([]byte, len(plaintextBytes))
+    mode := NewECBEncrypter(block)
+    mode.CryptBlocks(ciphertext, plaintextBytes)
 
-	return hex.EncodeToString(ciphertext), nil
+    return hex.EncodeToString(ciphertext), nil
 }
 
 func (s *EncryptionService) Decrypt(ciphertext string) (string, error) {
-	ciphertextBytes, err := hex.DecodeString(ciphertext)
-	if err != nil {
-		return "", err
-	}
+    ciphertextBytes, err := hex.DecodeString(ciphertext)
+    if err != nil {
+        return "", err
+    }
 
-	block, err := aes.NewCipher(s.key)
-	if err != nil {
-		return "", err
-	}
+    block, err := aes.NewCipher(s.key)
+    if err != nil {
+        return "", err
+    }
 
-	if len(ciphertextBytes) < aes.BlockSize {
-		return "", errors.New("ciphertext too short")
-	}
+    if len(ciphertextBytes)%aes.BlockSize != 0 {
+        return "", errors.New("ciphertext is not a multiple of the block size")
+    }
 
-	iv := ciphertextBytes[:aes.BlockSize]
-	ciphertextBytes = ciphertextBytes[aes.BlockSize:]
+    plaintext := make([]byte, len(ciphertextBytes))
+    mode := NewECBDecrypter(block)
+    mode.CryptBlocks(plaintext, ciphertextBytes)
 
-	stream := cipher.NewCFBDecrypter(block, iv)
-	stream.XORKeyStream(ciphertextBytes, ciphertextBytes)
+    plaintext = pkcs7Unpadding(plaintext)
 
-	return string(ciphertextBytes), nil
+    return string(plaintext), nil
+}
+
+func pkcs7Padding(data []byte, blockSize int) []byte {
+    padding := blockSize - len(data)%blockSize
+    padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+    return append(data, padtext...)
+}
+
+func pkcs7Unpadding(data []byte) []byte {
+    length := len(data)
+    unpadding := int(data[length-1])
+    return data[:(length - unpadding)]
 }
