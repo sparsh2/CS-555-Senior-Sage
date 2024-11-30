@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"storage-service/config"
 	"storage-service/types"
-	"strings"
 )
 
 var AuthzClientSvc IAuthzClientService
@@ -28,22 +27,7 @@ type AuthzClientService struct {
 }
 
 func (as *AuthzClientService) VerifyAccessRequest(requesterToken string, userId string, resources []types.ResourceType) (bool, string, error) {
-	// reqStr := fmt.Sprintf(`{"requester_id": "%s", "user"}`, requesterToken)
-	reqt := types.RequestAccessRequest{
-		RequesterToken: requesterToken,
-		UserId:         userId,
-		Resources:      resources,
-	}
-	reqStr, err := json.Marshal(reqt)
-	if err != nil {
-		return false, "", fmt.Errorf("error in creating request to authz service: %v", err)
-	}
-
-	req, err := http.NewRequest("GET", "http://"+config.Configs.AuthzConfig.Host+":"+config.Configs.AuthzConfig.Port+"/request-access", strings.NewReader(string(reqStr)))
-	if err != nil {
-		return false, "", fmt.Errorf("error in creating request to authz service: %v", err)
-	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := http.Get(config.Configs.AuthzConfig.Host + ":" + config.Configs.AuthzConfig.Port + "/request-access")
 	if err != nil {
 		return false, "", fmt.Errorf("error in making request to authz service: %v", err)
 	}

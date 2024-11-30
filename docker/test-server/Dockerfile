@@ -1,14 +1,11 @@
-FROM golang:1.23
+FROM python:3.9
 
+WORKDIR /app/
 
-WORKDIR /app
-
-RUN go install github.com/matryer/moq@latest
-COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 COPY . .
-RUN go generate ./...
 
+CMD ["python", "-m", "pytest"]
 
-CMD ["go", "test", "./..."]

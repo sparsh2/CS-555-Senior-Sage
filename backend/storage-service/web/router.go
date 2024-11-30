@@ -21,87 +21,9 @@ func GetRouter() *gin.Engine {
 	r.PUT("/preferences", writePreferences)
 	r.PUT("/reponses", writeResponses)
 	r.PUT("/reminders", writeReminders)
-	r.PUT("/question-counter", writeQuestionCounter)
-	r.PUT("/chat-history", writeChatHistory)
 	r.GET("/data", getData)
 
 	return r
-}
-
-func writeChatHistory(c *gin.Context) {
-	bytes, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
-		return
-	}
-	req := &types.WriteChatHistoryRequest{}
-	err = json.Unmarshal(bytes, req)
-	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
-		return
-	}
-	err = service.Svc.WriteChatHistory(req)
-	if err == types.ErrAccessDenied {
-		c.JSON(403, gin.H{
-			"error": "Access Denied",
-			"msg":   "Write access to chat history denied",
-		})
-		return
-	}
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "Internal Server Error",
-			"msg":   err.Error(),
-		})
-		return
-	}
-	c.JSON(200, gin.H{
-		"success": true,
-	})
-}
-
-func writeQuestionCounter(c *gin.Context) {
-	bytes, err := io.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
-		return
-	}
-	req := &types.WriteQuestionCounterRequest{}
-	err = json.Unmarshal(bytes, req)
-	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
-		return
-	}
-	err = service.Svc.WriteQuestionCounter(req)
-	if err == types.ErrAccessDenied {
-		c.JSON(403, gin.H{
-			"error": "Access Denied",
-			"msg":   "Write access to question counter denied",
-		})
-		return
-	}
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "Internal Server Error",
-			"msg":   err.Error(),
-		})
-		return
-	}
-	c.JSON(200, gin.H{
-		"success": true,
-	})
 }
 
 func writeReminders(c *gin.Context) {
@@ -131,6 +53,7 @@ func writeReminders(c *gin.Context) {
 		return
 	}
 	if err != nil {
+		log.Println(err)
 		c.JSON(500, gin.H{
 			"error": "Internal Server Error",
 			"msg":   err.Error(),

@@ -78,7 +78,6 @@ func getUserDoc(signupReq *types.UserSignupRequest) (*types.UserDetails, error) 
 		QuestionResponses: &[]types.QuestionResponse{},
 		VoiceSelection:    signupReq.VoiceSelection,
 		Name:              signupReq.Name,
-		QuestionCounts:    map[int]types.QuestionCounter{},
 	}, nil
 }
 
@@ -94,11 +93,9 @@ func getAclsDoc(signupReq *types.UserSignupRequest) (*types.MongoAclsDoc, error)
 	return &types.MongoAclsDoc{
 		UserId: encEmail,
 		Acls: map[types.ResourceType][]string{
-			types.RESOURCE_USER_DETAILS:      {llmEncEmail, encEmail},
-			types.RESOURCE_USER_PREFERENCES:  {llmEncEmail},
-			types.RESOURCE_USER_REMINDERS:    {llmEncEmail, encEmail},
-			types.RESOURCE_USER_CHAT_HISTORY: {llmEncEmail, encEmail},
-			types.RESOURCE_RPM_READINGS:      {llmEncEmail, encEmail},
+			types.RESOURCE_USER_DETAILS:     {llmEncEmail, encEmail},
+			types.RESOURCE_USER_PREFERENCES: {llmEncEmail},
+			types.RESOURCE_USER_REMINDERS:   {llmEncEmail, encEmail},
 		},
 	}, nil
 }

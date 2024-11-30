@@ -93,11 +93,3 @@ yarn-error.log
 
 # helm packages
 *.tgz
-
-# vscode
-.vscode/
-
-# idea
-.idea/
-
-.wav
