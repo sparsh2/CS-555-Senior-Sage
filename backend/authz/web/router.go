@@ -19,7 +19,7 @@ func GetRouter() *gin.Engine {
 	})
 
 	authG := r.Group("/auth/")
-	// authG.GET("/verify", verify)
+	authG.GET("/verify", verify)
 	authG.POST("/gen-token", generateToken)
 	authG.POST("/login", login)
 	authG.POST("/signup", signup)
@@ -58,11 +58,11 @@ func requestAccess(c *gin.Context) {
 	}
 	if granted {
 		c.JSON(200, gin.H{
-			"access_request": "granted",
+			"access_request": true,
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"access_request": "denied",
+			"access_request": false,
 		})
 	}
 }
@@ -113,25 +113,28 @@ func login(c *gin.Context) {
 	loginReq := &types.UserLoginRequest{}
 	err = json.Unmarshal(bytes, loginReq)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
+		resp := &types.UserLoginResponse{
+			Error: "Bad Request",
+			Msg:   err.Error(),
+		}
+		c.JSON(400, resp)
 		return
 	}
 
 	token, err := service.AuthService.Login(loginReq)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Bad Request",
-			"msg":   err.Error(),
-		})
+		resp := &types.UserLoginResponse{
+			Error: "Bad Request",
+			Msg:   err.Error(),
+		}
+		c.JSON(400, resp)
 		return
 	}
-	c.JSON(200, gin.H{
-		"token": token,
-		"msg":   "login successful",
-	})
+	resp := &types.UserLoginResponse{
+		Token: token,
+		Msg:   "login successful",
+	}
+	c.JSON(200, resp)
 }
 
 func generateToken(c *gin.Context) {
@@ -165,43 +168,42 @@ func generateToken(c *gin.Context) {
 	})
 }
 
-// func verify(c *gin.Context) {
-// 	bytes, err := io.ReadAll(c.Request.Body)
-// 	if err != nil {
-// 		c.JSON(400, gin.H{
-// 			"error": "Bad Request",
-// 			"msg":   err.Error(),
-// 		})
-// 		return
-// 	}
-// 	authReq := &types.AuthVerifyRequest{}
-// 	err = json.Unmarshal(bytes, authReq)
-// 	if err != nil {
-// 		c.JSON(400, gin.H{
-// 			"error": "Bad Request",
-// 			"msg":   err.Error(),
-// 		})
-// 		return
-// 	}
+func verify(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	authReq := &types.AuthVerifyRequest{}
+	err = json.Unmarshal(bytes, authReq)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
 
-// 	claims, err := service.AuthService.VerifyToken(authReq.JWTToken)
-// 	if err != nil {
-// 		if err == types.ErrInvalidToken {
-// 			c.JSON(200, gin.H{
-// 				"valid": "false",
-// 			})
-// 			return
-// 		}
-// 		c.JSON(500, gin.H{
-// 			"error": "Unknown internal error",
-// 			"msg":   err.Error(),
-// 		})
-// 		return
-// 	}
+	claims, err := service.AuthService.VerifyToken(authReq.JWTToken)
+	if err != nil {
+		if err == types.ErrInvalidToken {
+			c.JSON(200, gin.H{
+				"valid": "false",
+			})
+			return
+		}
+		c.JSON(500, gin.H{
+			"error": "Unknown internal error",
+			"msg":   err.Error(),
+		})
+		return
+	}
 
-// 	c.JSON(200, gin.H{
-// 		"valid":      "true",
-// 		"user_id":    claims.UserId,
-// 		"user_email": claims.UserEmail,
-// 	})
-// }
+	c.JSON(200, gin.H{
+		"valid":      "true",
+		"user_id":    claims.UserId,
+	})
+}

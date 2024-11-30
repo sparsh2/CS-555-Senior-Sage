@@ -2,16 +2,17 @@ package types
 
 type UserDetails struct {
 	// UserId    string `json:"user_id"`
-	Name                string              `json:"name"`
-	UserEmail           string              `json:"username"`
-	PasswordHash        string              `json:"password_hash"`
-	ReminderDetails     *[]ReminderDetails  `json:"reminders,omitempty"`
-	RPMReadings         *[]RPMReading       `json:"rpm_readings,omitempty"`
-	Preferences         *[]string           `json:"preferences,omitempty"`
-	ChatHistory         *[]ChatSession      `json:"chat_history,omitempty"`
-	RegisteredRPMDevice int64               `json:"registered_rpm_device"`
-	VoiceSelection      string              `json:"voice_selection"`
-	QuestionResponses   *[]QuestionResponse `json:"question_responses,omitempty"`
+	Name                string                  `json:"name"`
+	UserEmail           string                  `json:"username"`
+	PasswordHash        string                  `json:"password_hash"`
+	ReminderDetails     *[]ReminderDetails      `json:"reminders,omitempty"`
+	RPMReadings         *[]RPMReading           `json:"rpm_readings,omitempty"`
+	Preferences         *[]string               `json:"preferences,omitempty"`
+	ChatHistory         *[]ChatSession          `json:"chat_history,omitempty"`
+	RegisteredRPMDevice int64                   `json:"registered_rpm_device"`
+	VoiceSelection      string                  `json:"voice_selection"`
+	QuestionResponses   *[]QuestionResponse     `json:"question_responses,omitempty"`
+	QuestionCounts      map[int]QuestionCounter `json:"question_counts"`
 }
 
 type QuestionResponse struct {

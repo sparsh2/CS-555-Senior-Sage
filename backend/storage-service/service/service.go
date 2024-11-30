@@ -73,6 +73,60 @@ func (as *Service) WriteResponses(req *types.WriteResponsesRequest) error {
 	return nil
 }
 
+func (as *Service) WriteChatHistory(req *types.WriteChatHistoryRequest) error {
+	granted, _, err := AuthzClientSvc.VerifyAccessRequest(
+		req.RequesterToken,
+		req.UserId,
+		[]types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY},
+	)
+	if err != nil {
+		return fmt.Errorf("error in verifying access request: %v", err)
+	}
+	if !granted {
+		return types.ErrAccessDenied
+	}
+	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
+	if err != nil {
+		return fmt.Errorf("error in getting user data: %v", err)
+	}
+	if userDetails.ChatHistory == nil {
+		userDetails.ChatHistory = &[]types.ChatSession{}
+	}
+	if len(*req.ChatHistory) < len(*userDetails.ChatHistory) {
+		log.Printf("warning: new chat history is less than the existing chat history for user %s\n", req.UserId)
+	}
+	userDetails.ChatHistory = req.ChatHistory
+	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	if err != nil {
+		return fmt.Errorf("error in writing user data: %v", err)
+	}
+	return nil
+}
+
+func (as *Service) WriteQuestionCounter(req *types.WriteQuestionCounterRequest) error {
+	granted, _, err := AuthzClientSvc.VerifyAccessRequest(
+		req.RequesterToken,
+		req.UserId,
+		[]types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY},
+	)
+	if err != nil {
+		return fmt.Errorf("error in verifying access request: %v", err)
+	}
+	if !granted {
+		return types.ErrAccessDenied
+	}
+	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
+	if err != nil {
+		return fmt.Errorf("error in getting user data: %v", err)
+	}
+	userDetails.QuestionCounts = req.QuestionCounts
+	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	if err != nil {
+		return fmt.Errorf("error in writing user data: %v", err)
+	}
+	return nil
+}
+
 func (as *Service) WritePreferences(req *types.WritePreferencesRequest) error {
 	granted, _, err := AuthzClientSvc.VerifyAccessRequest(
 		req.RequesterToken,

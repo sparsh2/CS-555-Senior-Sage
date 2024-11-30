@@ -5,17 +5,13 @@ package main
 import (
 	"fmt"
 
-	"storage-service/config"
-	"storage-service/storage"
-	"storage-service/web"
+	"server/config"
+	"server/web"
 )
 
 func main() {
 	// Load the configs
 	config.LoadConfig()
-	// Init DB connection
-	storage.InitStorage()
-	storage.InitEncryptionService()
 	// Start the server
 	r := web.GetRouter()
 	err := r.Run()

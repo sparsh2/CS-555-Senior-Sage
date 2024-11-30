@@ -1,7 +1,15 @@
 # docker user name
-NAMESPACE := <your-docker-username>
+NAMESPACE := sarodesparsh
 
-all: authz-docker storage-service-docker
+all: authz-docker storage-service-docker language-processor-docker server-docker
+
+server-docker:
+	docker build -t $(NAMESPACE)/server -f ./server/Dockerfile ../backend/server/
+	docker push $(NAMESPACE)/server
+
+language-processor-docker:
+	docker build -t $(NAMESPACE)/language-processor -f ./language-processor/Dockerfile ../backend/llm/
+	docker push $(NAMESPACE)/language-processor
 
 authz-docker:
 	docker build -t $(NAMESPACE)/authz -f ./authz/Dockerfile ../backend/authz/
