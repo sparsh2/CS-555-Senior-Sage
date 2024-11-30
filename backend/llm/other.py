@@ -31,7 +31,7 @@ def llm_authenticate(cfg1):
         response.raise_for_status()
         token = response.json()['token']
     except Exception as e:
-        print(f"Error authenticating with LLM: {e}")
+        logger.debug(f"Error authenticating with LLM: {e}")
         return False
     llm_token = token
     return True
@@ -63,7 +63,8 @@ def pull_user_data(cfg, user_id):
             'context': context
         }
     except Exception as e:
-        print(f"Error pulling user data: {e}")
+        logger.error(f"Error pulling user data: {e}")
+        raise e
 
 def del_user_data(user_id):
     global all_user_data
@@ -80,7 +81,7 @@ def del_user_data(user_id):
             response.raise_for_status()
             del all_user_data[user_id]
     except Exception as e:
-        print(f"Error updating user data: {e}")
+        logger.error(f"Error updating user data: {e}")
 
 questions = {
     0: {
@@ -288,26 +289,27 @@ def get_response_data_from_llm(user_id, voice_data):
 
     text_data = stt_whisper(voice_data)
     logger.info(current_user_data)
-    text_response, audio_response = openai_complete(user_id, text_data, questions_to_ask, current_user_data.get('preferences', []), current_user_data.get('context', []), current_user_data.get('user_data', {}).get('voice', 'nova'))
+    text_response, audio_response = openai_complete(user_id, text_data, questions_to_ask, current_user_data.get('preferences', []), current_user_data.get('context', []), current_user_data.get('user_data', {}).get('voice', 'nova'), current_user_data.get('user_data', {}).get('name', 'unknown'))
     
     cur_time = datetime.now().isoformat()
     context = current_user_data.get('context', [])
     context.append((cur_time, text_data, text_response))
 
+    if 'current_session' not in current_user_data.keys():
+        current_user_data['current_session'] = {'messages': []}
     if "Alright then have a great" in re.sub(r'[^\w\s]', '', text_response):
         current_user_data['currrent_session']['messages'].append({
             'timestamp': datetime.now().isoformat(),
-            'user_message': text_data,
-            'bot_response': text_response
+            'user_message': str(text_data),
+            'bot_response': str(text_response)
         })
         # disconnect from the user
         return audio_response, True
 
-    if 'current_session' not in current_user_data.keys():
-        current_user_data['current_session'] = {'messages': []}
+    
     current_user_data['current_session']['messages'].append({
         'timestamp': datetime.now().isoformat(),
-        'user_message': voice_data,
+        'user_message': text_data,
         'bot_response': text_response
     })
 
@@ -315,7 +317,7 @@ def get_response_data_from_llm(user_id, voice_data):
 
 
 
-def openai_complete(username, user_ip, questions_to_ask, user_preferences, context, voice):
+def openai_complete(username, user_ip, questions_to_ask, user_preferences, context, voice, name):
     # global client
 
     # Load health questions
@@ -337,7 +339,8 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
 
     CHAT HISTORY: {context}
     QUESTIONAIRE: {health_questions}
-    USER PREFERENCES: {user_preferences}'''
+    USER PREFERENCES: {user_preferences}
+    USER NAME: {name}'''
 
     # api_key = 
     client = openai.OpenAI(api_key=cfg.get('openaiApiKey'))
@@ -356,7 +359,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
         
         response = completion.choices[0].message
 
-        print(f"\n\n{response}\n\n")
+        logger.debug(f"\n\n{response}\n\n")
         
         # Check if the model wants to call a function
         if hasattr(response, 'tool_calls') and response.tool_calls:
@@ -370,7 +373,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
                     remind=function_args["remind"]
                 )
                 confirmation = f"I've set a reminder for {function_args['remind']['reminder_for']} at {function_args['remind']['details']['time']}, {function_args['remind']['details']['frequency']}."
-                print(f"Chatbot: {confirmation}")
+                logger.debug(f"Chatbot: {confirmation}")
                 audio_response = fetch_audio(confirmation, voice)
                 return confirmation, audio_response
                 
@@ -384,7 +387,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
                         user_answer=function_args["user_answer"]
                     )
                 except Exception as e:
-                    print(f"Error processing health response: {str(e)}")
+                    logger.debug(f"Error processing health response: {str(e)}")
                     raise
 
             elif tool_call.function.name == "preferences":
@@ -398,7 +401,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
                         sentiment=function_args["sentiment"]
                     )
                 except Exception as e:
-                    print(f"Error storing user preference: {str(e)}")
+                    logger.debug(f"Error storing user preference: {str(e)}")
                     raise
         
         # Handle regular response
@@ -415,13 +418,13 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
             )
             regular_response = follow_up_completion.choices[0].message.content
             
-        print(f"Chatbot: {regular_response}")
+        logger.debug(f"Chatbot: {regular_response}")
         audio_response = fetch_audio(regular_response, voice)
         return regular_response, audio_response
 
     except Exception as e:
         error_msg = f"An error occurred: {str(e)}"
-        print(error_msg)
+        logger.debug(error_msg)
         audio_response = fetch_audio("I'm sorry, I encountered an error while processing your request.", voice)
         return error_msg, audio_response
 

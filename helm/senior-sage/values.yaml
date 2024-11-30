@@ -35,6 +35,7 @@ storageService:
   nodePort: 30002
   config:
     secretKey: "testSecretKey!"
+    encryptionKey: "test_keytest_key"
 languageProcessor:
   openaiApiKey: "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"
   name: language-processor

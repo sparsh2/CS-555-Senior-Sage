@@ -63,6 +63,7 @@ def record_audio(duration=None):
     stream = None
     is_recording = False
     recording_stopped = False
+    close = False
 
     def record_audio():
         nonlocal frames, stream
@@ -99,7 +100,7 @@ def record_audio(duration=None):
         recording_stopped = True
 
     def on_key(key):
-        nonlocal is_recording
+        nonlocal is_recording, close
 
         if key == keyboard.Key.up:
             if not is_recording:
@@ -108,6 +109,8 @@ def record_audio(duration=None):
             else:
                 stop_recording()
                 is_recording = False
+        elif key == keyboard.Key.down:
+            close = True
 
     listener = keyboard.Listener(on_press=on_key)
     listener.start()
@@ -118,11 +121,14 @@ def record_audio(duration=None):
             listener.stop()
         elif duration and (time.time() - start_time) > duration:
             listener.stop()
+        elif close:
+            listener.stop()
+            break
         time.sleep(0.01)
 
 if __name__ == '__main__':
     sio.connect('http://127.0.0.1:49675/', headers={
-        'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2ODc0NzU0MiwibmJmIjoxNzMyNzUxMTQyLCJpYXQiOjE3MzI3NTExNDIsInVzZXJfaWQiOiJmYTgwNTAxYTBjOTE5ODUwNzE5NjYyYTg2OTJiNzcyNSJ9.6geyEI52DCA0HtTRUw2lQremjZp3fIcWRKgYFuzXw9M'
+        'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2OTAwMTUzNCwibmJmIjoxNzMzMDA1MTM0LCJpYXQiOjE3MzMwMDUxMzQsInVzZXJfaWQiOiJmYTgwNTAxYTBjOTE5ODUwNzE5NjYyYTg2OTJiNzcyNSJ9.Fv1ezmkBeYfTuE04xPnWmCLpaMvWJlWg0UJn0IuCFgk'
     }, namespaces='/llm')
     sio.wait()
     # record_audio()

@@ -58,11 +58,11 @@ func requestAccess(c *gin.Context) {
 	}
 	if granted {
 		c.JSON(200, gin.H{
-			"access_request": "granted",
+			"access_request": true,
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"access_request": "denied",
+			"access_request": false,
 		})
 	}
 }

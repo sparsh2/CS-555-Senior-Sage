@@ -15,6 +15,7 @@ func main() {
 	config.LoadConfig()
 	// Init DB connection
 	storage.InitStorage()
+	storage.InitEncryptionService()
 	// Start the server
 	r := web.GetRouter()
 	err := r.Run()

@@ -54,3 +54,14 @@ type WriteChatHistoryRequest struct {
 	UserId         string       `json:"user_id"`
 	ChatHistory    *[]ChatSession `json:"chat_history"`
 }
+
+type RequestAccessRequest struct {
+	RequesterToken string         `json:"requester_id"`
+	UserId         string         `json:"user_id"`
+	Resources      []ResourceType `json:"resources"`
+}
+
+type RequestAccessResponse struct {
+	AccessRequest bool   `json:"access_request"`
+	Message       string `json:"message,omitempty"`
+}

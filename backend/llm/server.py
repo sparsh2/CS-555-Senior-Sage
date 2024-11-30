@@ -81,11 +81,8 @@ state_data = {}
 
 @socketio.on('auth', namespace='/llm')
 def handle_auth():
-    global app
+    global app, state_data, cfg
     app.logger.info('authenticating')
-    print('hi')
-    global cfg
-    print('authenticating')
     token = None
     if "Authorization" in request.headers:
         token = request.headers["Authorization"]
@@ -126,7 +123,7 @@ def handle_auth():
 
 @socketio.on('disconnect', namespace='/llm')
 def handle_disconnect():
-    global app
+    global app, state_data
     app.logger.info('disconnect')
     del_user_data(state_data[request.sid])
     del state_data[request.sid]
@@ -141,6 +138,7 @@ def handle_disconnect():
 @socketio.on('voice_input', namespace='/llm')
 def handle_voice_capture(raw_voice_data):
     try:
+        app.logger.info(f'voice_input: user_id: {state_data[request.sid]}, request.sid: {request.sid}')
         user_id = state_data[request.sid]
         voice_response, disconnect = get_response_data_from_llm(user_id, raw_voice_data)
         emit('voice_response', {'data': voice_response, 'disconnect': disconnect})
