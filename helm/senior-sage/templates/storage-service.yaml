@@ -48,7 +48,7 @@ data:
     encryptionKey: {{ .Values.storageService.config.encryptionKey }}
     llmUsername: {{ .Values.llmUsername }}
     authzConfig:
-      host: {{ .Values.authz.serviceName }}.{{ .Values.namespace }}
+      host: {{  .Values.namespace }}.{{ .Values.authz.serviceName }}
       port: {{ .Values.authz.servicePort }}
     db:
       host: {{ .Values.db.host }}
@@ -74,20 +74,3 @@ spec:
     - protocol: TCP
       port: {{ .Values.storageService.servicePort }}
       targetPort: {{ .Values.storageService.targetPort }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.storageService.nodePortServiceName }}
-  namespace: {{ .Values.namespace }}
-spec:
-  type: NodePort
-  selector:
-    app: {{ .Values.storageService.name }}
-  ports:
-    - protocol: TCP
-      port: {{ .Values.storageService.servicePort }}
-      # port: 80
-      targetPort: {{ .Values.storageService.targetPort }}
-      nodePort: {{ .Values.storageService.nodePort }}

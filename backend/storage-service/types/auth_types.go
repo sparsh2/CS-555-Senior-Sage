@@ -9,6 +9,11 @@ type AuthVerifyRequest struct {
 	JWTToken string `json:"jwt_token"`
 }
 
+type RequestAccessResponse struct {
+	AccessRequest bool   `json:"access_request"`
+	Message       string `json:"message,omitempty"`
+}
+
 type ResourceType string
 
 const (

@@ -42,7 +42,6 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("error connection to db: %v", err)
 	}
-	EncryptionSvc = NewEncryptionService(config.Configs.DataEncryptionKey)
 	storageSvc.client = client
 	StorageSvc = storageSvc
 	return nil
@@ -88,7 +87,7 @@ func (s *StorageService) GetAclsDoc(email string) (*types.MongoAclsDoc, error) {
 	var result types.MongoAclsDoc
 	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "uid", Value: email}}).Decode(&result)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error finding the user: %v", err)
 	}
 	return &result, nil
 }
@@ -98,7 +97,7 @@ func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
 	var result types.MongoUserDoc
 	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "email", Value: email}}).Decode(&result)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error finding the user: %v", err)
 	}
 	userDoc := &types.UserDetails{}
 	decryptedJsonData, err := EncryptionSvc.Decrypt(result.Data)

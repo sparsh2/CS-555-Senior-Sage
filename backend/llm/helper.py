@@ -1,11 +1,5 @@
 import json
 import os
-import re
-from datetime import datetime, timedelta
-from voice_interactions import stt_whisper, tts_whisper
-from chat_completion import openai_complete
-from update_health_question_counter_data import update_health_question_counter, save_user_health_question_counter, load_health_questions
-
 from datetime import datetime
 from voice_interactions import tts_whisper
 
@@ -48,7 +42,7 @@ def load_user_health_question_counter(username):
 # **Function to update the health question counter**
 def initialize_health_question_counter(questions, counter_data, username):
     for q_idx, data in questions.items():
-        curr_date = datetime.now().isoformat()
+        curr_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         if q_idx not in counter_data:
             # If question is not in the counter, add it
             counter_data[q_idx] = {
@@ -186,3 +180,4 @@ def append_conversation(username, conversation):
     logs = load_user_logs(username)
     logs.append(conversation)
     save_user_logs(username, logs)
+

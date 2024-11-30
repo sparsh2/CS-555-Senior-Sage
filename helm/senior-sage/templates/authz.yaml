@@ -46,7 +46,6 @@ metadata:
 data:
   conf.yaml: |-
     authSecretKey: {{ .Values.authz.config.secretKey }}
-    encryptionKey: {{ .Values.authz.config.encryptionKey }}
     llmUsername: {{ .Values.llmUsername }}
     db:
       host: {{ .Values.db.host }}
@@ -56,7 +55,7 @@ data:
       password: {{ .Values.db.password }}
       appname: {{ .Values.db.appname }}
       usersCollection: {{ .Values.db.usersCollection }}
-      aclsCollection: {{ .Values.db.aclsCollection }}
+      aclsCollections: {{ .Values.db.aclsCollections }}
 
 ---
 apiVersion: v1
@@ -71,20 +70,3 @@ spec:
     - protocol: TCP
       port: {{ .Values.authz.servicePort }}
       targetPort: {{ .Values.authz.targetPort }}
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.authz.nodePortServiceName }}
-  namespace: {{ .Values.namespace }}
-spec:
-  type: NodePort
-  selector:
-    app: {{ .Values.authz.name }}
-  ports:
-    - protocol: TCP
-      port: {{ .Values.authz.servicePort }}
-      # port: 80
-      # targetPort: {{ .Values.authz.targetPort }}
-      nodePort: {{ .Values.authz.nodePort }}
