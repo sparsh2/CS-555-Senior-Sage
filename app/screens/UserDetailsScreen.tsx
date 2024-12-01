@@ -22,7 +22,7 @@ export default function UserDetailsScreen({ navigation }: any) {
       return;
     }
 
-    navigation.navigate('NextStep'); // Replace with your next screen's name
+    navigation.navigate('VoiceSelection'); // Replace with your next screen's name
   };
 
   return (

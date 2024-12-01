@@ -27,7 +27,8 @@ export default function LoginScreen({ navigation }: any) {
 
       {/* Email and Password Fields */}
       <TextInput
-        style={styles.input}
+        //style={styles.input}
+        style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
         placeholder="Email/Vitalink ID"
         placeholderTextColor="#999"
       />

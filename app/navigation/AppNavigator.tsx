@@ -5,6 +5,8 @@ import MainScreen from '../screens/MainScreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen';
 import ProfilePictureScreen from '../screens/ProfilePictureScreen';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
+import VoiceSelectionScreen from '../screens/VoiceSelectionScreen';
+import HomeScreen from '../screens/HomeScreen';
 
 const Stack = createStackNavigator();
 
@@ -55,7 +57,25 @@ export default function AppNavigator() {
         options={{title: 'User Details'}}
         listeners={{
           focus: () => console.log('Navigate to User Details Screen'), //Debug when entering User Details Screen
-          blur: () => console.log('Left the UserDetails Screen'), //Debug when leaving the User Details Screen
+          blur: () => console.log('Left the User Details Screen'), //Debug when leaving the User Details Screen
+        }}
+      />
+      <Stack.Screen
+        name="VoiceSelection"
+        component={VoiceSelectionScreen}
+        options={{title: 'Voice Selection'}}
+        listeners={{
+          focus: () => console.log('Navigate to Voice Selection Screen'), //Debug when entering Voice Selection Screen
+          blur: () => console.log('Left the Voice Selection Screen'), //Debug when leaving the Voice Selection Screen
+        }}
+      />
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{title: 'Home'}}
+        listeners={{
+          focus: () => console.log('Navigate to Home Screen'), //Debug when entering Home Screen
+          blur: () => console.log('Left the Home Screen '), //Debug when leaving the Home Screen
         }}
       />
     </Stack.Navigator>
