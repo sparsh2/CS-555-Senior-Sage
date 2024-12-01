@@ -4,6 +4,7 @@ import (
 	"authz/config"
 	"authz/types"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -19,11 +20,10 @@ type StorageService struct {
 
 //go:generate moq -out storageservice_mock.go . IStorageService
 type IStorageService interface {
-	GetUserHash(string) (string, error)
-	GetUserId(string) (string, error)
-	InsertUserDoc(*types.MongoUserDoc) error
-	GetAclDoc(string) (*types.MongoAclsDoc, error)
-	InsertAclDoc(*types.MongoAclsDoc) error
+	InsertUserDoc(userDetails *types.UserDetails) error
+	GetUserDoc(email string) (*types.UserDetails, error)
+	GetAclsDoc(email string) (*types.MongoAclsDoc, error)
+	InsertAclsDoc(aclsDoc *types.MongoAclsDoc) error
 }
 
 var StorageSvc IStorageService
@@ -42,56 +42,72 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("error connection to db: %v", err)
 	}
+	EncryptionSvc = NewEncryptionService(config.Configs.DataEncryptionKey)
 	storageSvc.client = client
 	StorageSvc = storageSvc
 	return nil
 }
 
-func (s *StorageService) GetAclDoc(UserId string) (*types.MongoAclsDoc, error) {
+func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
+
+	bytes, err := json.Marshal(userDetails)
+	if err != nil {
+		return fmt.Errorf("error marshalling user data: %v", err)
+	}
+	encData, err := EncryptionSvc.Encrypt(string(bytes))
+	if err != nil {
+		return fmt.Errorf("error encrypting user data: %v", err)
+	}
+	encEmail, err := EncryptionSvc.Encrypt(userDetails.UserEmail)
+	if err != nil {
+		return fmt.Errorf("error encrypting user email: %v", err)
+	}
+	userDoc := &types.MongoUserDoc{
+		Email: encEmail,
+		Data:  encData,
+	}
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
+	_, err = coll.InsertOne(context.Background(), userDoc)
+	if err != nil {
+		return fmt.Errorf("error inserting into db: %v", err)
+	}
+	return nil
+}
+
+func (s *StorageService) InsertAclsDoc(aclsDoc *types.MongoAclsDoc) error {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
+	_, err := coll.InsertOne(context.Background(), aclsDoc)
+	if err != nil {
+		return fmt.Errorf("error inserting into db: %v", err)
+	}
+	return nil
+}
+
+func (s *StorageService) GetAclsDoc(email string) (*types.MongoAclsDoc, error) {
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
 	var result types.MongoAclsDoc
-	err := coll.FindOne(context.Background(), bson.D{{"uid", UserId}}).Decode(&result)
+	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "uid", Value: email}}).Decode(&result)
 	if err != nil {
-		return nil, fmt.Errorf("error finding Acls for the user: %v", err)
+		return nil, err
 	}
 	return &result, nil
 }
 
-func (s *StorageService) GetUserHash(email string) (string, error) {
+func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
 	var result types.MongoUserDoc
-	err := coll.FindOne(context.Background(), bson.D{{"user_details.email", email}}).Decode(&result)
+	err := coll.FindOne(context.Background(), bson.D{bson.E{Key: "email", Value: email}}).Decode(&result)
 	if err != nil {
-		return "", fmt.Errorf("error finding the user: %v", err)
+		return nil, err
 	}
-	return result.UserDetails.PasswordHash, nil
-}
-
-func (s *StorageService) GetUserId(email string) (string, error) {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	var result types.MongoUserDoc
-	err := coll.FindOne(context.Background(), bson.D{{"user_details.email", email}}).Decode(&result)
+	userDoc := &types.UserDetails{}
+	decryptedJsonData, err := EncryptionSvc.Decrypt(result.Data)
 	if err != nil {
-		return "", err
+		return nil, fmt.Errorf("error decrypting user data: %v", err)
 	}
-	fmt.Println(result)
-	return result.UserId, nil
-}
-
-func (s *StorageService) InsertUserDoc(userDoc *types.MongoUserDoc) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
-	_, err := coll.InsertOne(context.Background(), userDoc)
+	err = json.Unmarshal([]byte(decryptedJsonData), userDoc)
 	if err != nil {
-		return fmt.Errorf("error inserting into db: %v", err)
+		return nil, fmt.Errorf("error unmarshalling user data: %v", err)
 	}
-	return nil
-}
-
-func (s *StorageService) InsertAclDoc(aclDoc *types.MongoAclsDoc) error {
-	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AclsCollection)
-	_, err := coll.InsertOne(context.Background(), aclDoc)
-	if err != nil {
-		return fmt.Errorf("error inserting into db: %v", err)
-	}
-	return nil
+	return userDoc, nil
 }

@@ -16,10 +16,7 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI()
 
-def stt_whisper():
-    # This function uses OpenAI's whisper voice to text model to convert your voice input to text.
-    record_audio()
-    audio_file = open("user_response.wav", "rb")
+def stt_whisper(audio_file):
     transcript = client.audio.transcriptions.create(
         model="whisper-1",
         file=audio_file
@@ -102,8 +99,8 @@ def fetch_audio(sentence, voice="nova"):
         voice=voice.lower(),
         input=sentence
     )
-    audio_data = response.content
-    return AudioSegment.from_file(io.BytesIO(audio_data), format="mp3")
+    return response.content
+    # return AudioSegment.from_file(io.BytesIO(audio_data), format="mp3")
 
 # Main TTS function with preloading
 def tts_whisper(input_text, voice="nova"):
