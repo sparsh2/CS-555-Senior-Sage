@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/LoginScreen';
-import MainScreen from '../screens/MainScreen';
 import CreateAccountScreen from '../screens/CreateAccountScreen';
 import ProfilePictureScreen from '../screens/ProfilePictureScreen';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
@@ -22,15 +21,6 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigated to Login Screen'), // Debug when entering Login
           blur: () => console.log('Left Login Screen'), // Debug when leaving Login
-        }}
-      />
-      <Stack.Screen
-        name="Main"
-        component={MainScreen}
-        options={{ title: 'Main Screen' }}
-        listeners={{
-          focus: () => console.log('Navigated to Main Screen'), // Debug when entering Main
-          blur: () => console.log('Left Main Screen'), // Debug when leaving Main
         }}
       />
       <Stack.Screen
