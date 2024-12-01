@@ -6,6 +6,7 @@ import ProfilePictureScreen from '../screens/ProfilePictureScreen';
 import UserDetailsScreen from '../screens/UserDetailsScreen';
 import VoiceSelectionScreen from '../screens/VoiceSelectionScreen';
 import HomeScreen from '../screens/HomeScreen';
+import VoiceAssistantScreen from '../screens/VoiceAssistantScreen';
 
 const Stack = createStackNavigator();
 
@@ -66,6 +67,15 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to Home Screen'), //Debug when entering Home Screen
           blur: () => console.log('Left the Home Screen '), //Debug when leaving the Home Screen
+        }}
+      />
+      <Stack.Screen
+        name="Voice Assistant"
+        component={VoiceAssistantScreen}
+        options={{title: 'Voice Assistant'}}
+        listeners={{
+          focus: () => console.log('Navigate to Voice Assistant Screen'), //Debug when entering Voice Assistant Screen
+          blur: () => console.log('Left the Voice Assistant Screen'), //Debug when leaving Voice Assistant Screen
         }}
       />
     </Stack.Navigator>
