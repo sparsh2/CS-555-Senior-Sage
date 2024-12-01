@@ -1,7 +1,6 @@
 import requests
 from datetime import datetime
 # from voice_interactions import stt_whisper, fetch_audio
-from pydub import AudioSegment
 # from server import cfg
 import openai
 import json
@@ -528,4 +527,3 @@ def fetch_audio(sentence, voice="nova"):
         input=sentence
     )
     return response.content
-    AudioSegment.from_file(io.BytesIO(audio_data), format="mp3")
