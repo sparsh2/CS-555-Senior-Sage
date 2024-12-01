@@ -50,9 +50,9 @@ type WriteQuestionCounterRequest struct {
 }
 
 type WriteChatHistoryRequest struct {
-	RequesterToken string       `json:"requester_token"`
-	UserId         string       `json:"user_id"`
-	ChatHistory    *[]ChatSession `json:"chat_history"`
+	RequesterToken string      `json:"requester_token"`
+	UserId         string      `json:"user_id"`
+	ChatHistory    ChatSession `json:"chat_history"`
 }
 
 type RequestAccessRequest struct {

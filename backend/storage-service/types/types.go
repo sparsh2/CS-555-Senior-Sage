@@ -49,10 +49,11 @@ type Reminders struct {
 }
 
 type ReminderDetails struct {
-	Time      string `json:"time"`
-	Frequency string `json:"frequency"`
-	StartDate string `json:"start_date"`
-	Cron      string `json:"cron_job"`
+	ReminderFor string `json:"reminder_for"`
+	Time        string `json:"time"`
+	Frequency   string `json:"frequency"`
+	StartDate   string `json:"start_date"`
+	Cron        string `json:"cron_job"`
 }
 
 type MongoUserDoc struct {

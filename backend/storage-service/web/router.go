@@ -122,6 +122,13 @@ func writeReminders(c *gin.Context) {
 		})
 		return
 	}
+	if req.Reminders == nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   "Reminders cannot be nil",
+		})
+		return
+	}
 	err = service.Svc.WriteReminders(req)
 	if err == types.ErrAccessDenied {
 		c.JSON(403, gin.H{
@@ -131,6 +138,7 @@ func writeReminders(c *gin.Context) {
 		return
 	}
 	if err != nil {
+		log.Printf("error in writing reminders: %v", err)
 		c.JSON(500, gin.H{
 			"error": "Internal Server Error",
 			"msg":   err.Error(),

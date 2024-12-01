@@ -21,6 +21,7 @@ type StorageService struct {
 //go:generate moq -out storageservice_mock.go . IStorageService
 type IStorageService interface {
 	InsertUserDoc(userDetails *types.UserDetails) error
+	UpdateUserDoc(userDetails *types.UserDetails) error
 	GetUserDoc(email string) (*types.UserDetails, error)
 }
 
@@ -51,6 +52,7 @@ func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
 	if err != nil {
 		return fmt.Errorf("error marshalling user data: %v", err)
 	}
+	log.Printf("user details inserting: %v\n", string(bytes))
 	encData, err := EncryptionSvc.Encrypt(string(bytes))
 	if err != nil {
 		return fmt.Errorf("error encrypting user data: %v", err)
@@ -65,6 +67,33 @@ func (s *StorageService) InsertUserDoc(userDetails *types.UserDetails) error {
 	}
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
 	_, err = coll.InsertOne(context.Background(), userDoc)
+	if err != nil {
+		return fmt.Errorf("error inserting into db: %v", err)
+	}
+	return nil
+}
+
+func (s *StorageService) UpdateUserDoc(userDetails *types.UserDetails) error {
+
+	bytes, err := json.Marshal(userDetails)
+	if err != nil {
+		return fmt.Errorf("error marshalling user data: %v", err)
+	}
+	log.Printf("user details updating: %v\n", string(bytes))
+	encData, err := EncryptionSvc.Encrypt(string(bytes))
+	if err != nil {
+		return fmt.Errorf("error encrypting user data: %v", err)
+	}
+	encEmail, err := EncryptionSvc.Encrypt(userDetails.UserEmail)
+	if err != nil {
+		return fmt.Errorf("error encrypting user email: %v", err)
+	}
+	userDoc := &types.MongoUserDoc{
+		// Email: encEmail,
+		Data:  encData,
+	}
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
+	_, err = coll.UpdateOne(context.Background(), bson.D{bson.E{Key: "email", Value: encEmail}}, bson.D{bson.E{Key: "$set", Value: bson.D{bson.E{Key: "data", Value: userDoc.Data}}}})
 	if err != nil {
 		return fmt.Errorf("error inserting into db: %v", err)
 	}

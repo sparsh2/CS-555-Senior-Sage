@@ -35,8 +35,9 @@ func (as *Service) WriteReminders(req *types.WriteRemindersRequest) error {
 	if userDetails.ReminderDetails == nil {
 		userDetails.ReminderDetails = &[]types.ReminderDetails{}
 	}
-	userDetails.ReminderDetails = req.Reminders
-	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	userDetails.ReminderDetails = &[]types.ReminderDetails{}
+	*userDetails.ReminderDetails = append(*userDetails.ReminderDetails, *req.Reminders...)
+	err = storage.StorageSvc.UpdateUserDoc(userDetails)
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
@@ -66,7 +67,7 @@ func (as *Service) WriteResponses(req *types.WriteResponsesRequest) error {
 		log.Printf("warning: new responses are less than the existing responses for user %s\n", req.UserId)
 	}
 	userDetails.QuestionResponses = req.Responses
-	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	err = storage.StorageSvc.UpdateUserDoc(userDetails)
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
@@ -92,11 +93,8 @@ func (as *Service) WriteChatHistory(req *types.WriteChatHistoryRequest) error {
 	if userDetails.ChatHistory == nil {
 		userDetails.ChatHistory = &[]types.ChatSession{}
 	}
-	if len(*req.ChatHistory) < len(*userDetails.ChatHistory) {
-		log.Printf("warning: new chat history is less than the existing chat history for user %s\n", req.UserId)
-	}
-	userDetails.ChatHistory = req.ChatHistory
-	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	*userDetails.ChatHistory = append(*userDetails.ChatHistory, req.ChatHistory)
+	err = storage.StorageSvc.UpdateUserDoc(userDetails)
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
@@ -120,7 +118,7 @@ func (as *Service) WriteQuestionCounter(req *types.WriteQuestionCounterRequest) 
 		return fmt.Errorf("error in getting user data: %v", err)
 	}
 	userDetails.QuestionCounts = req.QuestionCounts
-	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	err = storage.StorageSvc.UpdateUserDoc(userDetails)
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
@@ -151,7 +149,7 @@ func (as *Service) WritePreferences(req *types.WritePreferencesRequest) error {
 		log.Printf("warning: new preferences are less than the existing preferences for user %s\n", req.UserId)
 	}
 	userDetails.Preferences = req.Preferences
-	err = storage.StorageSvc.InsertUserDoc(userDetails)
+	err = storage.StorageSvc.UpdateUserDoc(userDetails)
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
@@ -185,6 +183,8 @@ func (as *Service) GetData(getDataReq *types.GetDataRequest) (*types.GetDataResp
 	resp.ReminderDetails = userDetails.ReminderDetails
 	resp.RPMReadings = userDetails.RPMReadings
 	resp.VoiceSelection = userDetails.VoiceSelection
+	resp.QuestionResponses = userDetails.QuestionResponses
+	resp.QuestionCounts = userDetails.QuestionCounts
 	resp.Name = userDetails.Name
 	resp.Msg = "data fetched successfully"
 	return resp, nil
