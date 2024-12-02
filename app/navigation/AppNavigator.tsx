@@ -15,6 +15,7 @@ import MedicationScreen from '../screens/MedicationScreen';
 import ClaimRewardsScreen from '../screens/ClaimRewardsScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
 import AppointmentsScreen from '../screens/AppointmentsScreen';
+import StreaksScreen from '../screens/StreaksScreen';
 
 const Stack = createStackNavigator();
 
@@ -156,6 +157,15 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to the Appointments Screen'), //Debug when entering Appointments Screen
           blur: () => console.log('Left the Appointments Screen'), //Debug when leaving Appointments Screen
+        }}
+      />
+      <Stack.Screen
+        name="Streaks"
+        component={StreaksScreen}
+        options={{title: 'Streaks'}}
+        listeners={{
+          focus: () => console.log('Navigate to the Streaks Screen'), //Debug when entering Streaks Screen
+          blur: () => console.log('Left the Streaks Screen'), //Debug when leaving Streaks Screen
         }}
       />
     </Stack.Navigator>

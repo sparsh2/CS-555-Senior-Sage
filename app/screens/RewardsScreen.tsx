@@ -25,8 +25,10 @@ export default function RewardsScreen({ navigation }: any) {
 
       {/* Streak Section */}
       <View style={styles.streakContainer}>
-        <Image source={require('../assets/images/fire.png')} style={styles.streakIcon} />
-        <Text style={styles.streakText}>You're on a 3-day streak!</Text>
+        <TouchableOpacity style={styles.activityIcon} onPress={() => navigation.navigate('Streaks')}>
+          <Image source={require('../assets/images/fire.png')} style={styles.streakIcon} />
+          <Text style={styles.streakText}>You're on a 3-day streak!</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Activity Log Section */}
