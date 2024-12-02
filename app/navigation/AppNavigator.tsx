@@ -16,6 +16,7 @@ import ClaimRewardsScreen from '../screens/ClaimRewardsScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
 import AppointmentsScreen from '../screens/AppointmentsScreen';
 import StreaksScreen from '../screens/StreaksScreen';
+import TiersScreen from '../screens/TiersScreen';
 
 const Stack = createStackNavigator();
 
@@ -166,6 +167,15 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to the Streaks Screen'), //Debug when entering Streaks Screen
           blur: () => console.log('Left the Streaks Screen'), //Debug when leaving Streaks Screen
+        }}
+      />
+      <Stack.Screen
+        name="Tiers"
+        component={TiersScreen}
+        options={{title: 'Tiers'}}
+        listeners={{
+          focus: () => console.log('Navigate to the Tier Screen'), //Debug when entering Tiers Screen
+          blur: () => console.log('Left the Tier Screen'), //Debug when leaving Tiers Screen
         }}
       />
     </Stack.Navigator>

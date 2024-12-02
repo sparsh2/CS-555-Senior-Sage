@@ -6,12 +6,14 @@ export default function RewardsScreen({ navigation }: any) {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Image source={require('../assets/images/bronze tier.png')} style={styles.coinIcon} />
-        <View style={styles.headerTextContainer}>
-          <Text style={styles.totalPoints}>Total points: 300/500 (Next tier)</Text>
-          <Text style={styles.tier}>Bronze Tier</Text>
-        </View>
-        <Image source={require('../assets/icons/owl.png')} style={styles.icon} />
+        <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('Tiers')}>
+          <Image source={require('../assets/images/bronze-tier.png')} style={styles.coinIcon} />
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.totalPoints}>Total points: 300/500 (Next tier)</Text>
+            <Text style={styles.tier}>Bronze Tier</Text>
+          </View>
+          <Image source={require('../assets/icons/owl.png')} style={styles.icon} />
+        </TouchableOpacity>
       </View>
 
       {/* Daily Goal Section */}
