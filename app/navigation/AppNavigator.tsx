@@ -9,6 +9,7 @@ import HomeScreen from '../screens/HomeScreen';
 import VoiceAssistantScreen from '../screens/VoiceAssistantScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import RewardsScreen from '../screens/RewardsScreen';
 
 const Stack = createStackNavigator();
 
@@ -94,8 +95,17 @@ export default function AppNavigator() {
         component={SettingsScreen}
         options={{title: 'Settings'}}
         listeners={{
-          focus: () => console.log('Navigate to Settings Screen'), //Debug when entering Settings
+          focus: () => console.log('Navigate to Settings Screen'), //Debug when entering Settings Screen
           blur: () => console.log('Left the Settings Screen'), //Debug when leaving the Settings Screen
+        }}
+      />
+      <Stack.Screen
+        name="Rewards"
+        component={RewardsScreen}
+        options={{title: 'Rewards'}}
+        listeners={{
+          focus: () => console.log('Navigate to Rewards Screen'), //Debug when entering Rewards Screen
+          blur: () => console.log('Left the Rewards Screen'), //Debug when leaving the Rewards Screen
         }}
       />
     </Stack.Navigator>
