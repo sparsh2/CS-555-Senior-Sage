@@ -8,6 +8,7 @@ import VoiceSelectionScreen from '../screens/VoiceSelectionScreen';
 import HomeScreen from '../screens/HomeScreen';
 import VoiceAssistantScreen from '../screens/VoiceAssistantScreen';
 import RemindersScreen from '../screens/RemindersScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Stack = createStackNavigator();
 
@@ -86,6 +87,15 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to Reminders Screen'), //Debug when entering Reminders Screen
           blur: () => console.log('Left the Reminders Screen'), //Debug when leaving the Reminders Screen
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{title: 'Settings'}}
+        listeners={{
+          focus: () => console.log('Navigate to Settings Screen'), //Debug when entering Settings
+          blur: () => console.log('Left the Settings Screen'), //Debug when leaving the Settings Screen
         }}
       />
     </Stack.Navigator>
