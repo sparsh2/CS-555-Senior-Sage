@@ -58,7 +58,7 @@ export default function HomeScreen({ navigation }: any) {
           <Image source={require('../assets/icons/bell.png')} style={styles.navIcon} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Settings')}>
-          <Image source={require('../assets/icons/setting.png')} style={styles.navIcon} />
+          <Image source={require('../assets/icons/settings.png')} style={styles.navIcon} />
         </TouchableOpacity>
       </View>
     </View>
