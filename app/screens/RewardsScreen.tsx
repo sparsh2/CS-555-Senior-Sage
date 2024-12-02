@@ -50,7 +50,7 @@ export default function RewardsScreen({ navigation }: any) {
       </View>
 
       {/* Claim Rewards Button */}
-      <TouchableOpacity style={styles.claimButton} onPress={() => navigation.navigate('ClaimRewards')}>
+      <TouchableOpacity style={styles.claimButton} onPress={() => navigation.navigate('Claim Rewards')}>
         <Text style={styles.claimButtonText}>Claim your rewards!</Text>
       </TouchableOpacity>
 

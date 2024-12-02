@@ -12,6 +12,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import RewardsScreen from '../screens/RewardsScreen';
 import VitalsScreen from '../screens/VitalsScreen';
 import MedicationScreen from '../screens/MedicationScreen';
+import ClaimRewardsScreen from '../screens/ClaimRewardsScreen';
 
 const Stack = createStackNavigator();
 
@@ -126,6 +127,15 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to Medication Screen'), //Debug when entering Medication Screen
           blur: () => console.log('Left the Medication Screen'), //Debug when leaving the Medication Screen
+        }}
+      />
+      <Stack.Screen
+        name="Claim Rewards"
+        component={ClaimRewardsScreen}
+        options={{title: 'Claim Rewards'}}
+        listeners={{
+          focus: () => console.log('Navigate to Claim Rewards Screen'), //Debug when entering Claim Rewards Screen
+          blur: () => console.log('Left the Claim Rewards Screen'), //Debug when leaving the Claim Rewards Screen
         }}
       />
     </Stack.Navigator>
