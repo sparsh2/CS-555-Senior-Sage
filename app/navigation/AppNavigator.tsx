@@ -13,6 +13,8 @@ import RewardsScreen from '../screens/RewardsScreen';
 import VitalsScreen from '../screens/VitalsScreen';
 import MedicationScreen from '../screens/MedicationScreen';
 import ClaimRewardsScreen from '../screens/ClaimRewardsScreen';
+import ExerciseScreen from '../screens/ExerciseScreen';
+import AppointmentsScreen from '../screens/AppointmentsScreen';
 
 const Stack = createStackNavigator();
 
@@ -136,6 +138,24 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to Claim Rewards Screen'), //Debug when entering Claim Rewards Screen
           blur: () => console.log('Left the Claim Rewards Screen'), //Debug when leaving the Claim Rewards Screen
+        }}
+      />
+      <Stack.Screen
+        name="Exercise"
+        component={ExerciseScreen}
+        options={{title: 'Exercise'}}
+        listeners={{
+          focus: () => console.log('Navigate to the Exercise Screen'), //Debug when entering Exercise Screen
+          blur: () => console.log('Left the Exercise Screen'), //Debug when leaving Exercise Screen
+        }}
+      />
+      <Stack.Screen
+        name="Appointments"
+        component={AppointmentsScreen}
+        options={{title: 'Appointments'}}
+        listeners={{
+          focus: () => console.log('Navigate to the Appointments Screen'), //Debug when entering Appointments Screen
+          blur: () => console.log('Left the Appointments Screen'), //Debug when leaving Appointments Screen
         }}
       />
     </Stack.Navigator>
