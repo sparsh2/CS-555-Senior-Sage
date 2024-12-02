@@ -62,7 +62,7 @@ export default function RewardsScreen({ navigation }: any) {
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Rewards')}>
           <Image source={require('../assets/icons/rewards.png')} style={styles.navIcon} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Sage')}>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Voice Assistant')}>
           <Image source={require('../assets/icons/mic.png')} style={styles.navIcon} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Reminders')}>

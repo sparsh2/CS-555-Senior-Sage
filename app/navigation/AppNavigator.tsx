@@ -10,6 +10,7 @@ import VoiceAssistantScreen from '../screens/VoiceAssistantScreen';
 import RemindersScreen from '../screens/RemindersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RewardsScreen from '../screens/RewardsScreen';
+import VitalsScreen from '../screens/VitalsScreen';
 
 const Stack = createStackNavigator();
 
@@ -106,6 +107,15 @@ export default function AppNavigator() {
         listeners={{
           focus: () => console.log('Navigate to Rewards Screen'), //Debug when entering Rewards Screen
           blur: () => console.log('Left the Rewards Screen'), //Debug when leaving the Rewards Screen
+        }}
+      />
+      <Stack.Screen
+        name="Vitals"
+        component={VitalsScreen}
+        options={{title: 'Vitals'}}
+        listeners={{
+          focus: () => console.log('Navigate to Vitals Screen'), //Debug when entering Vitals Screen
+          blur: () => console.log('Left the Vitals Screen'), //Debug when leaving the Vitals Screen
         }}
       />
     </Stack.Navigator>
