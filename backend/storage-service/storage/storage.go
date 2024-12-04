@@ -23,6 +23,8 @@ type IStorageService interface {
 	InsertUserDoc(userDetails *types.UserDetails) error
 	UpdateUserDoc(userDetails *types.UserDetails) error
 	GetUserDoc(email string) (*types.UserDetails, error)
+	LogAccess(requesterEmail, userEmail string, operation string, resource types.ResourceType, granted bool) error
+	GetAccessLogs(userEmail string) ([]*types.AccessLog, error)
 }
 
 var StorageSvc IStorageService
@@ -90,7 +92,7 @@ func (s *StorageService) UpdateUserDoc(userDetails *types.UserDetails) error {
 	}
 	userDoc := &types.MongoUserDoc{
 		// Email: encEmail,
-		Data:  encData,
+		Data: encData,
 	}
 	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.UsersCollection)
 	_, err = coll.UpdateOne(context.Background(), bson.D{bson.E{Key: "email", Value: encEmail}}, bson.D{bson.E{Key: "$set", Value: bson.D{bson.E{Key: "data", Value: userDoc.Data}}}})
@@ -117,4 +119,40 @@ func (s *StorageService) GetUserDoc(email string) (*types.UserDetails, error) {
 		return nil, fmt.Errorf("error unmarshalling user data: %v", err)
 	}
 	return userDoc, nil
+}
+
+func (s *StorageService) LogAccess(requesterEmail, userEmail string, operation string, resource types.ResourceType, granted bool) error {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AccessLogsCollection)
+	accessLog := &types.AccessLog{
+		RequesterEmail: requesterEmail,
+		UserEmail:      userEmail,
+		Operation:      operation,
+		Resource:       resource,
+		Granted:        granted,
+		TimeStamp:      time.Now().Format(time.RFC3339),
+	}
+	_, err := coll.InsertOne(context.Background(), accessLog)
+	if err != nil {
+		return fmt.Errorf("error inserting into db: %v", err)
+	}
+	return nil
+}
+
+func (s *StorageService) GetAccessLogs(userEmail string) ([]*types.AccessLog, error) {
+	coll := s.client.Database(config.Configs.DBConfig.DBName).Collection(config.Configs.DBConfig.AccessLogsCollection)
+	cursor, err := coll.Find(context.Background(), bson.D{bson.E{Key: "user_email", Value: userEmail}})
+	if err != nil {
+		return nil, fmt.Errorf("error finding the user: %v", err)
+	}
+	defer cursor.Close(context.Background())
+	var accessLogs []*types.AccessLog
+	for cursor.Next(context.Background()) {
+		var result types.AccessLog
+		err := cursor.Decode(&result)
+		if err != nil {
+			return nil, fmt.Errorf("error decoding access log: %v", err)
+		}
+		accessLogs = append(accessLogs, &result)
+	}
+	return accessLogs, nil
 }

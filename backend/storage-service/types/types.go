@@ -60,3 +60,12 @@ type MongoUserDoc struct {
 	Email string `bson:"email,omitempty"`
 	Data  string `bson:"data,omitempty"`
 }
+
+type AccessLog struct {
+	RequesterEmail string             `bson:"requester_email"`
+	UserEmail      string             `bson:"user_email"`
+	Operation      string             `bson:"operation"`
+	Granted        bool               `bson:"granted"`
+	Resource       ResourceType `bson:"resource"`
+	TimeStamp      string             `bson:"timestamp"`
+}

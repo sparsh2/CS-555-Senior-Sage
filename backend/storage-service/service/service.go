@@ -1,10 +1,13 @@
 package service
 
 import (
+	"encoding/json"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"storage-service/storage"
 	"storage-service/types"
+	"strings"
 )
 
 type Service struct {
@@ -26,6 +29,7 @@ func (as *Service) WriteReminders(req *types.WriteRemindersRequest) error {
 		return fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
+		logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_REMINDERS}, granted)
 		return types.ErrAccessDenied
 	}
 	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
@@ -41,7 +45,51 @@ func (as *Service) WriteReminders(req *types.WriteRemindersRequest) error {
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
+	logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_REMINDERS}, granted)
 	return nil
+}
+
+func logAccess(requesterToken, userId, operation string, resources []types.ResourceType, granted bool) {
+	email, err := getEmailFromJWT(requesterToken)
+	if err != nil {
+		log.Printf("could not log access request: error in getting email from jwt: %v\n", err)
+		return
+	}
+	for _, res := range resources {
+		err = storage.StorageSvc.LogAccess(email, userId, operation, res, granted)
+		if err != nil {
+			log.Printf("error in logging access: %v\n", err)
+			return
+		}
+		log.Printf("access logged successfully\n")
+	}
+}
+
+func getEmailFromJWT(jwtToken string) (string, error) {
+	parts := strings.Split(jwtToken, ".")
+
+	// Decode the payload part (index 1)
+	payloadBytes, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		fmt.Println("Error decoding payload:", err)
+		return "", err
+	}
+
+	// Parse the JSON payload
+	var claims map[string]interface{}
+	err = json.Unmarshal(payloadBytes, &claims)
+	if err != nil {
+		fmt.Println("Error parsing claims:", err)
+		return "", err
+	}
+
+	email, ok := claims["user_id"].(string)
+	if !ok {
+			fmt.Println("Email claim not found")
+			return "", fmt.Errorf("Email claim not found")
+	}
+
+	return email, nil
 }
 
 func (as *Service) WriteResponses(req *types.WriteResponsesRequest) error {
@@ -54,6 +102,7 @@ func (as *Service) WriteResponses(req *types.WriteResponsesRequest) error {
 		return fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
+		logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY}, granted)
 		return types.ErrAccessDenied
 	}
 	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
@@ -69,6 +118,7 @@ func (as *Service) WriteResponses(req *types.WriteResponsesRequest) error {
 	userDetails.QuestionResponses = req.Responses
 	err = storage.StorageSvc.UpdateUserDoc(userDetails)
 	if err != nil {
+		logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY}, granted)
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
 	return nil
@@ -84,6 +134,7 @@ func (as *Service) WriteChatHistory(req *types.WriteChatHistoryRequest) error {
 		return fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
+		logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY}, granted)
 		return types.ErrAccessDenied
 	}
 	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
@@ -98,6 +149,7 @@ func (as *Service) WriteChatHistory(req *types.WriteChatHistoryRequest) error {
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
+	logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY}, granted)
 	return nil
 }
 
@@ -111,6 +163,7 @@ func (as *Service) WriteQuestionCounter(req *types.WriteQuestionCounterRequest) 
 		return fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
+		logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY}, granted)
 		return types.ErrAccessDenied
 	}
 	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
@@ -122,6 +175,7 @@ func (as *Service) WriteQuestionCounter(req *types.WriteQuestionCounterRequest) 
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
+	logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_CHAT_HISTORY}, granted)
 	return nil
 }
 
@@ -135,6 +189,7 @@ func (as *Service) WritePreferences(req *types.WritePreferencesRequest) error {
 		return fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
+		logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_PREFERENCES}, granted)
 		return types.ErrAccessDenied
 	}
 	userDetails, err := storage.StorageSvc.GetUserDoc(req.UserId)
@@ -153,6 +208,7 @@ func (as *Service) WritePreferences(req *types.WritePreferencesRequest) error {
 	if err != nil {
 		return fmt.Errorf("error in writing user data: %v", err)
 	}
+	logAccess(req.RequesterToken, req.UserId, types.OPERATION_WRITE, []types.ResourceType{types.RESOURCE_USER_PREFERENCES}, granted)
 	return nil
 }
 
@@ -171,6 +227,12 @@ func (as *Service) GetData(getDataReq *types.GetDataRequest) (*types.GetDataResp
 		return nil, fmt.Errorf("error in verifying access request: %v", err)
 	}
 	if !granted {
+		logAccess(getDataReq.RequesterToken, getDataReq.UserId, types.OPERATION_READ, []types.ResourceType{
+			types.RESOURCE_USER_PREFERENCES,
+			types.RESOURCE_USER_REMINDERS,
+			types.RESOURCE_USER_CHAT_HISTORY,
+			types.RESOURCE_RPM_READINGS,
+		}, granted)
 		return &types.GetDataResponse{Msg: msg}, types.ErrAccessDenied
 	}
 	resp := &types.GetDataResponse{}
@@ -187,5 +249,11 @@ func (as *Service) GetData(getDataReq *types.GetDataRequest) (*types.GetDataResp
 	resp.QuestionCounts = userDetails.QuestionCounts
 	resp.Name = userDetails.Name
 	resp.Msg = "data fetched successfully"
+	logAccess(getDataReq.RequesterToken, getDataReq.UserId, types.OPERATION_READ, []types.ResourceType{
+		types.RESOURCE_USER_PREFERENCES,
+		types.RESOURCE_USER_REMINDERS,
+		types.RESOURCE_USER_CHAT_HISTORY,
+		types.RESOURCE_RPM_READINGS,
+	}, granted)
 	return resp, nil
 }
