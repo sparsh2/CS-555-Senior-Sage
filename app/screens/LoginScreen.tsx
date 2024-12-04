@@ -16,7 +16,7 @@ export default function LoginScreen({ navigation }: any) {
       {/* Logo and Title */}
       <View style={styles.header}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Replace with your logo URI
+          source={require('../assets/icons/owl.png')} // Replace with your logo URI
           style={styles.logo}
         />
         <Text style={styles.title}>Senior Sage</Text>
