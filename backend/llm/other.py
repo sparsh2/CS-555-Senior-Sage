@@ -506,7 +506,9 @@ def update_health_question_counter(username, q_idx, counter_data):
 
 import io
 def stt_whisper(audio_file):
-    client = openai.OpenAI(api_key=cfg.get('openaiApiKey'))
+    key = cfg.get('openaiApiKey')
+    logger.info(f'api key: {key}')
+    client = openai.OpenAI(api_key=key)
     buffer = io.BytesIO(audio_file)
     buffer.name = 'file.mp3'
     transcript = client.audio.transcriptions.create(

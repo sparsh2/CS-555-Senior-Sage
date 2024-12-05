@@ -212,6 +212,22 @@ func (as *Service) WritePreferences(req *types.WritePreferencesRequest) error {
 	return nil
 }
 
+func (as *Service) GetAccessLogs(userEmail string) ([]string, error) {
+	accessLogs, err := storage.StorageSvc.GetAccessLogs(userEmail)
+	if err != nil {
+		return []string{}, fmt.Errorf("error in getting access logs: %v", err)
+	}
+	logsString := []string{}
+	for _, log := range accessLogs {
+		deniedOrGranted := "denied"
+		if log.Granted {
+			deniedOrGranted = "granted"
+		}
+		logsString = append(logsString, fmt.Sprintf("User %s requested %s access on %s.%s at %s; request was %s", log.RequesterEmail, log.Operation, log.UserEmail, log.Resource, log.TimeStamp, deniedOrGranted))
+	}
+	return logsString, nil
+}
+
 func (as *Service) GetData(getDataReq *types.GetDataRequest) (*types.GetDataResponse, error) {
 	granted, msg, err := AuthzClientSvc.VerifyAccessRequest(
 		getDataReq.RequesterToken,

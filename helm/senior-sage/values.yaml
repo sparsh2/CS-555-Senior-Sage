@@ -58,4 +58,5 @@ db:
   appname: users
   usersCollection: users
   aclsCollection: acls
+  accessLogsCollection: logs
   port: 8080

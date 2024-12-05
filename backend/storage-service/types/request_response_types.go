@@ -65,3 +65,11 @@ type RequestAccessResponse struct {
 	AccessRequest bool   `json:"access_request"`
 	Message       string `json:"message,omitempty"`
 }
+
+type GetRequestLogsRequest struct {
+	RequesterEmail string `json:"user_id"`
+}
+
+type GetRequestLogsResponse struct {
+	Logs []string `json:"logs"`
+}

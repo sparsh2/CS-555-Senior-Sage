@@ -24,8 +24,41 @@ func GetRouter() *gin.Engine {
 	r.PUT("/question-counter", writeQuestionCounter)
 	r.PUT("/chat-history", writeChatHistory)
 	r.GET("/data", getData)
+	r.GET("/access-logs", getRequestLogs)
 
 	return r
+}
+
+func getRequestLogs(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	req := &types.GetRequestLogsRequest{}
+	err = json.Unmarshal(bytes, req)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	logs, err := service.Svc.GetAccessLogs(req.RequesterEmail)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal Server Error",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	resp := &types.GetRequestLogsResponse{
+		Logs: logs,
+	}
+	c.JSON(200, resp)
 }
 
 func writeChatHistory(c *gin.Context) {

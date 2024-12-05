@@ -27,5 +27,6 @@ func authMiddleware(c *gin.Context) {
 		return
 	}
 	c.Set("user-id", userid)
+	log.Println("User authenticated")
 	c.Next()
 }

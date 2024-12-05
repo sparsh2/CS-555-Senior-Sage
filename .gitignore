@@ -100,4 +100,4 @@ yarn-error.log
 # idea
 .idea/
 
-.wav
+*.wav
