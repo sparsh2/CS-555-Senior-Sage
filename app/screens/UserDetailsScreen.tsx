@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import CustomTextInput from '../components/CustomTextInput';
 
 export default function UserDetailsScreen({ navigation }: any) {
   const [name, setName] = useState('');
@@ -30,18 +31,14 @@ export default function UserDetailsScreen({ navigation }: any) {
       <Text style={styles.stepText}>Step 2/3</Text>
       <Text style={styles.title}>Help us know you a little better</Text>
 
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Name"
-        placeholderTextColor="#999"
         value={name}
         onChangeText={setName}
       />
 
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Age (numerical entry only)"
-        placeholderTextColor="#999"
         keyboardType="numeric"
         value={age}
         onChangeText={setAge}
@@ -62,20 +59,16 @@ export default function UserDetailsScreen({ navigation }: any) {
         </Text>
       </TouchableOpacity>
 
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Medical Conditions (if any)"
-        placeholderTextColor="#999"
         value={medicalConditions}
         onChangeText={setMedicalConditions}
         multiline
         numberOfLines={3}
       />
 
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Medications (Optional)"
-        placeholderTextColor="#999"
         value={medications}
         onChangeText={setMedications}
         multiline

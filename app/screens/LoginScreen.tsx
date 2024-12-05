@@ -8,17 +8,19 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import CustomTextInput from '../components/CustomTextInput';
 
 export default function LoginScreen({ navigation }: any) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
   console.log('Rendering LoginScreen...');
+
   return (
     <View style={styles.container}>
       {/* Logo and Title */}
       <View style={styles.header}>
-        <Image
-          source={require('../assets/icons/owl.png')} // Replace with your logo URI
-          style={styles.logo}
-        />
+        <Image source={require('../assets/icons/owl.png')} style={styles.logo}/>
         <Text style={styles.title}>Senior Sage</Text>
       </View>
 
@@ -26,16 +28,15 @@ export default function LoginScreen({ navigation }: any) {
       <Text style={styles.welcomeText}>Welcome</Text>
 
       {/* Email and Password Fields */}
-      <TextInput
-        //style={styles.input}
-        style={[styles.input, { color: '#000', backgroundColor: '#fff' }]}
+      <CustomTextInput
         placeholder="Email/Vitalink ID"
-        placeholderTextColor="#999"
+        value={email}
+        onChangeText={setEmail}
       />
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Password"
-        placeholderTextColor="#999"
+        value={password}
+        onChangeText={setPassword}
         secureTextEntry
       />
 
@@ -113,11 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 20,
     textDecorationLine: 'underline',
-  },
-  faceId: {
-    position: 'absolute',
-    top: '55%',
-    right: '10%',
   },
   createAccountButton: {
     position: 'absolute',
