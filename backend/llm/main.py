@@ -5,6 +5,7 @@ from voice_interactions import stt_whisper, tts_whisper
 from chat_completion import openai_complete
 from helper import *
 from rag import load_vector_db, create_vector_db
+from emotion_detection import analyze_emotion
 
 def main_func():
     user_info = load_user_info()
@@ -84,6 +85,9 @@ def main_func():
     
     append_conversation(name, current_conversation)
     print(f"Conversation session saved for user '{name}'.")
+
+    # Emotion detection for the current session
+    analyze_emotion(current_conversation)
 
 if __name__ == "__main__":
     main_func()

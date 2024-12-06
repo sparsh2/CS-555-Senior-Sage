@@ -1,10 +1,13 @@
 import json
 import os
 from helper import *
+from datetime import timedelta, datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESPONSES_FILE = os.path.join(BASE_DIR, 'curr_response.json')
 HEALTH_QUESTIONS_FILE = os.path.join(BASE_DIR, 'health_questions.json')
+TASKS_FILE = os.path.join(BASE_DIR, 'tasks.json')
+USER_REWARDS_DIR = os.path.join(BASE_DIR, 'user_rewards')
 
 def reminders(username:str, remind:dict) -> None:
     add_reminder(username, remind)
@@ -166,3 +169,111 @@ def responses(q_idx: int, username: str, user_answer: str) -> None:
         raise
 
     return 
+
+def rewards(username, task_completed):
+    """
+    Calculate and track rewards for users based on completed tasks with advanced time tracking.
+    
+    Args:
+        username (str): The username of the user
+        task_completed (str): The specific task that was completed
+    
+    Returns:
+        dict: A dictionary containing reward details
+    """
+    # Paths for relevant files
+    USER_REWARDS_FILE = os.path.join(USER_REWARDS_DIR, f"{username}_rewards_log.json")
+    # Create user rewards directory if it doesn't exist
+    os.makedirs(USER_REWARDS_DIR, exist_ok=True)
+
+    # Load tasks configuration
+    try:
+        with open(TASKS_FILE, 'r', encoding='utf-8') as f:
+            tasks_config = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error loading tasks configuration: {e}")
+        return {"error": "Could not load tasks configuration"}
+
+    # Load or initialize user rewards log
+    try:
+        with open(USER_REWARDS_FILE, 'r', encoding='utf-8') as f:
+            user_rewards_log = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        user_rewards_log = {
+            "total_points": 0,
+            "task_history": {}
+        }
+
+    # Current timestamp
+    current_time = datetime.now()
+
+    # Check if the task exists in configuration
+    if task_completed not in tasks_config:
+        return {"error": "Task not found in configuration"}
+
+    task_info = tasks_config[task_completed]
+    points = task_info.get('points', 0)
+    
+    # New time-based parameters
+    when_should_be_reasked = task_info.get('when_should_be_reasked', timedelta(days=1))
+    
+    # Ensure task history exists
+    if task_completed not in user_rewards_log['task_history']:
+        user_rewards_log['task_history'][task_completed] = {
+            "last_rewarded": None,
+            "total_times_rewarded": 0
+        }
+
+    task_history = user_rewards_log['task_history'][task_completed]
+    last_rewarded = task_history.get('last_rewarded')
+
+    # Calculate time difference
+    can_reward = False
+    if last_rewarded is None:
+        # Never rewarded before
+        can_reward = True
+    else:
+        # Convert last_rewarded to datetime
+        last_rewarded_dt = datetime.fromisoformat(last_rewarded)
+        
+        # Calculate time difference
+        diff = current_time - last_rewarded_dt
+        
+        # Check if enough time has passed
+        if diff.days >= when_should_be_reasked:
+            can_reward = True
+
+    # Process reward if task can be rewarded
+    if can_reward:
+        # Update task history
+        task_history['last_rewarded'] = current_time.isoformat()
+        task_history['total_times_rewarded'] += 1
+
+        # Update total points
+        user_rewards_log['total_points'] += points
+
+        # Save updated rewards log
+        with open(USER_REWARDS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(user_rewards_log, f, indent=4)
+
+        return {
+            "task": tasks_config[task_completed]['description'],
+            "points_earned": points,
+            "total_points": user_rewards_log['total_points'],
+            "last_rewarded": current_time.isoformat(),
+            "times_rewarded": task_history['total_times_rewarded'],
+            "message": f"Congratulations! You earned {points} points for {task_completed}."
+        }
+    else:
+        # Calculate remaining time until next reward
+        remaining_time = when_should_be_reasked - (current_time - datetime.fromisoformat(last_rewarded)).days
+        
+        return {
+            "task": tasks_config[task_completed]['description'],
+            "points_earned": 0,
+            "total_points": user_rewards_log['total_points'],
+            "last_rewarded": last_rewarded,
+            "times_rewarded": task_history.get('total_times_rewarded', 0),
+            "message": f"You can earn points for this task again in {remaining_time} days.",
+            "remaining_time": str(remaining_time)
+        }

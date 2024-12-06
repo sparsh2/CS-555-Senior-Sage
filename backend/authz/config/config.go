@@ -15,12 +15,13 @@ type DBConfig struct {
 	Password        string `yaml:"password"`
 	DBName          string `yaml:"database"`
 	AppName         string `yaml:"appname"`
-	UsersCollection string `yaml:"users_collection"`
-	AclsCollection  string `yaml:"acls_collection"`
+	UsersCollection string `yaml:"usersCollection"`
+	AclsCollection  string `yaml:"aclsCollection"`
 }
 
 type Config struct {
 	DBConfig      *DBConfig `yaml:"db"`
+	DataEncryptionKey string      `yaml:"encryptionKey"`
 	AuthSecretKey string    `yaml:"authSecretKey"`
 	LLMUserEmail  string    `yaml:"llmUsername"`
 }
