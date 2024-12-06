@@ -1,8 +1,8 @@
 package service
 
 import (
-	"encoding/json"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"storage-service/storage"
@@ -67,7 +67,7 @@ func logAccess(requesterToken, userId, operation string, resources []types.Resou
 
 func getEmailFromJWT(jwtToken string) (string, error) {
 	parts := strings.Split(jwtToken, ".")
-
+	log.Println(parts)
 	// Decode the payload part (index 1)
 	payloadBytes, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
@@ -85,8 +85,8 @@ func getEmailFromJWT(jwtToken string) (string, error) {
 
 	email, ok := claims["user_id"].(string)
 	if !ok {
-			fmt.Println("Email claim not found")
-			return "", fmt.Errorf("Email claim not found")
+		fmt.Println("Email claim not found")
+		return "", fmt.Errorf("email claim not found")
 	}
 
 	return email, nil
