@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen({ navigation }: any) {
 
@@ -8,7 +7,7 @@ export default function HomeScreen({ navigation }: any) {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>Good Morning, Buddhe</Text>
+        <Text style={styles.greeting}>Welcome to Senior Sage!</Text>
         <Image source={require('../assets/icons/owl.png')} style={styles.icon} />
       </View>
 
@@ -20,8 +19,10 @@ export default function HomeScreen({ navigation }: any) {
 
       {/* Text-based Summary */}
       <View style={styles.summary}>
-        <Text style={styles.summaryText}>Lore Ipsum gaand masti,</Text>
-        <Text style={styles.summaryText}>We can have the text based summary here</Text>
+        <Text style={styles.summaryText}>Over the past month, you've had a mix of readings. 
+          There were several higher readings, where your systolic pressure went above 130, especially on days like the 1st, 5th, 11th, and 23rd.
+          It's important to pay attention to these instances as they indicate stages of high blood pressure. 
+        </Text>
       </View>
 
       {/* Upcoming Appointment */}
@@ -83,8 +84,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   bloodPressure: {
     marginTop: 20,
@@ -93,11 +94,11 @@ const styles = StyleSheet.create({
   bloodPressureText: {
     fontSize: 18,
     color: '#000',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   graph: {
     width: '100%',
-    height: 200,
+    height: 180,
     resizeMode: 'contain',
   },
   summary: {
@@ -122,14 +123,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#000',
   },
   appointmentDetails: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   doctorIcon: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     borderRadius: 20,
     marginRight: 10,
   },
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
   doctorName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#000',
   },
   specialty: {
     fontSize: 14,
@@ -180,11 +183,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
   },
   navButton: {
-    padding: 10,
+    padding: 5,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
 

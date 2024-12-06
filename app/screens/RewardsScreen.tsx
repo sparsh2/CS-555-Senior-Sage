@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   coinIcon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   headerTextContainer: {
     flex: 1,
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   dailyGoal: {
     marginTop: 40,
@@ -186,14 +186,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ddd',
     backgroundColor: '#f8f8f8',
-    marginTop: 280,
+    marginTop: 230,
   },
   navButton: {
     padding: 10,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
 

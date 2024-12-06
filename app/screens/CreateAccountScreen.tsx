@@ -6,8 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import CustomTextInput from '../components/CustomTextInput';
 
 export default function CreateAccountScreen({ navigation }: any) {
+  const [firstName, setFirstName] = React.useState('');
+  const [lastName, setLastName]  = React.useState('');
+  const [email, setEmail]        = React.useState('');
+  const [password, setPassword]  = React.useState('');
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -17,27 +23,27 @@ export default function CreateAccountScreen({ navigation }: any) {
       <Text style={styles.pageTitle}>Create Account</Text>
 
       {/* Input Fields */}
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="First Name"
-        placeholderTextColor="#999"
+        value={firstName}
+        onChangeText={setFirstName}
       />
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Last Name"
-        placeholderTextColor="#999"
+        value={lastName}
+        onChangeText={setLastName}
       />
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Email"
-        placeholderTextColor="#999"
         keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
       />
-      <TextInput
-        style={styles.input}
+      <CustomTextInput
         placeholder="Password"
-        placeholderTextColor="#999"
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
       {/* Create Account Button */}
