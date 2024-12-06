@@ -6,7 +6,7 @@ export default function ClaimRewardsScreen({ navigation }: any) {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Text style={styles.headerText}>REWARDS</Text>
+        <Text style={styles.headerText}>Let's Reward Your Hardwork!</Text>
         <Image source={require('../assets/images/gift.png')} style={styles.icon} />
       </View>
 
@@ -95,8 +95,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   rewardPointsSection: {
     marginTop: 30,
@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
 
