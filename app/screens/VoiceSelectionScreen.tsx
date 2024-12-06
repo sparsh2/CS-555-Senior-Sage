@@ -73,12 +73,12 @@ const styles = StyleSheet.create({
   step: {
     fontSize: 16,
     color: '#000',
-    marginTop: 10,
+    marginTop: 20,
   },
   chooseVoice: {
     fontSize: 20,
     color: '#000',
-    marginTop: 20,
+    marginTop: 10,
   },
   voiceContainer: {
     marginTop: 30,
@@ -119,11 +119,11 @@ const styles = StyleSheet.create({
     height: 50,
   },
   skipButton: {
-    marginTop: 5,
+    marginTop: 0,
     padding: 10,
     backgroundColor: '#555',
     borderRadius: 20,
-    marginBottom: 5,
+    marginBottom: 25,
   },
   skipText: {
     color: '#FFF',
