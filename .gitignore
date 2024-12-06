@@ -101,3 +101,5 @@ yarn-error.log
 .idea/
 
 *.wav
+
+.DS_Store
