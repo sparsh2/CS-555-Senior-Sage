@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"server/config"
 	"server/types"
@@ -30,7 +31,7 @@ type AuthzClientService struct {
 
 func (as *AuthzClientService) VerifyToken(token string) (bool, string, error) {
 	reqStr := fmt.Sprintf(`{"jwt_token": "%s"}`, token)
-	req, err := http.NewRequest("GET", "http://"+config.Configs.AuthSvcConfig.Host+":"+strconv.Itoa(config.Configs.AuthSvcConfig.Port)+"/verify-token", strings.NewReader(reqStr))
+	req, err := http.NewRequest("GET", "http://"+config.Configs.AuthSvcConfig.Host+":"+strconv.Itoa(config.Configs.AuthSvcConfig.Port)+"/auth/verify-token", strings.NewReader(reqStr))
 	if err != nil {
 		return false, "", fmt.Errorf("error in creating request to authz service: %v", err)
 	}
@@ -46,6 +47,7 @@ func (as *AuthzClientService) VerifyToken(token string) (bool, string, error) {
 	if resp.StatusCode != 200 {
 		return false, "", fmt.Errorf("error in authz service: %s", body)
 	}
+	log.Println(string(body))
 	verifyResp := &types.GetVerifyTokenResponse{}
 	err = json.Unmarshal(body, verifyResp)
 	if err != nil {

@@ -20,6 +20,11 @@ const (
 	RESOURCE_UNKNOWN           ResourceType = "UNKNOWN"
 )
 
+const (
+	OPERATION_READ  = "READ"
+	OPERATION_WRITE = "WRITE"
+)
+
 var ResourceList = []ResourceType{
 	RESOURCE_USER_CHAT_HISTORY,
 	RESOURCE_USER_PREFERENCES,

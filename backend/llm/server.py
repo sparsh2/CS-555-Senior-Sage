@@ -98,7 +98,7 @@ def handle_auth():
     try:
         authzHost = cfg['authzService']['host']
         authzPort = cfg['authzService']['port']
-        response = requests.get(f"http://{authzHost}:{authzPort}/auth/verify", json={"jwt_token": token})
+        response = requests.get(f"http://{authzHost}:{authzPort}/auth/verify-token", json={"jwt_token": token})
         response.raise_for_status()
         current_user = response.json()
         if current_user['valid'] == False:

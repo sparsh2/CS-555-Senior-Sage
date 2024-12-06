@@ -37,7 +37,9 @@ storageService:
     secretKey: "testSecretKey!"
     encryptionKey: "test_keytest_key"
 languageProcessor:
-  openaiApiKey: "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"
+  # openaiApiKey: "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"
+  openaiApiKey: "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"
+  # openaiApiKey: "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"
   name: language-processor
   image: language-processor
   replicas: 1
@@ -58,4 +60,5 @@ db:
   appname: users
   usersCollection: users
   aclsCollection: acls
+  accessLogsCollection: logs
   port: 8080

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"net/http"
 	"storage-service/service"
 	"storage-service/types"
 
@@ -12,6 +13,18 @@ import (
 
 func GetRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Accept")
+		c.Writer.Header().Set("Access-Control-Max-Age", "3600")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+		} else {
+			c.Next()
+		}
+	})
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -23,9 +36,42 @@ func GetRouter() *gin.Engine {
 	r.PUT("/reminders", writeReminders)
 	r.PUT("/question-counter", writeQuestionCounter)
 	r.PUT("/chat-history", writeChatHistory)
-	r.GET("/data", getData)
+	r.POST("/data", getData)
+	r.POST("/access-logs", getRequestLogs)
 
 	return r
+}
+
+func getRequestLogs(c *gin.Context) {
+	bytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	req := &types.GetRequestLogsRequest{}
+	err = json.Unmarshal(bytes, req)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	logs, err := service.Svc.GetAccessLogs(req.RequesterEmail)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": "Internal Server Error",
+			"msg":   err.Error(),
+		})
+		return
+	}
+	resp := &types.GetRequestLogsResponse{
+		Logs: logs,
+	}
+	c.JSON(200, resp)
 }
 
 func writeChatHistory(c *gin.Context) {
@@ -246,6 +292,14 @@ func getData(c *gin.Context) {
 		})
 		return
 	}
+	if getDataReq.RequesterToken == "" {
+		c.JSON(400, gin.H{
+			"error": "Bad Request",
+			"msg":   "Requester token cannot be nil",
+		})
+		return
+	}
+
 	resp, err := service.Svc.GetData(getDataReq)
 	if err != nil {
 		if err == types.ErrAccessDenied {

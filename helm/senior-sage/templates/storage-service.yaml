@@ -58,7 +58,7 @@ data:
       password: {{ .Values.db.password }}
       appname: {{ .Values.db.appname }}
       usersCollection: {{ .Values.db.usersCollection }}
-      aclsCollections: {{ .Values.db.aclsCollections }}
+      aclsCollections: {{ .Values.db.aclsCollection }}
       accessLogsCollection: {{ .Values.db.accessLogsCollection }}
 
 ---

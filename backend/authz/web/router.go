@@ -19,7 +19,7 @@ func GetRouter() *gin.Engine {
 	})
 
 	authG := r.Group("/auth/")
-	authG.GET("/verify", verify)
+	authG.GET("/verify-token", verify)
 	authG.POST("/gen-token", generateToken)
 	authG.POST("/login", login)
 	authG.POST("/signup", signup)

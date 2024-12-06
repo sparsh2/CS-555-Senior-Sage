@@ -33,3 +33,11 @@ type GetUserDetailsRequest struct {
 	UserId         string `json:"user_id"`
 	RequesterToken string `json:"requester_token"`
 }
+
+type GetRequestLogsRequest struct {
+	RequesterEmail string `json:"user_id"`
+}
+
+type GetRequestLogsResponse struct {
+	Logs []string `json:"logs"`
+}
