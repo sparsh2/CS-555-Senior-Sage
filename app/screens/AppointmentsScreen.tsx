@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   descriptionSection: {
     marginTop: 20,
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
   },
   appointmentIcon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
     marginRight: 20,
   },
   appointmentDetails: {
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
   xpText: {
     fontSize: 16,
     color: '#888',
+    marginBottom: 10,
   },
   navbar: {
     flexDirection: 'row',
@@ -163,8 +164,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
 
