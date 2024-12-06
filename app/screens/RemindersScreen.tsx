@@ -97,15 +97,15 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   notificationButton: {
     padding: 10,
   },
   notificationIcon: {
-    width: 24,
-    height: 24,
+    width: 50,
+    height: 50,
   },
   dateNavigation: {
     flexDirection: 'row',
@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
   reminderTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#000',
   },
   reminderDescription: {
     fontSize: 14,
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 100,
     right: 20,
     backgroundColor: '#4CAF50',
     width: 60,
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
