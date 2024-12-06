@@ -7,8 +7,10 @@ from pydub.playback import play
 import pydub
 from pydub import AudioSegment
 import io
+import logging
 
-sio = socketio.Client(logger=True, engineio_logger=True)
+sio = socketio.Client()
+
 
 @sio.on('connect', namespace='/llm')
 def connect():
@@ -17,20 +19,22 @@ def connect():
 
 @sio.on('connected', namespace='/llm')
 def connected(data):
-    print('done')
-    print(data)
+    # print('connected to server')
     record_audio()
     sio.emit('voice_input', open("user_response.wav", 'rb').read(), namespace='/llm')
 
 @sio.on('voice_response', namespace='/llm')
 def handle_voice_response(data):
-    print(data['disconnect'])
     # handle_voice_response(data)
     aud_seg = AudioSegment.from_file(io.BytesIO(data['data']), format="mp3")
     play(aud_seg)
     if not data['disconnect']:
         record_audio()
         sio.emit('voice_input', open("user_response.wav", 'rb').read(), namespace='/llm')
+    else:
+        global close
+        close = True
+
     
 
 @sio.on('connection_denied', namespace='/llm')
@@ -51,7 +55,7 @@ def connection_denied(data):
 #         print("Failed to play audio using ffplay. Falling back to alternative method...")
 #         # Implement alternative playback logic (e.g., pyaudio)
 #     return audio_segment
-
+close = False
 def record_audio(duration=None):
     CHUNK = 1024
     FORMAT = 'int16'
@@ -63,7 +67,8 @@ def record_audio(duration=None):
     stream = None
     is_recording = False
     recording_stopped = False
-    close = False
+    global close
+    print('Press UP to start recording, UP to stop recording')
 
     def record_audio():
         nonlocal frames, stream
@@ -100,16 +105,20 @@ def record_audio(duration=None):
         recording_stopped = True
 
     def on_key(key):
-        nonlocal is_recording, close
+        nonlocal is_recording
+        global close
 
         if key == keyboard.Key.up:
             if not is_recording:
+                print('recording audio')
                 record_audio()
                 is_recording = True
             else:
+                print('recording captured, voice assistant is thinking')
                 stop_recording()
                 is_recording = False
         elif key == keyboard.Key.down:
+            print('closing')
             close = True
 
     listener = keyboard.Listener(on_press=on_key)
@@ -117,19 +126,45 @@ def record_audio(duration=None):
 
     start_time = time.time()
     while listener.running:
+        if close:
+            listener.stop()
+            break
         if recording_stopped:
             listener.stop()
         elif duration and (time.time() - start_time) > duration:
             listener.stop()
-        elif close:
-            listener.stop()
-            break
+        
         time.sleep(0.01)
 
 if __name__ == '__main__':
-    sio.connect('http://127.0.0.1:58105', headers={
-        'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2OTAxNzQzMSwibmJmIjoxNzMzMDIxMDMxLCJpYXQiOjE3MzMwMjEwMzEsInVzZXJfaWQiOiI0MzZmMmZjOWE3ZmNlNjYwZDhkZjhjZGVhZjQ5ZDg0YyJ9.yfqmb6qyr_INSDdUb9I_SD1QSmeMSY5hWZVVmkmkQ3I'
+    # logging.getLogger('socketio').setLevel(logging.WARNING)
+    # logging.getLogger('engineio').setLevel(logging.WARNING)
+    while True:
+        print('Select user: press 1 for Alice, 2 for Bob')
+        user = input()
+        if user == '1':
+            print('logging in as Alice')
+            time.sleep(0.01)
+            user_id = '91c6e005d9fcd20a6cbf1fe1dfdd319d'
+            token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2OTQ0NzQ5MSwibmJmIjoxNzMzNDUxMDkxLCJpYXQiOjE3MzM0NTEwOTEsInVzZXJfaWQiOiI5MWM2ZTAwNWQ5ZmNkMjBhNmNiZjFmZTFkZmRkMzE5ZCJ9.VM2HcCgZQPu_dGgtsTBbGlvHD3QrRnxTGJwsWJokM9E'
+            break
+        elif user == '2':
+            print('logging in as Bob')
+            time.sleep(0.01)
+            user_id = 'ee82c18d386dd4f0b6e7fae47e5fc1a6'
+            token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2OTQ2OTc2NCwibmJmIjoxNzMzNDczMzY0LCJpYXQiOjE3MzM0NzMzNjQsInVzZXJfaWQiOiJlZTgyYzE4ZDM4NmRkNGYwYjZlN2ZhZTQ3ZTVmYzFhNiJ9.2JYxW9M3OiDTc6Lv2uGJlRlDEFxckX9_y0EKM6o93FA'
+            break
+        else:
+            print('Invalid user')
+            
+    sio.logger.setLevel(logging.WARNING)
+    sio.connect('http://127.0.0.1:52714', headers={
+        'Authorization': token
     }, namespaces='/llm')
-    sio.wait()
+    # sio.wait()
+    while close == False:
+        time.sleep(0.01)
+    print('closing connection')
+    sio.disconnect()
     # record_audio()
 

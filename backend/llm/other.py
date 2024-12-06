@@ -42,7 +42,7 @@ def pull_user_data(cfg, user_id):
     try:
         host = cfg['storageService']['host']
         port = cfg['storageService']['port']
-        response = requests.get(f"http://{host}:{port}/data", json={"requester_token": llm_token, "user_id": user_id})
+        response = requests.post(f"http://{host}:{port}/data", json={"requester_token": llm_token, "user_id": user_id})
         response.raise_for_status()
         user_data = response.json()
         logger.info(f'user data: {user_data}')
@@ -292,7 +292,7 @@ def get_response_data_from_llm(user_id, voice_data):
 
     text_data = stt_whisper(voice_data)
     logger.info(current_user_data)
-    text_response, audio_response = openai_complete(user_id, text_data, questions_to_ask, current_user_data.get('preferences', []), current_user_data.get('context', []), current_user_data.get('user_data', {}).get('voice', 'nova'), current_user_data.get('user_data', {}).get('name', 'unknown'))
+    text_response, audio_response = openai_complete(user_id, text_data, questions_to_ask, current_user_data.get('preferences', []), current_user_data.get('context', []), current_user_data.get('user_data', {}).get('voice_selection', 'nova'), current_user_data.get('user_data', {}).get('name', 'unknown'))
     
     cur_time = datetime.now().isoformat()
     context = current_user_data.get('context', [])
@@ -333,13 +333,14 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
     Make sure to have sense of what questions and contexts you have discussed with the user in the day and try to continue your conversation from there instead of starting from the beginning. Ex: A user mentions their hobby or plans for the day once, try to refer the chat history and documentation to understand the user preference and how you can continue the conversations from there.
     You can make use of the "QUESTIONAIRE" which includes some day to day questions that you should ask the user in a POLITE WAY, making sure it looks NATURAL and not like they are giving a medical form. When the user answers these question, call the ``responses`` function to store the answers to the questions and update your question bank.
     Keep short and consize answers not to bother them too much. Do not output long answers as it may be too long for them to read. Keep it short and simple and human-like. 
-    Utilize the context given below to keep track of user queries and your answers. Try to bring up events from past conversations using CHAT HISTORY to make it a more personalised experience for the user.
+    Utilize the context given below to keep track of user queries and your answers. Try to bring up events from past conversations using CHAT HISTORY and USER PREFERENCES to make it a more personalised experience for the user.
     Also try and keep a track of the users preferences, anything that makes them unique. Store results in one of the following: ["food", "hobby", "daily routine", "family", "health", "entertainment", "social", "other"] by calling the ``preferences`` function.
     If you don't understand a request, ask for clarification rather than making assumptions. Always prioritize user safety by never providing medical diagnosis, treatment recommendations, 
     or interpreting medical results. When in doubt, encourage consulting a healthcare professional.
     The conversation should be done in English (it can include numbers), if the user responds or asks you a question in any other language, return 
     "Pardon, I didn't quite get that,could you try again in English"
     If the user asks you to set a reminder, please extract the relevant information and use the ``reminders`` function. If the user hasn't provided information regarding time and frequency, ask them gently.
+    If the user discusses something repeatedly like about their dog, or their favourite food, use function call ``preferences`` to store the information and use it in the conversation.
     When the user tries to end the conversation using "exit","bye" or "see you soon" or anything simlilar, return 'Alright then, have a great day ahead!'
 
     CHAT HISTORY: {context}
@@ -390,7 +391,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
                     function_args = json.loads(tool_call.function.arguments)
                     responses(
                         q_idx=function_args["q_idx"],
-                        username=function_args["username"],
+                        username=username,
                         user_answer=function_args["user_answer"]
                     )
                 except Exception as e:
@@ -402,7 +403,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
                 try:
                     function_args = json.loads(tool_call.function.arguments)
                     preferences(
-                        username=function_args["username"],
+                        username=username,
                         preference_type=function_args["preference_type"],
                         preference_detail=function_args["preference_detail"],
                         sentiment=function_args["sentiment"]
