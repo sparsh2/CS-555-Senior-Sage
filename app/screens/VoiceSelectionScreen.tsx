@@ -5,12 +5,12 @@ import Slider from '@react-native-community/slider';
 export default function VoiceSelectionScreen({ navigation }: any) {
   const [selectedVoice, setSelectedVoice] = useState('Sol'); // Default voice
   const voices = [
-    { name: 'Alloy', description: 'Energetic and bright' },
-    { name: 'Echo', description: 'Calm and soothing' },
-    { name: 'Fable', description: 'Creative and friendly' },
-    { name: 'Onyx', description: 'Sharp and clear' },
-    { name: 'Nova', description: 'Soft and gentle' },
-    { name: 'Shimmer', description: 'Smooth and confident' },
+    { name: 'Sunshine', description: 'Cheerful and uplifting, like a warm ray of sunlight' },
+    { name: 'Serenity', description: 'Gentle and reassuring, like a peaceful evening breeze' },
+    { name: 'Sage', description: 'Wise and kind, like a friend sharing heartfelt stories' },
+    { name: 'Victor', description: 'Confident and articulate, a voice with a purpose' },
+    { name: 'Grace', description: 'Warm and tender, like a comforting hug from someone' },
+    { name: 'Sterling', description: 'Polished and steady, a voice that exudes assurance' },
   ];
 
   const handleVoiceChange = (index: number) => {
@@ -19,9 +19,9 @@ export default function VoiceSelectionScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>VA Voice Preference</Text>
       <Text style={styles.step}>Step 3/3</Text>
-      <Text style={styles.chooseVoice}>Choose a voice</Text>
+      <Text style={styles.title}>VA Voice Preference</Text>
+      <Text style={styles.chooseVoice}>Hi There! Please select your preferred voice to chat with the voice assistant</Text>
 
       <View style={styles.voiceContainer}>
         {voices.map((voice, index) => (
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     color: '#000',
+    marginTop: 5,
   },
   step: {
     fontSize: 16,
@@ -122,6 +123,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#555',
     borderRadius: 20,
+    marginBottom: 5,
   },
   skipText: {
     color: '#FFF',

@@ -8,7 +8,7 @@ export default function HomeScreen({ navigation }: any) {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>Good Morning, Buddhe</Text>
+        <Text style={styles.greeting}>Welcome to Senior Sage!</Text>
         <Image source={require('../assets/icons/owl.png')} style={styles.icon} />
       </View>
 
