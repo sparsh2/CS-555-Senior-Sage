@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   descriptionSection: {
     marginTop: 20,
@@ -162,8 +162,9 @@ const styles = StyleSheet.create({
     height: 20,
   },
   xpSection: {
-    marginTop: 40,
+    marginTop: 0,
     alignItems: 'center',
+
   },
   xpText: {
     fontSize: 16,
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
