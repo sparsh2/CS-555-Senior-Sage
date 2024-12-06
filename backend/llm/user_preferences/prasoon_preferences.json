@@ -1,6 +1,6 @@
 {
   "user": "Prasoon",
-  "last_updated": "2024-11-11T20:35:53.496966",
+  "last_updated": "2024-12-05T14:38:18.108700",
   "preferences": [
     {
       "type": "food",
@@ -25,6 +25,30 @@
       "detail": "Pizza from Napolis",
       "sentiment": "like",
       "timestamp": "2024-11-11T20:35:53.496936"
+    },
+    {
+      "type": "health",
+      "detail": "experiencing backache",
+      "sentiment": "dislike",
+      "timestamp": "2024-11-14T08:56:28.100572"
+    },
+    {
+      "type": "daily routine",
+      "detail": "Spending a lazy day soaking in sunlight with dog, plans to play Valorant later if running nose stops",
+      "sentiment": "like",
+      "timestamp": "2024-11-14T09:10:25.113122"
+    },
+    {
+      "type": "food",
+      "detail": "likes veggie burger from Shake Shack",
+      "sentiment": "like",
+      "timestamp": "2024-11-14T19:50:53.397623"
+    },
+    {
+      "type": "daily routine",
+      "detail": "Did 30 minutes of exercise with Oreo.",
+      "sentiment": "like",
+      "timestamp": "2024-12-05T14:38:18.108664"
     }
   ]
 }
