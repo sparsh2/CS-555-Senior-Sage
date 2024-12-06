@@ -1,73 +1,85 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  Button,
   StyleSheet,
   Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from 'react-native';
 import CustomTextInput from '../components/CustomTextInput';
 
 export default function LoginScreen({ navigation }: any) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
-  console.log('Rendering LoginScreen...');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
-    <View style={styles.container}>
-      {/* Logo and Title */}
-      <View style={styles.header}>
-        <Image source={require('../assets/icons/owl.png')} style={styles.logo}/>
-        <Text style={styles.title}>Senior Sage</Text>
-      </View>
-
-      {/* Welcome Text */}
-      <Text style={styles.welcomeText}>Welcome</Text>
-
-      {/* Email and Password Fields */}
-      <CustomTextInput
-        placeholder="Email/Vitalink ID"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <CustomTextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      {/* Sign In Button */}
-      <TouchableOpacity style={styles.signInButton}>
-        <Text style={styles.signInButtonText}>Sign In</Text>
-      </TouchableOpacity>
-
-      {/* Forgot Password Link */}
-      <TouchableOpacity onPress={() => console.log('Forgot Password pressed')}>
-        <Text style={styles.forgotPassword}>Forgot Password?</Text>
-      </TouchableOpacity>
-
-      {/* Create Account Button */}
-      <TouchableOpacity
-        style={styles.createAccountButton}
-        onPress={() => navigation.navigate('CreateAccount')} // Navigate to CreateAccount
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.createAccountButtonText}>Create Account</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Logo and Title */}
+        <View style={styles.header}>
+          <Image source={require('../assets/icons/owl.png')} style={styles.logo} />
+          <Text style={styles.title}>Senior Sage</Text>
+        </View>
+
+        {/* Welcome Text */}
+        <Text style={styles.welcomeText}>Welcome</Text>
+
+        {/* Input Fields */}
+        <View style={{ width: '100%' }}>
+          <CustomTextInput
+            placeholder="Email/Vitalink ID"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <CustomTextInput
+            placeholder="Password"
+            value={password}
+            secureTextEntry
+            onChangeText={setPassword}
+          />
+        </View>
+
+        {/* Sign In Button */}
+        <TouchableOpacity style={styles.signInButton}>
+          <Text style={styles.signInButtonText}>Sign In</Text>
+        </TouchableOpacity>
+
+        {/* Forgot Password Link */}
+        <TouchableOpacity onPress={() => console.log('Forgot Password pressed')}>
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </TouchableOpacity>
+
+        {/* Create Account Button */}
+        <TouchableOpacity
+          style={styles.createAccountButton}
+          onPress={() => navigation.navigate('CreateAccount')}
+        >
+          <Text style={styles.createAccountButtonText}>Create Account</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
   },
   header: {
     alignItems: 'center',
@@ -86,15 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '600',
     marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 15,
   },
   signInButton: {
     width: '100%',
@@ -130,4 +133,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
