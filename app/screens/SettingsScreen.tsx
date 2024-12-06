@@ -8,6 +8,7 @@ export default function SettingsScreen({ navigation }: any) {
       <View style={styles.header}>
         <Image source={require('../assets/icons/owl.png')} style={styles.icon} />
         <Text style={styles.headerText}>Settings</Text>
+        <Image source={require('../assets/icons/gears.png')} style={styles.icon} />
       </View>
 
       {/* General Section */}
@@ -93,8 +94,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 50,
+    height: 50,
   },
   settingsList: {
     marginTop: 20,
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   navIcon: {
-    width: 24,
-    height: 24,
+    width: 34,
+    height: 34,
   },
 });
