@@ -8,6 +8,7 @@ from other import llm_authenticate, pull_user_data, del_user_data, get_response_
 import time
 from flask import Flask
 import logging
+import traceback
 
 import yaml
 
@@ -137,6 +138,7 @@ def handle_disconnect():
 
 @socketio.on('voice_input', namespace='/llm')
 def handle_voice_capture(raw_voice_data):
+    global app, state_data
     try:
         app.logger.info(f'voice_input: user_id: {state_data[request.sid]}, request.sid: {request.sid}')
         user_id = state_data[request.sid]
@@ -149,6 +151,8 @@ def handle_voice_capture(raw_voice_data):
         # app.logger.error('Error:', error_message)
         app.logger.info(f"Exception type: {type(e)}")
         app.logger.error(f"Exception message: {str(e)}")
+        traceback_str = ''.join(traceback.format_tb(e.__traceback__))
+        app.logger.error(traceback_str)
         # app.logger.error(e)
 
 if __name__ == '__main__':

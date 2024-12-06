@@ -1,7 +1,6 @@
 import requests
 from datetime import datetime
 # from voice_interactions import stt_whisper, fetch_audio
-from pydub import AudioSegment
 # from server import cfg
 import openai
 import json
@@ -283,6 +282,10 @@ def create_questions_to_ask_stack(questions, counter_data, username):
 
 def get_response_data_from_llm(user_id, voice_data):
     global questions, all_user_data
+    if user_id not in all_user_data.keys():
+        logger.info(f'userid {user_id} not in all_user_data')
+        all_user_data[user_id] = {}
+        # pull_user_data(cfg, user_id)
     current_user_data: dict = all_user_data.get(user_id, {})
     counter_data, questions_to_ask = initialize_health_question_counter(questions, current_user_data.get('question_counts', {}), user_id)
     current_user_data['question_counts'] = counter_data
@@ -298,10 +301,12 @@ def get_response_data_from_llm(user_id, voice_data):
     if 'current_session' not in current_user_data.keys():
         current_user_data['current_session'] = {'messages': []}
     if "Alright then have a great" in re.sub(r'[^\w\s]', '', text_response):
-        current_user_data['currrent_session']['messages'].append({
+        logger.info(f'ending conversation for {user_id}')
+        logger.info(f'current_user_data: {current_user_data}')
+        current_user_data['current_session']['messages'].append({
             'timestamp': datetime.now().isoformat(),
-            'user_message': str(text_data),
-            'bot_response': str(text_response)
+            'user_message': text_data,
+            'bot_response': text_response
         })
         # disconnect from the user
         return audio_response, True
@@ -340,6 +345,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
     CHAT HISTORY: {context}
     QUESTIONAIRE: {health_questions}
     USER PREFERENCES: {user_preferences}
+    USER REMINDERS: {all_user_data[username]['user_data']['reminder_details']}
     USER NAME: {name}'''
 
     # api_key = 
@@ -368,6 +374,7 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
             if tool_call.function.name == "reminders":
                 # Handle reminder function call
                 function_args = json.loads(tool_call.function.arguments)
+                logger.info(f"reminders function args: {function_args}")
                 reminders(
                     username=username,
                     remind=function_args["remind"]
@@ -432,36 +439,38 @@ def openai_complete(username, user_ip, questions_to_ask, user_preferences, conte
 def preferences(username, preference_type, preference_detail, sentiment):
     global all_user_data, cfg
     current_user_data = all_user_data.get(username, {})
-    current_user_data['preferences'].append(preference_detail)
+    current_user_data['user_data']['preferences'].append(preference_detail)
     # make a http request to store the preference
     host = cfg['storageService']['host']
     port = cfg['storageService']['port']
     response = requests.put(f"http://{host}:{port}/preferences", json={
         "requester_token": llm_token,
         "user_id": username,
-        "preferences": all_user_data[username]['preferences']
+        "preferences": current_user_data['user_data']['preferences']
     })
     response.raise_for_status()
 
 
 def reminders(username, remind):
     global all_user_data, cfg
-    all_user_data[username]['reminders'].append(remind)
+    all_user_data[username]['user_data']['reminder_details'].append({'reminder_for': remind['reminder_for'], 'time': remind['details']['time'], 'frequency': remind['details']['frequency'], 'start_date': remind['details']['start_date'], 'cron_job': remind['details']['cron_job']})
     # make a http request to store the reminder
     host = cfg['storageService']['host']
     port = cfg['storageService']['port']
+    logger.info(f'making request to store reminders: {all_user_data[username]["user_data"]["reminder_details"]}')
     response = requests.put(f"http://{host}:{port}/reminders", json={
         "requester_token": llm_token,
         "user_id": username,
-        "reminder": all_user_data[username]['reminders']
+        "reminders": all_user_data[username]['user_data']['reminder_details']
     })
     response.raise_for_status()
+    logger.debug(f'reminder api response: {response.json()}')
 
 
 def responses(q_idx, username, user_answer):
     global all_user_data
     current_user_data = all_user_data.get(username, {})
-    current_user_data['question_responses'].append(
+    current_user_data['user_data']['question_responses'].append(
         {
             "q_id": q_idx,
             "question": questions[q_idx],
@@ -518,4 +527,3 @@ def fetch_audio(sentence, voice="nova"):
         input=sentence
     )
     return response.content
-    AudioSegment.from_file(io.BytesIO(audio_data), format="mp3")

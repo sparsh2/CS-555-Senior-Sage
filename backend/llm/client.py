@@ -127,8 +127,8 @@ def record_audio(duration=None):
         time.sleep(0.01)
 
 if __name__ == '__main__':
-    sio.connect('http://127.0.0.1:49675/', headers={
-        'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2OTAwMTUzNCwibmJmIjoxNzMzMDA1MTM0LCJpYXQiOjE3MzMwMDUxMzQsInVzZXJfaWQiOiJmYTgwNTAxYTBjOTE5ODUwNzE5NjYyYTg2OTJiNzcyNSJ9.Fv1ezmkBeYfTuE04xPnWmCLpaMvWJlWg0UJn0IuCFgk'
+    sio.connect('http://127.0.0.1:51323/', headers={
+        'Authorization': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzYWdlLXNlcnZlciIsImV4cCI6MTc2OTAxNzQzMSwibmJmIjoxNzMzMDIxMDMxLCJpYXQiOjE3MzMwMjEwMzEsInVzZXJfaWQiOiI0MzZmMmZjOWE3ZmNlNjYwZDhkZjhjZGVhZjQ5ZDg0YyJ9.yfqmb6qyr_INSDdUb9I_SD1QSmeMSY5hWZVVmkmkQ3I'
     }, namespaces='/llm')
     sio.wait()
     # record_audio()

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from function_calling import reminders, responses, preferences, rewards
 from rag import get_context
 import os
+from update_health_question_counter_data import create_questions_to_ask_stack  
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
