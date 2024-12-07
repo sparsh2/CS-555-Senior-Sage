@@ -19,52 +19,57 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 - Run `npx react-native run-android` to build and install the app on your device
 
 ### Backend server setup
-- Ensure you are running this in a virtual environment
-- Navigate to `backend/server/flaskr/`
-- Run `pip install -r requirements.txt`
-- From the same directory run `flask --app server run`
+- Install minikube: [installation](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2F.exe+download)
+- Install helm: [installation](https://helm.sh/docs/intro/install/)
+- Build docker images
+  - Navigate to [Docker Makefile](./docker/Makefile)
+  - Change the `NAMESPACE` var to your docker account username
+  - Navigate to [helm values.yaml](./helm/senior-sage/values.yaml)
+  - Change `dockerUsername` to your docker username
+  - Navigate to `./docker` directory and run `make`
+    - This will build all the required images and push it to your docker hub account
+- Run minikube: `minikube start`
+- Run ingress addon: `minikube addons enable ingress`
+- In a new terminal, start minikube dashboard: `minikube dashboard`
+- Expose ingress to localhost: `minikube service -n ingress-nginx ingress-nginx-controller`
+- Install `senior-sage` project:
+  - `cd helm`
+  - `helm install senior-sage ./senior-sage/`
 
-### Authorization server setup
-#### Set up
-- `authz` service is written `golang`. So, ensure you have installed go on your local: [Install go](https://go.dev/doc/install). Requires go version `1.23`
-- Navigate to dir `backend/authz` and run `go mod download` to install dependencies
-- Run `go install github.com/matryer/moq@latest` to install `moq` to generate mocks for testing
-- Run `go generate ./...` to generate the mocks
-- Run `go test ./...` to run the tests on local
+## Architecture
+![architecture diagram](./assets/Architecture-diagram.png)
 
+- We are leveraging OpenAI APIs for our project. The 2 models that we are using are `GPT 4o mini` and `Whisper`
+- We have opted for microservice based architecture for scalability in mind as each service (as shown in the diagram) can be horizontally scaled to meed the growing user base.
+- The system is designed to be HIPAA compliant
+  - `Storage Service` enforces strict authorization rules for who can access what resources and data 
+  - It will also log data access requests (and whether or not it was granted) for auditing purposes
+  - Data stored in the Database is completely encrypted and will be decrypted by `Storage Service` on the fly while serving the requests
 
-#### Run
-- Run in docker
-- From the root dir run `docker build -t authz -f docker/authz/Dockerfile backend/authz` to build image
-- Run `docker run -it --rm -p 8080:8080 --entrypoint bash authz`
-- This should open up a terminal to the docker container
-- Add the `conf.yaml` file for the server:
-```
-mkdir config
-cd config
-cat > conf.yaml <<EOF
-authSecretKey: testkey
-llmUsername: llmuser
-db:
-  host: mymongocluster.r1pcx2q.mongodb.net
-  user: sage
-  password: oQZxNrwTuKBsmAgu
-  database: sage
-  appname: users
-  users_collection: users
-  acls_collection: acls
-EOF
-```
-- Run `cd ../` and `./authz` to start the server
-- This should start the server in the docker and expose port on local on 8080
+### Language Processor Service
+- This is the brain of the Voice Assistant
+- Implemented in Python and leverages OpenAI APIs with prompt engineering the achieve the desired functionalities
 
-### LLM functionalities setup
-- Install ffmpeg
-    - Using `chocolatey` for windows: `choco install ffmpeg`
-    - Using homebrew for macOS `brew install ffmpeg`
-- Navigate to `backend/llm` in your shell/terminal
-- Install all the necessary python libraries using `pip install -r requirements.txt`
-- Run `main.py`
+### Server
+- This is the server that is exposed to outside world for phones to connect to.
+- Implemented in Golang
+
+### Authz Service
+- This is the Authentication and Authorization service that responsible for login, signup, authorization services.
+- Implemented in Golang
+
+### Storage Service
+- Exposes internal APIs for other services to access the Data
+- Leveraging the `Authz` service, enforces strict authorization policies for data access control
+- Logs data access requests for auditing purposes
+
+### Phone App
+- Beautifully designed simple and intuitive cross-platform application built using React-native, keeping in mind the ease of use for senior users
+
+### Data Store
+- Currently using MongoDB to store all user data
+- Data that is store in MongoDB is completely encrypted
+
 
 ## Features completed so far (Sprint 1)
 
