@@ -40,7 +40,7 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 ![architecture diagram](./assets/Architecture-diagram.png)
 
 - We are leveraging OpenAI APIs for our project. The 2 models that we are using are `GPT 4o mini` and `Whisper`
-- We have opted for microservice based architecture with scalability in mind as each service (as shown in the diagram) can be horizontally scaled to meed the growing user base.
+- We have opted for microservice based architecture with scalability in mind as each service (as shown in the diagram) can be horizontally scaled to meet the growing user base.
 - The system is designed to be HIPAA compliant
   - `Storage Service` enforces strict authorization rules for who can access what resources and data 
   - It will also log data access requests (and whether or not it was granted) for auditing purposes
@@ -48,14 +48,14 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 
 ### Language Processor Service
 - This is the brain of the Voice Assistant
-- Implemented in Python and leverages OpenAI APIs with prompt engineering the achieve the desired functionalities
+- Implemented in Python and leverages OpenAI APIs with prompt engineering to achieve the desired functionalities
 
 ### Server
 - This is the server that is exposed to outside world for phones to connect to.
 - Implemented in Golang
 
 ### Authz Service
-- This is the Authentication and Authorization service that responsible for login, signup, authorization services.
+- This is the Authentication and Authorization service that is responsible for login, signup, authorization services.
 - Implemented in Golang
 
 ### Storage Service
@@ -68,7 +68,7 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 
 ### Data Store
 - Currently using MongoDB to store all user data
-- Data that is store in MongoDB is completely encrypted
+- Data that is stored in MongoDB is completely encrypted
 
 
 ## Features completed so far (Sprint 1)
