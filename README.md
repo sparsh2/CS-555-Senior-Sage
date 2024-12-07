@@ -40,7 +40,7 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 ![architecture diagram](./assets/Architecture-diagram.png)
 
 - We are leveraging OpenAI APIs for our project. The 2 models that we are using are `GPT 4o mini` and `Whisper`
-- We have opted for microservice based architecture for scalability in mind as each service (as shown in the diagram) can be horizontally scaled to meed the growing user base.
+- We have opted for microservice based architecture with scalability in mind as each service (as shown in the diagram) can be horizontally scaled to meed the growing user base.
 - The system is designed to be HIPAA compliant
   - `Storage Service` enforces strict authorization rules for who can access what resources and data 
   - It will also log data access requests (and whether or not it was granted) for auditing purposes
