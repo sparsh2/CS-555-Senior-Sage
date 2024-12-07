@@ -37,7 +37,7 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
   - `helm install senior-sage ./senior-sage/`
 
 ## Architecture
-![architecture diagram](./assets/Architecture-diagram.png)
+[architecture diagram](./assets/Architecture-diagram.png)
 
 - We are leveraging OpenAI APIs for our project. The 2 models that we are using are `GPT 4o mini` and `Whisper`
 - We have opted for microservice based architecture with scalability in mind as each service (as shown in the diagram) can be horizontally scaled to meet the growing user base.
