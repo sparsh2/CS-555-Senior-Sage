@@ -94,6 +94,27 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 - **Login & sign up functionality**: `authz` service has been added which now supports user login and signup.
 - **Authorization**:  `authz` service also exposes endpoints to be used by `storage` service to check for requesting user permissions before granting access to resources in the database. This is a requirement for HIPAA compliant storage system.
 
+## Features completed so far (Sprint 3)
+
+- **Storing health related questions:** Added the ability to record user responses from the health questionnaire for research purposes.
+- **Storing user preferences:** Made the voice assistant smarter by remembering user preferences for personalized interactions.
+- **Built in-house knowledge base:** Built a repository of medical references for users to access credible information.
+- - **Created a custom RAG model:** Validated responses for our RAG/customized LLM to make sure it gives accurate health-related answers.
+- **RPM Insights module:** Generated summaries of RPM data, giving both doctors and patients actionable insights.
+- **Role-based control:**Implemented role-based access control to keep things private and HIPAA-compliant.
+- **Tesitng Environment Setup:**Set up Minikube to test and deploy Kubernetes locally.
+- **Error logging:**Added error logging to help with troubleshooting and improve the system for developers and admins.
+
+## Features completed so far (Sprint 4)
+
+- **Rewards Module:** Implemented the rewards module, allowed users to log their activities when done.
+- **Emotion Detection Analysis:** Performed sentiment analysis on the users inputs to generate a mood based report per user, that can help doctor's in their analysis.
+- **Login and create user section:** Login screen and create user screen implemented
+- **Onboarding section:** Create Account screen, Profile picture screen, Voice selection screen and user details screen implemented
+- **Rewards and functionalities section :** Home screen, rewards screen, claim rewards screen, exercise screen, medication screen, reminders screen, streaks screen, tiers screen, vitals screen, voice assistant screen implemented
+- **General settings and feedback screen:** Settings screen implemented
+
+
 ### Demos
 
 - Video demonstration of completed features: [Drive Link](https://drive.google.com/drive/u/0/folders/13SrXH7Rgg0j0vdOqyGlyub7U1ZGvrnYm)
