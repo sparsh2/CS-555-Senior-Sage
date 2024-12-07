@@ -117,4 +117,4 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 
 ### Demos
 
-- Video demonstration of completed features: [Drive Link](https://drive.google.com/drive/u/0/folders/13SrXH7Rgg0j0vdOqyGlyub7U1ZGvrnYm)
+- Video demonstration of completed features: [Drive Link](https://drive.google.com/file/d/1ehv0SEtEmiVb6_0UlOOfCOUTCsOCESpG/view?usp=sharing)
