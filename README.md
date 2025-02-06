@@ -101,9 +101,9 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 - **Built in-house knowledge base:** Built a repository of medical references for users to access credible information.
 - - **Created a custom RAG model:** Validated responses for our RAG/customized LLM to make sure it gives accurate health-related answers.
 - **RPM Insights module:** Generated summaries of RPM data, giving both doctors and patients actionable insights.
-- **Role-based control:**Implemented role-based access control to keep things private and HIPAA-compliant.
-- **Testing Environment Setup:**Set up Minikube to test and deploy Kubernetes locally.
-- **Error logging:**Added error logging to help with troubleshooting and improve the system for developers and admins.
+- **Role-based control:** Implemented role-based access control to keep things private and HIPAA-compliant.
+- **Testing Environment Setup:** Set up Minikube to test and deploy Kubernetes locally.
+- **Error logging:** Added error logging to help with troubleshooting and improve the system for developers and admins.
 
 ## Features completed so far (Sprint 4)
 
