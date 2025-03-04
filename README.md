@@ -1,4 +1,4 @@
-# Senior Sage
+# Senior Sage - AI Powered Voice Assistant for Senior Healthcare
 
 The primary objective of this project is to enhance the **Vitalink management app** by developing a voice assistant (VA) specifically tailored for senior users in healthcare management. This voice assistant will collect health-related information through natural, conversational interactions, allowing doctors and researchers to gain insights without making users feel like they are undergoing a medical assessment. The VA will simulate a doctor-patient conversation to help seniors feel more comfortable sharing information about their well-being.
 
@@ -101,14 +101,14 @@ Our aim is to create short, efficient conversations that seamlessly fit into the
 - **Built in-house knowledge base:** Built a repository of medical references for users to access credible information.
 - - **Created a custom RAG model:** Validated responses for our RAG/customized LLM to make sure it gives accurate health-related answers.
 - **RPM Insights module:** Generated summaries of RPM data, giving both doctors and patients actionable insights.
-- **Role-based control:**Implemented role-based access control to keep things private and HIPAA-compliant.
-- **Tesitng Environment Setup:**Set up Minikube to test and deploy Kubernetes locally.
-- **Error logging:**Added error logging to help with troubleshooting and improve the system for developers and admins.
+- **Role-based control:** Implemented role-based access control to keep things private and HIPAA-compliant.
+- **Testing Environment Setup:** Set up Minikube to test and deploy Kubernetes locally.
+- **Error logging:** Added error logging to help with troubleshooting and improve the system for developers and admins.
 
 ## Features completed so far (Sprint 4)
 
 - **Rewards Module:** Implemented the rewards module, allowed users to log their activities when done.
-- **Emotion Detection Analysis:** Performed sentiment analysis on the users inputs to generate a mood based report per user, that can help doctor's in their analysis.
+- **Emotion Detection Analysis:** Performed sentiment analysis on user's inputs to generate a mood based report per user, that can help doctor's in their analysis.
 - **Login and create user section:** Login screen and create user screen implemented
 - **Onboarding section:** Create Account screen, Profile picture screen, Voice selection screen and user details screen implemented
 - **Rewards and functionalities section :** Home screen, rewards screen, claim rewards screen, exercise screen, medication screen, reminders screen, streaks screen, tiers screen, vitals screen, voice assistant screen implemented
