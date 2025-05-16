@@ -16,13 +16,6 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 client = openai.OpenAI()
 
-def stt_whisper(audio_file):
-    transcript = client.audio.transcriptions.create(
-        model="whisper-1",
-        file=audio_file
-    )
-    return transcript.text
-
 def record_audio(duration=None):
     CHUNK = 1024
     FORMAT = 'int16'
@@ -91,6 +84,14 @@ def record_audio(duration=None):
             listener.stop()
         time.sleep(0.01)
 
+def stt_whisper():
+    record_audio()
+    audio_file = open("user_response.wav", "rb")
+    transcript = client.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file
+    )
+    return transcript.text
 
 # Function to fetch and prepare audio for a sentence
 def fetch_audio(sentence, voice="nova"):

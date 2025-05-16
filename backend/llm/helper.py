@@ -3,7 +3,6 @@ import os
 import re
 from datetime import datetime, timedelta
 from voice_interactions import stt_whisper, tts_whisper
-from chat_completion import openai_complete
 from update_health_question_counter_data import update_health_question_counter, save_user_health_question_counter, load_health_questions
 
 from datetime import datetime

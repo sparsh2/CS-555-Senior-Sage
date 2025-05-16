@@ -199,7 +199,8 @@ def openai_complete(username, user_ip, context, vector_db, voice):
 
     try:
         completion = client.chat.completions.create(
-            model="gpt-4-turbo-preview",
+            # model="gpt-4-turbo-preview",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_ip}

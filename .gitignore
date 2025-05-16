@@ -103,3 +103,6 @@ yarn-error.log
 *.wav
 
 .DS_Store
+
+.env
+
