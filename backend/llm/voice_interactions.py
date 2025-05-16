@@ -119,6 +119,9 @@ def tts_whisper(input_text, voice="nova"):
             current_audio = fetch_audio(sentence, voice)  # Load initial sentence
         else:
             current_audio = next_audio  # Use preloaded audio
+        
+        if isinstance(current_audio, bytes):
+            current_audio = AudioSegment.from_file(io.BytesIO(current_audio))
 
         play(current_audio)
 
